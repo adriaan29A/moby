@@ -3,7 +3,7 @@ import "./styles.css"
 import { NewTodoForm } from "./NewTodoForm"
 import { TodoList } from "./TodoList"
 //import {DisplayLine } from "./DisplayLine.jsx"
-import {DisplaySynset } from "./DisplaySynset.jsx"
+import { Synset } from "./Synset.jsx"
 //import graph from "./graph.json"
 //import nodeinfo from "./nodes.json"
 
@@ -53,7 +53,7 @@ export default function App() {
 
 	return (
 		<>
-			<DisplaySynset/>
+			<Synset/>
 			<NewTodoForm onSubmit = {addTodo} />
 		    <h1 className="header"> Todo List </h1>
 			<TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />

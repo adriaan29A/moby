@@ -1,11 +1,11 @@
-import { DisplayLine1 } from "./DisplayLine1"
+import { SynsetRow } from "./SynsetRow"
 
 
-export function DisplaySynset() {
+export function Synset() {
 
-	//const rowset = getDisplayMetadaByRow(node, graph, nodeinfo, zlevel);
+	//const displist = getDispListInfo(node, graph, nodeinfo, zlevel);
 
-	const rowset =
+	const dispList =
 		  [
 			  [{nodeid: 2347, text: "diamond", color: "blue", cost: 2349955},
 			   {nodeid: 2342, text: "blackbeard", color: "red", cost: 45298655},
@@ -18,10 +18,10 @@ export function DisplaySynset() {
 
 	return (
 		<ul className="quux">
-			{rowset.map(function(row, index, array) {
+			{dispList.map(function(dispRow, index, array) {
 				return (
-					<DisplayLine1
-						row = {row}
+					<SynsetRow
+						row = {dispRow}
 					/>
 				)
 			})}

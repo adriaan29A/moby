@@ -50,6 +50,20 @@ silver teal white yellow
 	padding: 10px;
 }
 
+.quuxbutton {
+    background-color: white;
+    text-align: center;
+    display: inline-block;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.quuxbutton1 {
+        cursor: pointer;
+        background-color: transparent;
+		border: none;
+		outline: none;
+ }
 
 
 
