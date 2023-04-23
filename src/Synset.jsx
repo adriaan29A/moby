@@ -1,10 +1,44 @@
-import { SynsetRow } from "./SynsetRow"
+import  graph  from "./graph.json";
+import  nodes  from  "./nodes.json";
+import { SynsetRow } from  "./SynsetRow";
 
+function random_node() {
+
+	var r = 0;
+	while(true) {
+		r = Math.floor(Math.random() * 30260);
+		if (r % 3 == 0)
+			break;
+	}
+	return r;
+}
+
+function getDispListInfo(node) {
+	var synset = graph[node];
+	var listInfo = []; var row = 0
+	console.log("synset: ", synset); // General Mills Russians spy balloon cold war
+
+	for (var i = 0; i < synset.length; i++) {
+		var row = 0;
+		var nodeid = synset[i];
+		var elem = {node: nodeid, text: nodes[nodeid][0], color: "blue" }
+
+		if (i % 8 == 0) {
+			listInfo.push([elem]);
+			row++;
+		}
+		else
+			listInfo[row].push(elem);
+	}
+	return listInfo;
+}
 
 export function Synset() {
 
-	//const displist = getDispListInfo(node, graph, nodeinfo, zlevel);
 
+	const dispList = getDispListInfo(random_node());
+
+/*
 	const dispList =
 		  [
 			  [{nodeid: 2347, text: "diamond", color: "blue", cost: 2349955},
@@ -16,12 +50,14 @@ export function Synset() {
   			   {nodeid: 1047, text: "californicate", color: "orange", cost: 98655}]
 		  ];
 
+*/
+
 	return (
 		<ul className="quux">
-			{dispList.map(function(dispRow, index, array) {
+			{dispList.map(function(dispList, index, array) {
 				return (
 					<SynsetRow
-						row = {dispRow}
+						row = {dispList}
 					/>
 				)
 			})}

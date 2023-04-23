@@ -2,10 +2,7 @@ import { useEffect, useState } from "react"
 import "./styles.css"
 import { NewTodoForm } from "./NewTodoForm"
 import { TodoList } from "./TodoList"
-//import {DisplayLine } from "./DisplayLine.jsx"
 import { Synset } from "./Synset.jsx"
-//import graph from "./graph.json"
-//import nodeinfo from "./nodes.json"
 
 export default function App() {
 	//const [todos, setTodos] = useState([]);

@@ -1,9 +1,3 @@
-function myFunc(torf) {
-	if (torf == true)
-		console.log("clicked");
-	return null;
-}
-
 export function SynsetRow({row}) {
 
 	return (
