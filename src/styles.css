@@ -26,52 +26,50 @@ silver teal white yellow
 }
 
 .new-item-form {
-  display: flex;
-  flex-direction: column;
+	position: absolute;
+	top: 2%;
+	left: 1%;
   gap: 0.1rem;
 }
 
 .form-row {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 0.1rem;
 }
+
 
 .quux {
 	position: absolute;
 	top: 10%;
-	left:10%;
+	left: 10%;
 }
 
 .quux1 {
 	display: flex;
 	flex-direction: row;
-	gap: 0.5rem;
-	padding: 10px;
+	gap: 0.1em;
+    padding: .1em 0.1em;
 }
 
-.quuxbutton {
-    background-color: white;
-    text-align: center;
-    display: inline-block;
-    font-size: 15px;
-    cursor: pointer;
-}
 
 .quuxbutton1 {
         cursor: pointer;
         background-color: transparent;
 		border: none;
 		outline: none;
+	    padding: 0.2em 0.2em;
  }
 
-
+.quuxbtn2 {
+	margin-left: 20px;
+}
 
 .btn {
   background: hsl(200, 100%, 50%, 0.1);
   border: 1px solid hsl(200, 100%, 50%);
   color: hsl(200, 100%, 50%);
-  padding: 0.25em 0.5em;
+  padding: 0.1em 0.5em;
   border-radius: 0.25em;
   cursor: pointer;
   outline: none;

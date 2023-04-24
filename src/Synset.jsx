@@ -15,20 +15,18 @@ function random_node() {
 
 function getDispListInfo(node) {
 	var synset = graph[node];
-	var listInfo = []; var row = 0
-	console.log("synset: ", synset); // General Mills Russians spy balloon cold war
+	var listInfo = []; var row = 0;
 
 	for (var i = 0; i < synset.length; i++) {
-		var row = 0;
 		var nodeid = synset[i];
 		var elem = {node: nodeid, text: nodes[nodeid][0], color: "blue" }
 
-		if (i % 8 == 0) {
+		if ((i % 8) == 0) {
 			listInfo.push([elem]);
 			row++;
 		}
 		else
-			listInfo[row].push(elem);
+			listInfo[row-1].push(elem);
 	}
 	return listInfo;
 }

@@ -50,11 +50,12 @@ export default function App() {
 
 	return (
 		<>
-			<Synset/>
 			<NewTodoForm onSubmit = {addTodo} />
+			<Synset/>
+			{/*
 		    <h1 className="header"> Todo List </h1>
 			<TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
-
+			 */}
 	   </>
 	)
 
