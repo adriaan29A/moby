@@ -5,7 +5,6 @@ import { SynsetRow } from  "./SynsetRow";
 
 
 
-
 export function Synset({synonym}) {
 
 	console.log("synonym: ", synonym());
@@ -66,29 +65,35 @@ function getDisplayListInfo(node) {
 }
 
 
+
+const blue = "#00A"; const lightblue ="#55F"; const cyan = "#0AA"; const lightcyan = "#5FF";
+const magenta ="#A0A"; const lightmagenta ="#F5F"; const green="#0A0"; const lightgreen ="#5F5";
+const yellow ="#A50"; const lightyellow="#FF8"; const red="#A00"; const lightred="#F55";
+const black = "#000"; const lightblack = "#555";
+
 function color_from_cost(cost) {
 	if (cost < 5e4)
-		return "blue";
+		return "Blue";
 	else if (cost < 3e5)
-		return "lightblue";
+		return "DeepSkyBlue";
+	else if (cost < 5e5)
+		return "BlueViolet";
 	else if (cost < 1e6)
-		return "aquamarine"
+		return "LightMagenta";
 	else if (cost < 5e6)
-		return "aqua";
+		return "lightgreen";
 	else if (cost < 1e7)
-		return "green"
+		return "Lime";
 	else if (cost < 5e7)
-		return "greenyellow"
+		return "Yellow";
 	else if (cost < 1e8)
-		return "yellow";
-	else if (cost < 5e8)
-		return "orange";
-	else if (cost < 1e9)
-		return "orangered"
+		return "lightyellow";
+	else if (cost < 5e9)
+		return "OrangeRed";
 	else if (cost < 1.5e10)
-		return "red"
+		return "Red";
 	else
-		return "gray"
+		return Gray;
 }
 
 
