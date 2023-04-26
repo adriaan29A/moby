@@ -4,6 +4,8 @@ import  nodes  from  "./nodes.json";
 import { SynsetRow } from  "./SynsetRow";
 
 
+
+
 export function Synset({synonym}) {
 
 	console.log("synonym: ", synonym());
@@ -50,7 +52,8 @@ function getDisplayListInfo(node) {
 
 	for (var i = 0; i < synset.length; i++) {
 		var nodeid = synset[i];
-		var elem = {node: nodeid, text: nodes[nodeid][0], color: "blue" }
+		var elem = {node: nodeid, text: nodes[nodeid][0], color: color_from_cost(nodes[nodeid][1])}
+		//var elem = {node: nodeid, text: nodes[nodeid][0], color: "blue" }
 
 		if ((i % 8) == 0) {
 			listInfo.push([elem]);
@@ -61,6 +64,33 @@ function getDisplayListInfo(node) {
 	}
 	return listInfo;
 }
+
+
+function color_from_cost(cost) {
+	if (cost < 5e4)
+		return "blue";
+	else if (cost < 3e5)
+		return "lightblue";
+	else if (cost < 1e6)
+		return "aquamarine"
+	else if (cost < 5e6)
+		return "aqua";
+	else if (cost < 1e7)
+		return "green"
+	else if (cost < 5e7)
+		return "greenyellow"
+	else if (cost < 1e8)
+		return "yellow";
+	else if (cost < 5e8)
+		return "orange";
+	else if (cost < 1e9)
+		return "orangered"
+	else if (cost < 1.5e10)
+		return "red"
+	else
+		return "gray"
+}
+
 
 function nodeid_from_text(text, info) {
     // This func is O(N), but it is rarely used and the

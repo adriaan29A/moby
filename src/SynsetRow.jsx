@@ -5,7 +5,7 @@ export function SynsetRow({row}) {
 		<li className = "quux1">
 		{
 			row.map(function(node, index, array) {
-				return (<><button onClick={() => console.log('clicked!!')} style = {{ "color": row[index].color }} className="quuxbutton1">
+				return (<><button key = {row[index].nodeid} onClick={() => console.log('clicked!!')} style = {{ "color": row[index].color }} className="quuxbutton1">
 
 							  {array[index].text}
 
