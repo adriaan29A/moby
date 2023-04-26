@@ -5,7 +5,20 @@ import { TodoList } from "./TodoList"
 import { Synset } from "./Synset.jsx"
 
 export default function App() {
-	//const [todos, setTodos] = useState([]);
+
+	const [history, setHistory] = useState(() => {
+		const localValue = localStorage.getItem("HISTORY")
+		if (localValue == null) {
+			console.log('localValue null')
+			return []
+		}
+		return JSON.parse(localValue)
+	})
+
+	useEffect(() => {
+		localStorage.setItem("HISTORY", JSON.stringify(history))
+	}, [history])
+
 
 	const [todos, setTodos] = useState(() => {
 		const localValue = localStorage.getItem("ITEMS")
@@ -20,6 +33,20 @@ export default function App() {
 		localStorage.setItem("ITEMS", JSON.stringify(todos))
 	}, [todos])
 
+
+	function setCurrent(syn) {
+		setHistory((history) => {
+			return [
+				...history, // adds new node
+				{id: crypto.randomUUID(), synonym: syn },
+			]
+		})
+	}
+
+	function getCurrent() {
+		console.log('history: ', history);
+		return (history[history.length-1].synonym);
+	}
 
 	function addTodo(title){
 		setTodos((currentTodos) => {
@@ -50,12 +77,8 @@ export default function App() {
 
 	return (
 		<>
-			<NewTodoForm onSubmit = {addTodo} />
-			<Synset/>
-			{/*
-		    <h1 className="header"> Todo List </h1>
-			<TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
-			 */}
+			<NewTodoForm onSubmit = {setCurrent} />
+			<Synset synonym = {getCurrent} />
 	   </>
 	)
 
