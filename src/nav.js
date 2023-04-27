@@ -1,0 +1,315 @@
+import graph from "./graph.json";
+import node_data from "./nodes.json";
+
+class Navigator
+{
+    constructor(current, graph, node_data) {
+
+        this.graph = graph;
+        this.node_data = node_data;
+
+        // general navigation
+        this.current = current;
+        this.origin = current;
+        this.history = [current];
+        this.travlog = [current];
+
+        // game specific
+        this.target = null;
+        this.cost = 0;
+        this.last_delta = 0;
+
+        // zoom levels
+        this.zlevel = DEFAULT_ZOOM;
+		this.xfactor = 0;
+        this.zin = zin;
+        this.zout = zout;
+
+        this.nodeid_from_text = nodeid_from_text;
+	}
+
+	display(synset = this.graph[this.current]) {
+
+		if ((g_limit == 0) && (this.xfactor == 0)) {
+			display_adjacency_list(synset, this.node_data,
+								   this.graph, this.zlevel, this.xfactor, this.current);
+		}
+		else {
+			var expanded_synset = expand_synset(synset, this.graph, this.node_data, this.xfactor);
+			display_adjacency_list(expanded_synset, this.node_data,
+								   this.graph, this.zlevel, this.xfactor, this.current);
+		}
+	}
+
+    list() {
+
+		this.display();
+
+		if (this.target != null) {
+			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
+			console.log('goal:\t', this.node_data[this.target][TEXT]);
+			console.log('cost:\t' + color + this.cost.toLocaleString('en-US') + reset);
+		}
+	}
+
+	zoom(z) {
+
+        if (z == true && this.zlevel > MIN_ZOOM)
+            this.zlevel = this.zin[this.zlevel];
+        else if (z == false && this.zlevel < MAX_ZOOM)
+			this.zlevel = this.zout[this.zlevel];
+
+		this.display();
+
+        if (this.target != null) {
+			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
+            console.log('goal:\t', this.node_data[this.target][TEXT]);
+			console.log('cost:\t' + color + this.cost.toLocaleString('en-US') + reset);
+		}
+	}
+
+	// zlevel (filtering) and xfactor (synset expansion) can be modified
+	// independently but this function chains them to give an intgrated
+	// zoom effect. zlevel = MAX_ZOOM and xfactor = 0 are used to transition
+	// betwen the two regimes.
+
+	integrated_zoom(z) {
+
+		// zoom out
+		if (z == false) {
+			if (this.xfactor == 0) { // are in filter mode
+				if (this.zlevel == MAX_ZOOM) { // already at max filter level
+					this.xfactor++; // expand synset
+					this.display();
+				}
+				else {
+					this.zoom(false); // are in expansion mode. down-filter synset
+					return;
+				}
+			}
+			else { // xfactor not 0 -> in expansion mode
+				this.xfactor++;  // expand synset
+				this.display();
+			}
+		}
+		// zoom in, (z = true)
+		else {
+			if (this.xfactor == 0) { // in filter mode
+				this.zoom(true); // up filter synset
+				return;
+			}
+			else {
+				this.xfactor--; // unexpand synset
+				this.display();
+			}
+		}
+
+		if (this.target != null) {
+			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
+			console.log('goal:\t', this.node_data[this.target][TEXT]);
+			console.log('cost:\t' + color + this.cost.toLocaleString('en-US') + reset);
+		}
+	}
+
+	set_current(object) {
+
+		var nodeid = (typeof(object) == 'string') ?
+			this.nodeid_from_text(object, this.node_data) : object;
+
+		if (nodeid == null || this.graph[nodeid].length == 0)
+            return false;
+
+        this.current = nodeid;
+        this.history.push(this.current);
+        return true;
+	}
+
+
+	set_target(object) {
+
+		var nodeid = (typeof(object) == 'string') ?
+			this.nodeid_from_text(object, this.node_data) : object;
+
+        if (nodeid == null || this.graph[nodeid].length == 0)
+            return false;
+
+        this.origin = this.current;
+        this.target = nodeid;
+        this.history = [this.current];
+
+		this.display();
+
+        console.log('goal:\t', this.node_data[this.target][TEXT]);
+
+        var parent = dijkstra(this.graph, this.node_data, this.current, this.target);
+        var [cost, jumps] = get_cost_and_distance(parent, this.target, this.node_data);
+        console.log('\nmin cost:\t' + cost.toLocaleString('en-US') + ' / ' + jumps.toLocaleString('en-US'));
+
+        this.cost = cost; // current cost to target
+        parent = dijkstra(this.graph, this.node_data, this.current, this.target, 1e8);
+        [cost, jumps] = get_cost_and_distance(parent, this.target, this.node_data);
+        console.log('min jumps:\t' + cost.toLocaleString('en-US') + ' / ' + jumps.toLocaleString('en-US'));
+
+        return true;
+	}
+
+    next() {
+
+        if (this.target == null) {
+            console.log('No target selected');
+            return false;
+		}
+        else if (this.current == this.target)
+            return false;
+
+        // find min cost path from current node
+        var parent = dijkstra(this.graph, this.node_data, this.current, this.target);
+        var [path, nodes] = make_path(parent, this.target, this.node_data);
+
+        if (nodes.length > 1) {
+
+            // get next node in path, calculate new cost and delta
+            var next_node = nodes[1]; var new_cost;
+            if (next_node != this.target) {
+                var [cost, jumps] = get_cost_and_distance(parent, this.target, this.node_data);
+                new_cost = cost - this.node_data[next_node][COST];
+			}
+			else
+				new_cost = 0;
+
+			this.last_delta = (next_node != this.target)? new_cost - this.cost : 0;
+
+            this.current = next_node;
+            this.history.push(next_node);
+            this.travlog.push(next_node);
+            this.cost = new_cost;
+
+			this.display();
+
+			var color = (this.last_delta <= 0)? green : red;
+            console.log('target:\t', this.node_data[this.target][TEXT]);
+			console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
+		}
+		return true;
+	}
+
+	back() {
+
+        var node = this.history.pop();
+        if (this.history.length == 0) {
+            this.history.push(node);
+            return true;
+		}
+
+		this.current = this.history.slice(-1);
+		this.display();
+
+        if (this.target != null) {
+
+            // find min cost path from current node
+            var parent = dijkstra(this.graph, this.node_data,
+								  this.current, this.target);
+
+            var [cost, jumps] = get_cost_and_distance(parent, this.target,
+													  this.node_data);
+            this.last_delta = cost - this.cost;
+            this.cost = cost;
+
+			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
+            console.log('goal:\t', this.node_data[this.target][TEXT]);
+            console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
+		}
+
+		return true;
+	}
+
+
+    // jump to a given word, possibly in a navigation session
+	goto(object) {
+
+		var next_node = (typeof(object) == 'string') ?
+			this.nodeid_from_text(object, this.node_data) : object;
+
+        if (next_node == null || this.graph[next_node].length == 0)
+            return false;
+
+		this.current = next_node;
+		this.display(this.graph[this.current]);
+
+        // if tracking to a target
+        if (this.target != null) {
+
+            // find min cost path from current node
+            var parent = dijkstra(this.graph, this.node_data, next_node, this.target);
+            var [new_cost, jumps] = get_cost_and_distance(parent, this.target, this.node_data);
+
+            this.last_delta = new_cost - this.cost;
+            this.cost = new_cost;
+
+			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
+            console.log('goal:\t', this.node_data[this.target][TEXT]);
+            console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
+		}
+
+        this.history.push(this.current);
+        this.travlog.push(this.current);
+
+        return true;
+	}
+
+	play_loop(n) {
+
+		for (var i = 0; i < n; i++) {
+			var start = find_random_node(1e4, this.node_data);
+			var target = find_random_node(1e4, this.node_data);
+			this.clear();
+			this.zlevel = DEFAULT_ZOOM;
+			this.set_current(start);
+			this.set_target(target);
+			sleep(SLEEP_TIME);
+		}
+	}
+
+    print_history() {
+        var path = '';
+        if (this.history.length == 0)
+            this.history.push(this.current);
+        for (var nodeid of this.history)
+            path += this.node_data[nodeid][TEXT] + ' ';
+        console.log(path);
+	}
+
+    print_color_scale() {
+
+        var color_scale = '';
+
+        // Get max cost in current view
+        var node_costs = {};
+        var adj_list = this.graph[this.current];
+        for (var nodeid of adj_list)
+            if (this.node_data[nodeid][COST] < this.zlevel)
+                node_costs[nodeid] = this.node_data[nodeid][COST];
+
+        var [min_cost, max_cost] = minmax(node_costs);
+        for (i = 0; i < colors.length; i++) {
+            var color = colors[i];
+            var flat_level = i * (max_cost - min_cost)/colors.length + min_cost;
+            var scaled_level = flat_level; // = Math.floor(flat_level * sigmoid(flat_level, max_cost));
+            var level = scaled_level.toExponential(0);
+			color_scale += color + level + ' ';
+		}
+        console.log('\n' + color_scale);
+        console.log(reset);
+	}
+
+    clear() {
+
+        this.target = null;
+        this.cost = 0;
+        this.last_delta = 0;
+		this.travlog = [this.current];
+        this.history = [this.current];
+        this.zlevel = DEFAULT_ZOOM;
+	}
+
+} // end class Navigator
