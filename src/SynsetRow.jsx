@@ -1,11 +1,24 @@
-export function SynsetRow({row}) {
+
+
+
+
+export function SynsetRow({row, onClick}) {
+
+	function handleOnClick(e) {
+		e.preventDefault()
+		console.log('e.target.id: ', e.target.id);
+		console.log('e is: ', e);
+		onClick(e.target.innerText);
+
+	}
 
 	return (
 		<>
 		<li className = "quux1">
 		{
 			row.map(function(node, index, array) {
-				return (<><button key = {row[index].nodeid} onClick={() => console.log('clicked!!')} style = {{ "color": row[index].color }} className="quuxbutton1">
+				return (<><button id = {row[index].nodeid} onClick={handleOnClick}
+								  style = {{ "color": row[index].color }} className="quuxbutton1">
 
 							   {array[index].text}
 
@@ -16,6 +29,10 @@ export function SynsetRow({row}) {
 		</>
 	)
 }
+
+
+
+
 
 
 

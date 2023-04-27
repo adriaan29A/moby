@@ -35,4 +35,3 @@ export function NewTodoForm( {onSubmit} ) {
 		</form>
 	)
 }
-// navy, blue, fuchsia, gray, green, lime, maroon, navy, olive, purple, red, silver, teal, white, yellow

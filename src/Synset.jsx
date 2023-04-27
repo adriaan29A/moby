@@ -5,12 +5,12 @@ import { SynsetRow } from  "./SynsetRow";
 
 
 
-export function Synset({synonym}) {
+export function Synset({synonym, onClick}) {
 
 	console.log("synonym: ", synonym());
 
 	var nodeid = 0;
-	if (synonym() === undefined) {
+	if (synonym() == null) {
 		nodeid = random_node();
 	}
 	else {
@@ -24,7 +24,7 @@ export function Synset({synonym}) {
 		<ul className="quux">
 			{displayList.map(function(displayList, index, array) {
 				return (
-					<SynsetRow
+					<SynsetRow onClick = {onClick}
 						row = {displayList}
 					/>
 				)
@@ -51,7 +51,7 @@ function getDisplayListInfo(node) {
 
 	for (var i = 0; i < synset.length; i++) {
 		var nodeid = synset[i];
-		var elem = {node: nodeid, text: nodes[nodeid][0], color: color_from_cost(nodes[nodeid][1])}
+		var elem = {nodeid: nodeid, text: nodes[nodeid][0], color: color_from_cost(nodes[nodeid][1])}
 		//var elem = {node: nodeid, text: nodes[nodeid][0], color: "blue" }
 
 		if ((i % 8) == 0) {
@@ -64,13 +64,23 @@ function getDisplayListInfo(node) {
 	return listInfo;
 }
 
-
+function nodeid_from_text(text, info) {
+    // This func is O(N), but it is rarely used and the
+    // the need for an auxiliary dictionary is avoided.
+	for (var nodeid in info) {
+		if (info[nodeid][0] == text)
+			return nodeid;
+	}
+	return null;
+}
 
 const blue = "#00A"; const lightblue ="#55F"; const cyan = "#0AA"; const lightcyan = "#5FF";
 const magenta ="#A0A"; const lightmagenta ="#F5F"; const green="#0A0"; const lightgreen ="#5F5";
 const yellow ="#A50"; const lightyellow="#FF8"; const red="#A00"; const lightred="#F55";
 const black = "#000"; const lightblack = "#555";
 
+
+// make this binary search
 function color_from_cost(cost) {
 	if (cost < 5e4)
 		return "Blue";
@@ -81,28 +91,50 @@ function color_from_cost(cost) {
 	else if (cost < 1e6)
 		return "LightMagenta";
 	else if (cost < 5e6)
-		return "lightgreen";
+		return "LightGreen";
 	else if (cost < 1e7)
 		return "Lime";
 	else if (cost < 5e7)
 		return "Yellow";
 	else if (cost < 1e8)
 		return "lightyellow";
-	else if (cost < 5e9)
-		return "OrangeRed";
+	else if (cost < 2e8)
+		return "Orange";
 	else if (cost < 1.5e10)
 		return "Red";
 	else
 		return Gray;
 }
 
+// navy, blue, fuchsia, gray, green, lime, maroon, olive, purple, red, silver, teal, white, yellow
+/*
 
-function nodeid_from_text(text, info) {
-    // This func is O(N), but it is rarely used and the
-    // the need for an auxiliary dictionary is avoided.
-	for (var nodeid in info) {
-		if (info[nodeid][0] == text)
-			return nodeid;
-	}
-	return null;
+aqua black blue fuchsia gray green lime maroon navy olive purple red
+silver teal white yellow
+*/
+
+
+function color_from_cost2(cost) {
+	if (cost < 5e4)
+		return "navy";
+	else if (cost < 3e5)
+		return "blue";
+	else if (cost < 5e5)
+		return "aqua";
+	else if (cost < 1e6)
+		return "fuchsia";
+	else if (cost < 5e6)
+		return "purple";
+	else if (cost < 1e7)
+		return "green";
+	else if (cost < 5e7)
+		return "lime";
+	else if (cost < 1e8)
+		return "yellow";
+	else if (cost < 5e9)
+		return "orange";
+	else if (cost < 1.2e10)
+		return "red";
+	else
+		return gray;
 }

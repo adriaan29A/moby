@@ -45,7 +45,7 @@ export default function App() {
 
 	function getCurrent() {
 		console.log('history: ', history);
-		return (history[history.length-1].synonym);
+		return (history.length != 0) ? history[history.length-1].synonym : null;
 	}
 
 	function addTodo(title){
@@ -78,7 +78,7 @@ export default function App() {
 	return (
 		<>
 			<NewTodoForm onSubmit = {setCurrent} />
-			<Synset synonym = {getCurrent} />
+			<Synset synonym = {getCurrent} onClick = {setCurrent} />
 	   </>
 	)
 
