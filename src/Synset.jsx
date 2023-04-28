@@ -2,11 +2,11 @@ import {useState} from "react"
 import  graph  from "./graph.json";
 import  nodes  from  "./nodes.json";
 import { SynsetRow } from  "./SynsetRow";
-import  { random_node, nodeid_from_text, getDisplayListInfo } from "./corelogic"
+
+import  { nodeid_from_text, getDisplayListInfo, random_node } from "./core.js";
+
 
 export function Synset({synonym, onClick}) {
-
-	console.log("synonym: ", synonym());
 
 	var nodeid = 0;
 	if (synonym() == null) {
@@ -14,7 +14,6 @@ export function Synset({synonym, onClick}) {
 	}
 	else {
 		nodeid = nodeid_from_text(synonym(), nodes);
-		console.log('nodeid: ', nodeid);
 	}
 
 	const displayList = getDisplayListInfo(nodeid);

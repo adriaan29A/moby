@@ -3,6 +3,7 @@ import "./styles.css"
 import { NewTodoForm } from "./NewTodoForm"
 import { TodoList } from "./TodoList"
 import { Synset } from "./Synset.jsx"
+import { CreateNavigator } from "./nav.js"
 
 export default function App() {
 
@@ -74,6 +75,8 @@ export default function App() {
 			return currentTodos.filter(todo => todo.id !== id)
 		})
 	}
+
+	var nav = CreateNavigator(getCurrent());
 
 	return (
 		<>

@@ -1,6 +1,17 @@
 import graph from "./graph.json";
 import node_data from "./nodes.json";
 
+import  { display_adjacency_list, dijkstra, get_cost_and_distance,
+		  random_node, minmax, nodeid_from_text, getDisplayListInfo, colors,
+		  zin, zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST} from "./core.js";
+
+
+export function CreateNavigator (object) {
+		var nodeid = (typeof(object) == 'string') ?
+		nodeid_from_text(object, node_data) : object;
+	return new Navigator(nodeid, graph, node_data);
+}
+
 class Navigator
 {
     constructor(current, graph, node_data) {
@@ -27,6 +38,7 @@ class Navigator
 
         this.nodeid_from_text = nodeid_from_text;
 	}
+/*
 
 	display(synset = this.graph[this.current]) {
 
@@ -40,6 +52,8 @@ class Navigator
 								   this.graph, this.zlevel, this.xfactor, this.current);
 		}
 	}
+*/
+
 
     list() {
 
@@ -257,19 +271,6 @@ class Navigator
         return true;
 	}
 
-	play_loop(n) {
-
-		for (var i = 0; i < n; i++) {
-			var start = find_random_node(1e4, this.node_data);
-			var target = find_random_node(1e4, this.node_data);
-			this.clear();
-			this.zlevel = DEFAULT_ZOOM;
-			this.set_current(start);
-			this.set_target(target);
-			sleep(SLEEP_TIME);
-		}
-	}
-
     print_history() {
         var path = '';
         if (this.history.length == 0)
@@ -313,3 +314,15 @@ class Navigator
 	}
 
 } // end class Navigator
+	/*
+
+	   DEFAULT_ZOOM,
+	   colors,
+	   MIN_ZOOM
+	   TEXT, COST
+	   dijkstra
+	   get_cost_and_distance
+	   minmax
+	   MIN_ZOOM
+
+	 */

@@ -1,6 +1,127 @@
-import nodes from "./nodes.json";
+import node_data from "./nodes.json";
 import graph  from "./graph.json";
+import {CreatePriorityQueue} from "./priorityQueue.js";
 
+export {display_adjacency_list, dijkstra, get_cost_and_distance,
+		random_node, minmax, nodeid_from_text, getDisplayListInfo,
+		colors, zin, zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM,
+		TEXT, COST, };
+
+
+// temporary testing purposes
+var g_c1 = 1; var g_c2 = 1; var g_limit = 0;
+
+// zoom stuff
+const MIN_ZOOM = 5e4;
+const MAX_ZOOM = 12e9;
+const DEFAULT_ZOOM = 1e6;
+
+const ztable = [12e9, 5e8, 1e8, 1e7, 1e6, 5e5, 3e5, 15e4, 5e4];
+const zin = {}; const zout = {};
+
+for (var i = 0; i < ztable.length - 1; i++) {
+    zin[ztable[i]] = ztable[i+1];
+    zout[ztable[i+1]] = ztable[i];
+}
+
+// tuples/indexes
+const ID = 0;
+const TEXT = 0;
+const COST = 1;
+
+/*--
+
+Unused, keep around for now
+
+// ansi/console codes mapped from orig defines using ansi2html node package
+const blue = "#00A"; const lightblue ="#55F"; const cyan = "#0AA"; const lightcyan = "#5FF";
+const magenta ="#A0A"; const lightmagenta ="#F5F"; const green="#0A0"; const lightgreen ="#5F5";
+const yellow ="#A50"; const lightyellow="#FF8"; const red="#A00"; const lightred="#F55";
+const black = "#000"; const lightblack = "#555";
+
+var colors = [blue, lightblue, cyan, lightcyan, magenta, lightmagenta,
+              green, lightgreen, yellow, lightyellow, red, lightred];
+
+ --*/
+
+var colors = ["Blue",  "DeepSkyBlue", "BlueViolet", "LightMagenta", "LightGreen", "Lime",
+              "Yellow", "LighttYellow", "Orange", "Red"];
+
+// to be gotten rid of soon...
+var fmt = [];
+for (var c of colors)
+		fmt.push(c);
+
+
+/*--
+
+  Constructs main synset display list ready to convert --> HTML
+
+  --*/
+function display_adjacency_list(raw_nodes, node_data, graph, zlevel, xfactor, curr) {
+
+    var nodes = [];
+    var node_costs = {};
+    var revised_node_costs = {};
+
+    for (var node of raw_nodes) {
+		if ((node_data[node] !== 'undefined') && (node_data[node][COST] != Infinity)) {
+			nodes.push(node);
+			node_costs[node] = node_data[node][COST];
+		}
+	}
+    if (nodes.length == 0)
+        return false;
+
+    for (node of nodes)
+        if (graph[node].length == 0)
+            node_costs[node] = 0;
+
+	// compute min and max cost before applying sigmoid
+    var [min_cost, max_cost] = minmax(node_costs);
+    for (node of nodes)
+        if (node_data[node][COST] < zlevel)
+            revised_node_costs[node] = Math.floor(node_costs[node]
+												  * sigmoid(node_costs[node], max_cost));
+        else
+            // Important so these nodes don't contribute to scaling
+            revised_node_costs[node] = 0;
+
+    // post-sigmoid recompute max and min cost
+    [min_cost, max_cost] = minmax(revised_node_costs);
+
+    // leaf nodes blanked when any other nodes are.
+    var suppress_leafs = false;
+    for (node of nodes)
+        if (graph[node].length != 0)
+            if (node_data[node][COST] > zlevel) {
+                suppress_leafs = true;
+                break;
+			}
+
+	//console.clear();
+    console.log('\n');
+
+    print_adjacency_list(nodes, node_data, graph, revised_node_costs,
+                         min_cost, max_cost, zlevel, suppress_leafs, curr);
+
+	console.log('\nzoom:\t' + zlevel.toExponential(1));
+	console.log('#syns:\t', nodes.length);
+
+	// if (xfactor != 0)
+		// console.log('expand:\t', xfactor);
+
+    console.log('curr:\t' + node_data[curr][TEXT] + ' (' + curr + ')');
+
+
+    return true;
+}
+
+/*--
+
+  Low-level display processing api called by display_adjacency_list
+
+--*/
 
 const DEFAULT_COLUMNS = 80;
 const AVG_WORDS_PER_80_COL = 9; // eyeballed
@@ -85,70 +206,6 @@ function print_adjacency_list(nodes, node_data, graph, revised_node_costs,
 }
 
 
-/*--
-
-  Constructs final syntax display list
-
-  --*/
-function display_adjacency_list(raw_nodes, node_data, graph, zlevel, xfactor, curr) {
-
-    var nodes = [];
-    var node_costs = {};
-    var revised_node_costs = {};
-
-    for (var node of raw_nodes) {
-		if ((node_data[node] !== 'undefined') && (node_data[node][COST] != Infinity)) {
-			nodes.push(node);
-			node_costs[node] = node_data[node][COST];
-		}
-	}
-    if (nodes.length == 0)
-        return false;
-
-    for (node of nodes)
-        if (graph[node].length == 0)
-            node_costs[node] = 0;
-
-	// compute min and max cost before applying sigmoid
-    var [min_cost, max_cost] = minmax(node_costs);
-    for (node of nodes)
-        if (node_data[node][COST] < zlevel)
-            revised_node_costs[node] = Math.floor(node_costs[node]
-												  * sigmoid(node_costs[node], max_cost));
-        else
-            // Important so these nodes don't contribute to scaling
-            revised_node_costs[node] = 0;
-
-    // post-sigmoid recompute max and min cost
-    [min_cost, max_cost] = minmax(revised_node_costs);
-
-    // leaf nodes blanked when any other nodes are.
-    var suppress_leafs = false;
-    for (node of nodes)
-        if (graph[node].length != 0)
-            if (node_data[node][COST] > zlevel) {
-                suppress_leafs = true;
-                break;
-			}
-
-	//console.clear();
-    console.log('\n');
-
-    print_adjacency_list(nodes, node_data, graph, revised_node_costs,
-                         min_cost, max_cost, zlevel, suppress_leafs, curr);
-
-	console.log('\nzoom:\t' + zlevel.toExponential(1));
-	console.log('#syns:\t', nodes.length);
-
-	// if (xfactor != 0)
-		// console.log('expand:\t', xfactor);
-
-    console.log('curr:\t' + node_data[curr][TEXT] + ' (' + curr + ')');
-
-
-    return true;
-}
-
 // helper functions for print/display_adjacency_list above
 
 function sigmoid(freq, max_freq) {
@@ -177,7 +234,11 @@ function center_line(line, nodecount, columns) {
     return centered_line;
 }
 
+/*--
 
+  breadth-first graph walker for finding paths between synonyms
+
+--*/
 function dijkstra(G, C, start, goal, edge_weight = 0) {
 
     var visited = new Set();
@@ -226,8 +287,12 @@ function dijkstra(G, C, start, goal, edge_weight = 0) {
 	return parent;
 }
 
+/*
 
-// Ancillary functions using dijkstra
+  graph-walk results helper funcs
+
+*/
+
 function make_path(parent, goal, node_data) {
 
     if (!(goal in parent))
@@ -263,6 +328,13 @@ function get_cost_and_distance(parent, goal, node_data) {
 }
 
 
+/*
+
+  Takes an existing synset and expands it by walking
+  neighbors for additional terms and merging them in.
+
+*/
+
 const EXPANSION_FACTOR = 2; // = 1.6; // eyeballed
 function expand_synset(synset, graph, node_data, level) {
 
@@ -283,9 +355,8 @@ function expand_synset(synset, graph, node_data, level) {
 			final_set.push([child, node_data[child][TEXT]]);
 		}
 	}
-	// breadth first search for nearest terms
-	// completing when the requested limit has
-	// been reached. BUG - infinit loop possible
+	// breadth first search for nearest terms completing when the requested
+	// limit has been reached. BUG - fix infinite loop
 	if (limit != 0) {
 
 		var count = 0;
@@ -321,13 +392,15 @@ function compareFn(a, b) {
 	return (sa < sb)? -1 : (sa > sb) ? 1 : 0;
 }
 
+//
+//
 //--------------------------------------------------------------------------
-// Working functions
+//   currently exported functions
 //
 
 
 // CHANGE ME WHEN YOU CHANGE GRAPH/NODES SIZES
-export function random_node() {
+function random_node() {
 	var r = 0;
 	while(true) {
 		r = Math.floor(Math.random() * 30260);
@@ -349,27 +422,28 @@ function find_random_node(mincost, node_data) {
 }
 */
 
-export function nodeid_from_text(text, nodes) {
+function nodeid_from_text(text, node_data) {
     // This func is O(N), but it is rarely used and the
     // the need for an auxiliary dictionary is avoided.
-	for (var nodeid in nodes) {
-		if (nodes[nodeid][0] == text)
+	for (var nodeid in node_data) {
+		if (node_data[nodeid][0] == text)
 			return nodeid;
 	}
 	return null;
 }
 
-export function getDisplayListInfo(node) {
+// this to be returned from Nav
+function getDisplayListInfo(node) {
 	var synset = graph[node];
 	var listInfo = []; var row = 0;
 
 	for (var i = 0; i < synset.length; i++) {
 		var nodeid = synset[i];
 
-		var elem = {nodeid: nodeid, text: nodes[nodeid][0],
-					color: color_from_cost(nodes[nodeid][1]) };
+		var elem = {nodeid: nodeid, text: node_data[nodeid][0],
+					color: color_from_cost(node_data[nodeid][1]) };
 
-		if ((i % 8) == 0) {
+		if ((i % 12) == 0) {
 			listInfo.push([elem]);
 			row++;
 		}
@@ -380,20 +454,7 @@ export function getDisplayListInfo(node) {
 }
 
 
-/*
-navy, blue, fuchsia, gray, green, lime, maroon, olive, purple, red, silver, teal, white, yellow
-aqua black blue fuchsia gray green lime maroon navy olive purple red
-silver teal white yellow
-*/
-
-// ansi/console codes mapped from orig defines using ansi2html node package
-const blue = "#00A"; const lightblue ="#55F"; const cyan = "#0AA"; const lightcyan = "#5FF";
-const magenta ="#A0A"; const lightmagenta ="#F5F"; const green="#0A0"; const lightgreen ="#5F5";
-const yellow ="#A50"; const lightyellow="#FF8"; const red="#A00"; const lightred="#F55";
-const black = "#000"; const lightblack = "#555";
-
-
-// make this binary search
+// super temporary
 function color_from_cost(cost) {
 	if (cost < 5e4)
 		return "Blue";
@@ -416,7 +477,7 @@ function color_from_cost(cost) {
 	else if (cost < 1.5e10)
 		return "Red";
 	else
-		return Gray;
+		return "Gray";
 }
 
 // unused
@@ -436,6 +497,7 @@ function makeStruct(keys) {
 navy, blue, fuchsia, gray, green, lime, maroon, olive, purple, red, silver, teal, white, yellow
 aqua black blue fuchsia gray green lime maroon navy olive purple red
 silver teal white yellow
+
 
 // ansi/console codes mapped from orig defines using ansi2html node package
 const blue = "#00A"; const lightblue ="#55F"; const cyan = "#0AA"; const lightcyan = "#5FF";
