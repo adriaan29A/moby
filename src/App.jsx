@@ -76,6 +76,11 @@ export default function App() {
 		})
 	}
 
+	//
+	// here I want to persist the entire Navigator, right? Exactly what is thzt...
+	//
+
+
 	var nav = CreateNavigator(getCurrent());
 
 	return (

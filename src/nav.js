@@ -14,10 +14,9 @@ export function CreateNavigator (object) {
 
 class Navigator
 {
-    constructor(current, graph, node_data) {
 
-        this.graph = graph;
-        this.node_data = node_data;
+
+    constructor(current) {
 
         // general navigation
         this.current = current;
@@ -35,21 +34,19 @@ class Navigator
 		this.xfactor = 0;
         this.zin = zin;
         this.zout = zout;
-
-        this.nodeid_from_text = nodeid_from_text;
 	}
 /*
 
-	display(synset = this.graph[this.current]) {
+	display(synset = graph[this.current]) {
 
 		if ((g_limit == 0) && (this.xfactor == 0)) {
-			display_adjacency_list(synset, this.node_data,
-								   this.graph, this.zlevel, this.xfactor, this.current);
+			display_adjacency_list(synset, node_data,
+								   graph, this.zlevel, this.xfactor, this.current);
 		}
 		else {
-			var expanded_synset = expand_synset(synset, this.graph, this.node_data, this.xfactor);
-			display_adjacency_list(expanded_synset, this.node_data,
-								   this.graph, this.zlevel, this.xfactor, this.current);
+			var expanded_synset = expand_synset(synset, graph, node_data, this.xfactor);
+			display_adjacency_list(expanded_synset, node_data,
+								   graph, this.zlevel, this.xfactor, this.current);
 		}
 	}
 */
@@ -61,7 +58,7 @@ class Navigator
 
 		if (this.target != null) {
 			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
-			console.log('goal:\t', this.node_data[this.target][TEXT]);
+			console.log('goal:\t', node_data[this.target][TEXT]);
 			console.log('cost:\t' + color + this.cost.toLocaleString('en-US') + reset);
 		}
 	}
@@ -77,7 +74,7 @@ class Navigator
 
         if (this.target != null) {
 			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
-            console.log('goal:\t', this.node_data[this.target][TEXT]);
+            console.log('goal:\t', node_data[this.target][TEXT]);
 			console.log('cost:\t' + color + this.cost.toLocaleString('en-US') + reset);
 		}
 	}
@@ -120,7 +117,7 @@ class Navigator
 
 		if (this.target != null) {
 			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
-			console.log('goal:\t', this.node_data[this.target][TEXT]);
+			console.log('goal:\t', node_data[this.target][TEXT]);
 			console.log('cost:\t' + color + this.cost.toLocaleString('en-US') + reset);
 		}
 	}
@@ -128,9 +125,9 @@ class Navigator
 	set_current(object) {
 
 		var nodeid = (typeof(object) == 'string') ?
-			this.nodeid_from_text(object, this.node_data) : object;
+			this.nodeid_from_text(object, node_data) : object;
 
-		if (nodeid == null || this.graph[nodeid].length == 0)
+		if (nodeid == null || graph[nodeid].length == 0)
             return false;
 
         this.current = nodeid;
@@ -142,9 +139,9 @@ class Navigator
 	set_target(object) {
 
 		var nodeid = (typeof(object) == 'string') ?
-			this.nodeid_from_text(object, this.node_data) : object;
+			this.nodeid_from_text(object, node_data) : object;
 
-        if (nodeid == null || this.graph[nodeid].length == 0)
+        if (nodeid == null || graph[nodeid].length == 0)
             return false;
 
         this.origin = this.current;
@@ -153,15 +150,15 @@ class Navigator
 
 		this.display();
 
-        console.log('goal:\t', this.node_data[this.target][TEXT]);
+        console.log('goal:\t', node_data[this.target][TEXT]);
 
-        var parent = dijkstra(this.graph, this.node_data, this.current, this.target);
-        var [cost, jumps] = get_cost_and_distance(parent, this.target, this.node_data);
+        var parent = dijkstra(graph, node_data, this.current, this.target);
+        var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
         console.log('\nmin cost:\t' + cost.toLocaleString('en-US') + ' / ' + jumps.toLocaleString('en-US'));
 
         this.cost = cost; // current cost to target
-        parent = dijkstra(this.graph, this.node_data, this.current, this.target, 1e8);
-        [cost, jumps] = get_cost_and_distance(parent, this.target, this.node_data);
+        parent = dijkstra(graph, node_data, this.current, this.target, 1e8);
+        [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
         console.log('min jumps:\t' + cost.toLocaleString('en-US') + ' / ' + jumps.toLocaleString('en-US'));
 
         return true;
@@ -177,16 +174,16 @@ class Navigator
             return false;
 
         // find min cost path from current node
-        var parent = dijkstra(this.graph, this.node_data, this.current, this.target);
-        var [path, nodes] = make_path(parent, this.target, this.node_data);
+        var parent = dijkstra(graph, node_data, this.current, this.target);
+        var [path, nodes] = make_path(parent, this.target, node_data);
 
         if (nodes.length > 1) {
 
             // get next node in path, calculate new cost and delta
             var next_node = nodes[1]; var new_cost;
             if (next_node != this.target) {
-                var [cost, jumps] = get_cost_and_distance(parent, this.target, this.node_data);
-                new_cost = cost - this.node_data[next_node][COST];
+                var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
+                new_cost = cost - node_data[next_node][COST];
 			}
 			else
 				new_cost = 0;
@@ -201,7 +198,7 @@ class Navigator
 			this.display();
 
 			var color = (this.last_delta <= 0)? green : red;
-            console.log('target:\t', this.node_data[this.target][TEXT]);
+            console.log('target:\t', node_data[this.target][TEXT]);
 			console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
 		}
 		return true;
@@ -221,16 +218,16 @@ class Navigator
         if (this.target != null) {
 
             // find min cost path from current node
-            var parent = dijkstra(this.graph, this.node_data,
+            var parent = dijkstra(graph, node_data,
 								  this.current, this.target);
 
             var [cost, jumps] = get_cost_and_distance(parent, this.target,
-													  this.node_data);
+													  node_data);
             this.last_delta = cost - this.cost;
             this.cost = cost;
 
 			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
-            console.log('goal:\t', this.node_data[this.target][TEXT]);
+            console.log('goal:\t', node_data[this.target][TEXT]);
             console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
 		}
 
@@ -242,26 +239,26 @@ class Navigator
 	goto(object) {
 
 		var next_node = (typeof(object) == 'string') ?
-			this.nodeid_from_text(object, this.node_data) : object;
+			this.nodeid_from_text(object, node_data) : object;
 
-        if (next_node == null || this.graph[next_node].length == 0)
+        if (next_node == null || graph[next_node].length == 0)
             return false;
 
 		this.current = next_node;
-		this.display(this.graph[this.current]);
+		this.display(graph[this.current]);
 
         // if tracking to a target
         if (this.target != null) {
 
             // find min cost path from current node
-            var parent = dijkstra(this.graph, this.node_data, next_node, this.target);
-            var [new_cost, jumps] = get_cost_and_distance(parent, this.target, this.node_data);
+            var parent = dijkstra(graph, node_data, next_node, this.target);
+            var [new_cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
 
             this.last_delta = new_cost - this.cost;
             this.cost = new_cost;
 
 			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
-            console.log('goal:\t', this.node_data[this.target][TEXT]);
+            console.log('goal:\t', node_data[this.target][TEXT]);
             console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
 		}
 
@@ -276,7 +273,7 @@ class Navigator
         if (this.history.length == 0)
             this.history.push(this.current);
         for (var nodeid of this.history)
-            path += this.node_data[nodeid][TEXT] + ' ';
+            path += node_data[nodeid][TEXT] + ' ';
         console.log(path);
 	}
 
@@ -286,10 +283,10 @@ class Navigator
 
         // Get max cost in current view
         var node_costs = {};
-        var adj_list = this.graph[this.current];
+        var adj_list = graph[this.current];
         for (var nodeid of adj_list)
-            if (this.node_data[nodeid][COST] < this.zlevel)
-                node_costs[nodeid] = this.node_data[nodeid][COST];
+            if (node_data[nodeid][COST] < this.zlevel)
+                node_costs[nodeid] = node_data[nodeid][COST];
 
         var [min_cost, max_cost] = minmax(node_costs);
         for (i = 0; i < colors.length; i++) {

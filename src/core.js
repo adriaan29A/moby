@@ -99,19 +99,16 @@ function display_adjacency_list(raw_nodes, node_data, graph, zlevel, xfactor, cu
                 break;
 			}
 
-	//console.clear();
-    console.log('\n');
 
     print_adjacency_list(nodes, node_data, graph, revised_node_costs,
                          min_cost, max_cost, zlevel, suppress_leafs, curr);
 
-	console.log('\nzoom:\t' + zlevel.toExponential(1));
-	console.log('#syns:\t', nodes.length);
 
+	//console.log('\nzoom:\t' + zlevel.toExponential(1));
+	//console.log('#syns:\t', nodes.length);
 	// if (xfactor != 0)
 		// console.log('expand:\t', xfactor);
-
-    console.log('curr:\t' + node_data[curr][TEXT] + ' (' + curr + ')');
+    //console.log('curr:\t' + node_data[curr][TEXT] + ' (' + curr + ')');
 
 
     return true;
@@ -160,6 +157,7 @@ function print_adjacency_list(nodes, node_data, graph, revised_node_costs,
         var nodecount = 0;
 		for (i = nprev; i < ncur; i++) {
 
+			var format = '';
             if (graph[nodes[i]].length != 0) {
 
                 if (node_data[nodes[i]][COST] < zlevel) {
@@ -169,40 +167,34 @@ function print_adjacency_list(nodes, node_data, graph, revised_node_costs,
                         id = Math.floor((revised_node_costs[nodes[i]] - min_cost) /
                                         (max_cost - min_cost) * (fmt.length - 1));
 
-					if (nodes[i] == curr) //
-						var format = lightred + normal;//
-					else //
-						format = fmt[id]; // original
+					format = fmt[id];
 				}
 				else
-					format = black + dim;
+					format = "Black";
 			}
 			else {
 
 				if (!suppress_leafs)
-					format = lightblack + dim;
+					format = "LightBlack";
 				else
-					format = black + dim;
+					format = "Black";
 			}
-			var curr_bracket_left = (nodes[i] == curr) ? '<' : ''; //
-			var curr_bracket_right = (nodes[i] == curr) ? '>' : ''; //
 
-            s = format + curr_bracket_left + node_data[nodes[i]][TEXT] + curr_bracket_right + ' '; //
-            line += s;
-            nodecount += 1;
+			// This is where I need to add the node data to a list -->
+            var text = format + node_data[nodes[i]][TEXT] + ' '; //
+            line += text;
+
+			nodecount += 1;
 		}
 
+		// --> and this is where I go to the next list
 		console.log(center_line(line, nodecount, columns));
-		//console.log(line);
-        // print(black, end=''); ????
 
         // Done printing line
         ncur += 1;
 		nprev = ncur;
 
 	}  // end while(ncur < n)
-
-	console.log(reset);
 }
 
 
@@ -224,6 +216,7 @@ function minmax(nodes) {
 	return [Math.min(...values), Math.max(...values)];
 }
 
+// not needed
 function center_line(line, nodecount, columns) {
     var slack = columns - (line.length - (nodecount + nodecount * (black.length + dim.length)));
     var half = Math.floor(slack / 2);
@@ -343,8 +336,7 @@ function expand_synset(synset, graph, node_data, level) {
 	var expanded_list = [];
 	var visited = new Set();
 
-	// includes temp hack
-	var limit = (g_limit == 0) ? synset.length * (Math.floor(EXPANSION_FACTOR ** level)) : g_limit;
+	var limit = synset.length * Math.floor(EXPANSION_FACTOR ** level);
 
 	// populate the final list to be shown with
 	// the nodes of the starting synsets.
