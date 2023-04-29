@@ -1,13 +1,18 @@
 import {useState} from "react"
+import  { nodeid_from_text } from "./core.js";
 
-export function NewTodoForm( {onSubmit} ) {
+export function NewTodoForm({nav, onSubmit}) {
+
 	const [newItem, setNewItem] = useState("");
 
 	function handleSubmit(e) {
 		e.preventDefault()
-//		if (newItem === "") return
+		// if (newItem === "") return
 
-		onSubmit(newItem);
+		// set the current node on the nav object
+		// which will be refreshed in state
+		nav.current = nodeid_from_text(newItem);
+		onSubmit(nav.get());
 
 		setNewItem("")
 	}

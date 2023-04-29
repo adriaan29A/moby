@@ -4,23 +4,12 @@ import { NewTodoForm } from "./NewTodoForm"
 import { TodoList } from "./TodoList"
 import { Synset } from "./Synset.jsx"
 import { CreateNavigator } from "./nav.js"
+import { nodeid_from_text, random_node } from "./core.js"
 
 export default function App() {
 
-	const [history, setHistory] = useState(() => {
-		const localValue = localStorage.getItem("HISTORY")
-		if (localValue == null) {
-			console.log('localValue null')
-			return []
-		}
-		return JSON.parse(localValue)
-	})
 
-	useEffect(() => {
-		localStorage.setItem("HISTORY", JSON.stringify(history))
-	}, [history])
-
-
+/*--
 	const [todos, setTodos] = useState(() => {
 		const localValue = localStorage.getItem("ITEMS")
 		if (localValue == null) {
@@ -34,21 +23,11 @@ export default function App() {
 		localStorage.setItem("ITEMS", JSON.stringify(todos))
 	}, [todos])
 
+	--*/
 
-	function setCurrent(syn) {
-		setHistory((history) => {
-			return [
-				...history, // adds new node
-				{id: crypto.randomUUID(), synonym: syn },
-			]
-		})
-	}
 
-	function getCurrent() {
-		console.log('history: ', history);
-		return (history.length != 0) ? history[history.length-1].synonym : null;
-	}
 
+/*--
 	function addTodo(title){
 		setTodos((currentTodos) => {
 			return [
@@ -76,17 +55,40 @@ export default function App() {
 		})
 	}
 
-	//
-	// here I want to persist the entire Navigator, right? Exactly what is thzt...
-	//
+	--*/
+
+	var nav = CreateNavigator();
+
+	const [navctx, setNavctx] = useState(() => {
+		const localValue = localStorage.getItem("NAVCTX1")
+		if (localValue == null) {
+			console.log('localValue null')
+
+			nav.current = nav.origin = random_node();
+			nav.history = [nav.current];
+
+			return nav.get();
+
+		}
+		return JSON.parse(localValue)
+	})
+
+	useEffect(() => {
+		localStorage.setItem("NAVCTX1", JSON.stringify(navctx))
+	}, [navctx])
 
 
-	var nav = CreateNavigator(getCurrent());
+	function setCtx(ctx) {
+		console.log('in setCtx, ctx = ', ctx);
+		setNavctx((navctx) => {return ctx });
+	}
+
+	nav.set(navctx);
 
 	return (
 		<>
-			<NewTodoForm onSubmit = {setCurrent} />
-			<Synset synonym = {getCurrent} onClick = {setCurrent} />
+			<NewTodoForm nav = { nav } onSubmit = { setCtx } />
+			<Synset nav = { nav } onClick = { setCtx } />
 	   </>
 	)
 

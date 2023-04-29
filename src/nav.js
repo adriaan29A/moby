@@ -3,40 +3,64 @@ import node_data from "./nodes.json";
 
 import  { display_adjacency_list, dijkstra, get_cost_and_distance,
 		  random_node, minmax, nodeid_from_text, getDisplayListInfo, colors,
-		  zin, zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST} from "./core.js";
+		  zin, zout, color_from_cost, MIN_ZOOM, MAX_ZOOM,DEFAULT_ZOOM, TEXT, COST} from "./core.js";
 
-
-export function CreateNavigator (object) {
-		var nodeid = (typeof(object) == 'string') ?
-		nodeid_from_text(object, node_data) : object;
-	return new Navigator(nodeid, graph, node_data);
+export function CreateNavigator () {
+	return new Navigator();
 }
 
-class Navigator
-{
 
+class Navigator {
 
-    constructor(current) {
+    constructor() {
 
         // general navigation
-        this.current = current;
-        this.origin = current;
-        this.history = [current];
-        this.travlog = [current];
+        this.current = null; this.origin = null; this.history = [];
 
         // game specific
-        this.target = null;
-        this.cost = 0;
-        this.last_delta = 0;
+        this.target = null; this.cost = 0; this.last_delta = 0;
 
         // zoom levels
-        this.zlevel = DEFAULT_ZOOM;
-		this.xfactor = 0;
-        this.zin = zin;
-        this.zout = zout;
+        this.zlevel = DEFAULT_ZOOM;	this.xfactor = 0; this.zin = zin; this.zout = zout;
 	}
-/*
 
+
+	set(ctx) {
+		this.current = ctx.curr; this.origin = ctx.origin; this.history = ctx.history;
+		this.target = ctx.target; this.cost = ctx.cost; this.last_delta = ctx.delta;
+		this.zlevel = ctx.zlevel; this.xfactor = ctx.xactor; this.zin = ctx.zin;
+		this.zout = ctx.zout;
+	}
+
+	get() {
+		return { curr: this.current, origin: this.origin, history: this.history,
+				 target: this.target, cost: this.cost, delta: this.last_delta,
+				 zin: this.zin, zout: this.zout };
+	}
+
+	getDisplayListInfo() {
+
+		var synset = graph[this.current];
+		var listInfo = []; var row = 0;
+
+		for (var i = 0; i < synset.length; i++) {
+			var nodeid = synset[i];
+
+			var elem = {nodeid: nodeid, text: node_data[nodeid][0],
+						color: color_from_cost(node_data[nodeid][1]) };
+
+			if ((i % 12) == 0) {
+				listInfo.push([elem]);
+				row++;
+			}
+			else
+				listInfo[row-1].push(elem);
+		}
+		return listInfo;
+	}
+
+
+/*
 	display(synset = graph[this.current]) {
 
 		if ((g_limit == 0) && (this.xfactor == 0)) {
@@ -192,7 +216,6 @@ class Navigator
 
             this.current = next_node;
             this.history.push(next_node);
-            this.travlog.push(next_node);
             this.cost = new_cost;
 
 			this.display();
@@ -263,7 +286,6 @@ class Navigator
 		}
 
         this.history.push(this.current);
-        this.travlog.push(this.current);
 
         return true;
 	}
@@ -305,7 +327,6 @@ class Navigator
         this.target = null;
         this.cost = 0;
         this.last_delta = 0;
-		this.travlog = [this.current];
         this.history = [this.current];
         this.zlevel = DEFAULT_ZOOM;
 	}

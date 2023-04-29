@@ -4,7 +4,7 @@ import {CreatePriorityQueue} from "./priorityQueue.js";
 
 export {display_adjacency_list, dijkstra, get_cost_and_distance,
 		random_node, minmax, nodeid_from_text, getDisplayListInfo,
-		colors, zin, zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM,
+		colors, zin, zout, color_from_cost, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM,
 		TEXT, COST, };
 
 
@@ -472,6 +472,8 @@ function color_from_cost(cost) {
 		return "Gray";
 }
 
+
+
 // unused
 function makeStruct(keys) {
 
@@ -483,6 +485,8 @@ function makeStruct(keys) {
 	}
 	return constructor;
 }
+
+
 
 
 /*
