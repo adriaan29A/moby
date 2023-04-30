@@ -41,6 +41,7 @@ class Navigator {
 
 
 	getDisplayInfo() {
+	console.log("this: ", this);
 		return getDisplayInfo(graph[this.current], this.zlevel,
 							  this.xfactor, this.current);
 	}

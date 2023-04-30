@@ -47,11 +47,6 @@ var colors = [blue, lightblue, cyan, lightcyan, magenta, lightmagenta,
 var colors = ["Blue",  "DeepSkyBlue", "BlueViolet", "LightMagenta", "LightGreen", "Lime",
               "Yellow", "LighttYellow", "Orange", "Red"];
 
-// to be gotten rid of soon...
-var fmt = [];
-for (var c of colors)
-		fmt.push(c);
-
 
 /*--
 
@@ -157,15 +152,17 @@ function colorize_and_layout(nodes, revised_node_costs,
 
 			var color = '';
             if (graph[nodes[i]].length != 0) {
-
                 if (node_data[nodes[i]][COST] < zlevel) {
-                    if (max_cost == 0)
+
+					if (max_cost == 0)
                         var id = 0;
                     else
                         id = Math.floor((revised_node_costs[nodes[i]] - min_cost) /
-                                        (max_cost - min_cost) * (fmt.length - 1));
+                                        (max_cost - min_cost) * (colors.length - 1));
+
 
 					color = colors[id];
+					console.log("color: ", color);
 				}
 				else
 					color = "Black";
@@ -178,7 +175,7 @@ function colorize_and_layout(nodes, revised_node_costs,
 					color = "Black";
 			}
 
-			displayLine.push( { node: nodes[i], text: node_data[nodes[i]][TEXT],
+			displayLine.push( { nodeid: nodes[i], text: node_data[nodes[i]][TEXT],
 								   color: color, cost: node_data[nodes[i]][COST]} );
 
 			nodecount += 1;
