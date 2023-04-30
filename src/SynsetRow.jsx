@@ -1,15 +1,9 @@
 
-
-
-
 export function SynsetRow({row, onClick}) {
 
 	function handleOnClick(e) {
 		e.preventDefault()
-		console.log('e.target.id: ', e.target.id);
-		console.log('e is: ', e);
 		onClick(e);
-
 	}
 
 	return (

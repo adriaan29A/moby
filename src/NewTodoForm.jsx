@@ -1,4 +1,5 @@
 import {useState} from "react"
+import nodes from "./nodes.json"
 import  { nodeid_from_text } from "./core.js";
 
 export function NewTodoForm({nav, onSubmit}) {
@@ -11,9 +12,8 @@ export function NewTodoForm({nav, onSubmit}) {
 
 		// set the current node on the nav object
 		// which will be refreshed in state
-		nav.current = nodeid_from_text(newItem);
+		nav.current = nodeid_from_text(newItem, nodes);
 		onSubmit(nav.get());
-
 		setNewItem("")
 	}
 
@@ -27,14 +27,14 @@ export function NewTodoForm({nav, onSubmit}) {
 					type="text"
 					id="item"
 					/>
-				<button className="btn" >Search</button>
+				<button className="btn" >Go</button>
 				<button className="btn" >+</button>
-				<button className="btn" style = {{"text-align": "center", "vertical-align": "center" }} >-</button>
-				<button className="btn" >Back</button>
-				<button className="btn" style = {{"margin-left":"20px"}} >Navigate</button>
-				<button className="btn" >Next</button>
-				<button className="btn" >Clear</button>
-				<label style = {{"margin-left":"20px"}}> Jumps: </label>
+				<button className="btn"  >&minus;</button>
+				<button className="btn" >&laquo;</button>
+				<button className="btn" style = {{"margin-left":"20px"}} >Nav</button>
+				<button className="btn" disabled>&raquo;</button>
+				<button className="btn" disabled>Clear</button>
+				{/*<label style = {{"margin-left":"20px"}}> Jumps: </label> */}
 			</div>
 
 		</form>
