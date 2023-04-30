@@ -2,7 +2,7 @@ import node_data from "./nodes.json";
 import graph  from "./graph.json";
 import {CreatePriorityQueue} from "./priorityQueue.js";
 
-export {display_adjacency_list, dijkstra, get_cost_and_distance,
+export {getDisplayInfo, dijkstra, get_cost_and_distance,
 		random_node, minmax, nodeid_from_text, getDisplayListInfo,
 		colors, zin, zout, color_from_cost, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM,
 		TEXT, COST, };
@@ -58,14 +58,15 @@ for (var c of colors)
   Constructs main synset display list ready to convert --> HTML
 
   --*/
-function display_adjacency_list(raw_nodes, node_data, graph, zlevel, xfactor, curr) {
+//
+function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
 
     var nodes = [];
     var node_costs = {};
     var revised_node_costs = {};
 
     for (var node of raw_nodes) {
-		if ((node_data[node] !== 'undefined') && (node_data[node][COST] != Infinity)) {
+		if ((node_data[node] !== 'undefined') && (node_data[node][COST] != Infinity)) { // Infinity no longer used
 			nodes.push(node);
 			node_costs[node] = node_data[node][COST];
 		}
@@ -99,19 +100,9 @@ function display_adjacency_list(raw_nodes, node_data, graph, zlevel, xfactor, cu
                 break;
 			}
 
-
-    print_adjacency_list(nodes, node_data, graph, revised_node_costs,
+	// colorize by cost and lay out with ~constant aspect ratio
+    return colorize_and_layout(nodes, revised_node_costs,
                          min_cost, max_cost, zlevel, suppress_leafs, curr);
-
-
-	//console.log('\nzoom:\t' + zlevel.toExponential(1));
-	//console.log('#syns:\t', nodes.length);
-	// if (xfactor != 0)
-		// console.log('expand:\t', xfactor);
-    //console.log('curr:\t' + node_data[curr][TEXT] + ' (' + curr + ')');
-
-
-    return true;
 }
 
 /*--
@@ -122,9 +113,14 @@ function display_adjacency_list(raw_nodes, node_data, graph, zlevel, xfactor, cu
 
 const DEFAULT_COLUMNS = 80;
 const AVG_WORDS_PER_80_COL = 9; // eyeballed
-function print_adjacency_list(nodes, node_data, graph, revised_node_costs,
-							  min_cost, max_cost, zlevel, suppress_leafs, curr) {
-    var ncur = 0;
+function colorize_and_layout(nodes, revised_node_costs,
+							 min_cost, max_cost, zlevel, suppress_leafs, curr) {
+
+	// contains list of list of colorized nodes with list lengths
+	// adjusted to maintain an approximate constant aspect ratio
+	var displayInfo = [];
+
+	var ncur = 0;
     var nprev = 0;
 
 	// estimate columns to print.
@@ -155,9 +151,11 @@ function print_adjacency_list(nodes, node_data, graph, revised_node_costs,
         // Print one line
         var line = '';
         var nodecount = 0;
+		var displayLine = [];
+
 		for (i = nprev; i < ncur; i++) {
 
-			var format = '';
+			var color = '';
             if (graph[nodes[i]].length != 0) {
 
                 if (node_data[nodes[i]][COST] < zlevel) {
@@ -167,40 +165,45 @@ function print_adjacency_list(nodes, node_data, graph, revised_node_costs,
                         id = Math.floor((revised_node_costs[nodes[i]] - min_cost) /
                                         (max_cost - min_cost) * (fmt.length - 1));
 
-					format = fmt[id];
+					color = colors[id];
 				}
 				else
-					format = "Black";
+					color = "Black";
 			}
 			else {
 
 				if (!suppress_leafs)
-					format = "LightBlack";
+					color = "LightBlack";
 				else
-					format = "Black";
+					color = "Black";
 			}
 
-			// This is where I need to add the node data to a list -->
-            var text = format + node_data[nodes[i]][TEXT] + ' '; //
-            line += text;
+			displayLine.push( { node: nodes[i], text: node_data[nodes[i]][TEXT],
+								   color: color, cost: node_data[nodes[i]][COST]} );
 
 			nodecount += 1;
-		}
 
-		// --> and this is where I go to the next list
-		console.log(center_line(line, nodecount, columns));
+		} // end for (i = nprev; i < ncur; i++)
 
         // Done printing line
+		displayInfo.push(displayLine);
         ncur += 1;
 		nprev = ncur;
 
+		// figure out how to handle centerline later
+		//console.log(center_line(line, nodecount, columns));
+
 	}  // end while(ncur < n)
+
+	return displayInfo;
+
 }
 
 
 // helper functions for print/display_adjacency_list above
 
 function sigmoid(freq, max_freq) {
+
     var c1 = g_c1; var c2 = g_c2 / c1;
     var f = freq / max_freq;
     if (f == 0)
@@ -216,7 +219,6 @@ function minmax(nodes) {
 	return [Math.min(...values), Math.max(...values)];
 }
 
-// not needed
 function center_line(line, nodecount, columns) {
     var slack = columns - (line.length - (nodecount + nodecount * (black.length + dim.length)));
     var half = Math.floor(slack / 2);

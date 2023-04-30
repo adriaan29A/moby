@@ -26,12 +26,6 @@ export function SynsetRow({row, onClick}) {
 
 
 
-
-
-
-
-
-
 {/*
   return (<button className = "quuxbutton1" onclick= {myFunc(true)} type="button">
 

@@ -4,12 +4,12 @@ import { SynsetRow } from  "./SynsetRow";
 export function Synset({nav, onClick}) {
 
 	function handleOnClick(e) {
-		var foo = e.target.id;
 		nav.current = e.target.id;
 		onClick(nav.get());
 	}
 
-	const displayList = nav.getDisplayListInfo();
+//	const displayList = nav.getDisplayListInfo();
+	const displayList = nav.getDisplayInfo();
 
 	return (
 		<ul className="quux">

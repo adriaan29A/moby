@@ -1,7 +1,7 @@
 import graph from "./graph.json";
 import node_data from "./nodes.json";
 
-import  { display_adjacency_list, dijkstra, get_cost_and_distance,
+import  { getDisplayInfo, dijkstra, get_cost_and_distance,
 		  random_node, minmax, nodeid_from_text, getDisplayListInfo, colors,
 		  zin, zout, color_from_cost, MIN_ZOOM, MAX_ZOOM,DEFAULT_ZOOM, TEXT, COST} from "./core.js";
 
@@ -12,7 +12,9 @@ export function CreateNavigator () {
 
 class Navigator {
 
-    constructor() {
+//    ctx = { curr: null, origin: null, history: [],
+
+	constructor() {
 
         // general navigation
         this.current = null; this.origin = null; this.history = [];
@@ -21,22 +23,31 @@ class Navigator {
         this.target = null; this.cost = 0; this.last_delta = 0;
 
         // zoom levels
-        this.zlevel = DEFAULT_ZOOM;	this.xfactor = 0; this.zin = zin; this.zout = zout;
+        this.zlevel = DEFAULT_ZOOM;	this.xfactor = 0;
 	}
 
 
 	set(ctx) {
 		this.current = ctx.curr; this.origin = ctx.origin; this.history = ctx.history;
 		this.target = ctx.target; this.cost = ctx.cost; this.last_delta = ctx.delta;
-		this.zlevel = ctx.zlevel; this.xfactor = ctx.xactor; this.zin = ctx.zin;
-		this.zout = ctx.zout;
+		this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor;
 	}
 
 	get() {
 		return { curr: this.current, origin: this.origin, history: this.history,
 				 target: this.target, cost: this.cost, delta: this.last_delta,
-				 zin: this.zin, zout: this.zout };
+				 zlevel: this.zlevel, xfactor: this.xfactor};
 	}
+
+
+	getDisplayInfo() {
+		return getDisplayInfo(graph[this.current], this.zlevel,
+							  this.xfactor, this.current);
+	}
+
+
+	//function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
+
 
 	getDisplayListInfo() {
 
@@ -87,12 +98,14 @@ class Navigator {
 		}
 	}
 
+
+
 	zoom(z) {
 
         if (z == true && this.zlevel > MIN_ZOOM)
-            this.zlevel = this.zin[this.zlevel];
+            this.zlevel = zin[this.zlevel];
         else if (z == false && this.zlevel < MAX_ZOOM)
-			this.zlevel = this.zout[this.zlevel];
+			this.zlevel = zout[this.zlevel];
 
 		this.display();
 
