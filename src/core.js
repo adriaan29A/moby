@@ -2,7 +2,7 @@ import node_data from "./nodes.json";
 import graph  from "./graph.json";
 import {CreatePriorityQueue} from "./priorityQueue.js";
 
-export {getDisplayInfo, dijkstra, get_cost_and_distance,
+export {getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance,
 		random_node, minmax, nodeid_from_text, getDisplayListInfo,
 		colors, zin, zout, color_from_cost, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM,
 		TEXT, COST, };
@@ -107,7 +107,7 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
 --*/
 
 const DEFAULT_COLUMNS = 80;
-const AVG_WORDS_PER_80_COL = 9; // eyeballed
+const AVG_WORDS_PER_80_COL = 5; // eyeballed
 function colorize_and_layout(nodes, revised_node_costs,
 							 min_cost, max_cost, zlevel, suppress_leafs, curr) {
 
@@ -162,7 +162,6 @@ function colorize_and_layout(nodes, revised_node_costs,
 
 
 					color = colors[id];
-					console.log("color: ", color);
 				}
 				else
 					color = "Black";
@@ -170,7 +169,7 @@ function colorize_and_layout(nodes, revised_node_costs,
 			else {
 
 				if (!suppress_leafs)
-					color = "LightBlack";
+					color = "Grey";
 				else
 					color = "Black";
 			}
@@ -327,8 +326,8 @@ function get_cost_and_distance(parent, goal, node_data) {
 
 */
 
-const EXPANSION_FACTOR = 2; // = 1.6; // eyeballed
-function expand_synset(synset, graph, node_data, level) {
+const EXPANSION_FACTOR = 1.5; // = 1.6; // eyeballed
+function expand_synset(synset, level) {
 
 	var synsets = [];
 	var final_set = [];

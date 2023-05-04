@@ -1,9 +1,9 @@
 import graph from "./graph.json";
 import node_data from "./nodes.json";
 
-import  { getDisplayInfo, dijkstra, get_cost_and_distance,
+import  { getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance,
 		  random_node, minmax, nodeid_from_text, getDisplayListInfo, colors,
-		  zin, zout, color_from_cost, MIN_ZOOM, MAX_ZOOM,DEFAULT_ZOOM, TEXT, COST} from "./core.js";
+		  zin, zout, color_from_cost, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST} from "./core.js";
 
 export function CreateNavigator () {
 	return new Navigator();
@@ -11,8 +11,6 @@ export function CreateNavigator () {
 
 
 class Navigator {
-
-//    ctx = { curr: null, origin: null, history: [],
 
 	constructor() {
 
@@ -23,7 +21,7 @@ class Navigator {
         this.target = null; this.cost = 0; this.last_delta = 0;
 
         // zoom levels
-        this.zlevel = DEFAULT_ZOOM;	this.xfactor = 0;
+        this.zlevel = 1e6; this.xfactor = 0;
 	}
 
 
@@ -41,53 +39,19 @@ class Navigator {
 
 
 	getDisplayInfo() {
-	console.log("this: ", this);
-		return getDisplayInfo(graph[this.current], this.zlevel,
-							  this.xfactor, this.current);
-	}
 
-
-	//function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
-
-
-	getDisplayListInfo() {
-
-		var synset = graph[this.current];
-		var listInfo = []; var row = 0;
-
-		for (var i = 0; i < synset.length; i++) {
-			var nodeid = synset[i];
-
-			var elem = {nodeid: nodeid, text: node_data[nodeid][0],
-						color: color_from_cost(node_data[nodeid][1]) };
-
-			if ((i % 12) == 0) {
-				listInfo.push([elem]);
-				row++;
-			}
-			else
-				listInfo[row-1].push(elem);
-		}
-		return listInfo;
-	}
-
-
-/*
-	display(synset = graph[this.current]) {
-
-		if ((g_limit == 0) && (this.xfactor == 0)) {
-			display_adjacency_list(synset, node_data,
-								   graph, this.zlevel, this.xfactor, this.current);
+		if ( this.xfactor == 0) {
+			return getDisplayInfo(graph[this.current], this.zlevel,
+								  this.xfactor, this.current);
 		}
 		else {
-			var expanded_synset = expand_synset(synset, graph, node_data, this.xfactor);
-			display_adjacency_list(expanded_synset, node_data,
-								   graph, this.zlevel, this.xfactor, this.current);
+			var expanded_synset = expand_synset(graph[this.current], this.xfactor);
+			return getDisplayInfo(expanded_synset, this.zlevel,
+								  this.xfactor, this.current);
 		}
 	}
-*/
 
-
+/*
     list() {
 
 		this.display();
@@ -99,7 +63,7 @@ class Navigator {
 		}
 	}
 
-
+*/
 
 	zoom(z) {
 
@@ -108,19 +72,35 @@ class Navigator {
         else if (z == false && this.zlevel < MAX_ZOOM)
 			this.zlevel = zout[this.zlevel];
 
-		this.display();
+//		this.display();
+
+/*
 
         if (this.target != null) {
 			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
             console.log('goal:\t', node_data[this.target][TEXT]);
 			console.log('cost:\t' + color + this.cost.toLocaleString('en-US') + reset);
 		}
+*/
 	}
+
 
 	// zlevel (filtering) and xfactor (synset expansion) can be modified
 	// independently but this function chains them to give an intgrated
 	// zoom effect. zlevel = MAX_ZOOM and xfactor = 0 are used to transition
 	// betwen the two regimes.
+
+	xoom(x) {
+
+		if (x == false) {
+			if (this.xfactor != 0) {
+				this.xfactor--;
+			}
+		}
+		else
+			this.xfactor++;
+	}
+
 
 	integrated_zoom(z) {
 
@@ -129,7 +109,6 @@ class Navigator {
 			if (this.xfactor == 0) { // are in filter mode
 				if (this.zlevel == MAX_ZOOM) { // already at max filter level
 					this.xfactor++; // expand synset
-					this.display();
 				}
 				else {
 					this.zoom(false); // are in expansion mode. down-filter synset
@@ -138,7 +117,6 @@ class Navigator {
 			}
 			else { // xfactor not 0 -> in expansion mode
 				this.xfactor++;  // expand synset
-				this.display();
 			}
 		}
 		// zoom in, (z = true)
@@ -149,15 +127,15 @@ class Navigator {
 			}
 			else {
 				this.xfactor--; // unexpand synset
-				this.display();
 			}
 		}
-
+/*
 		if (this.target != null) {
 			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
 			console.log('goal:\t', node_data[this.target][TEXT]);
 			console.log('cost:\t' + color + this.cost.toLocaleString('en-US') + reset);
 		}
+*/
 	}
 
 	set_current(object) {
