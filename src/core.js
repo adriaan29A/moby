@@ -5,7 +5,7 @@ import {CreatePriorityQueue} from "./priorityQueue.js";
 export {getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance,
 		random_node, minmax, nodeid_from_text, getDisplayListInfo,
 		colors, zin, zout, color_from_cost, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM,
-		TEXT, COST, };
+		TEXT, COST };
 
 
 // temporary testing purposes
@@ -107,7 +107,7 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
 --*/
 
 const DEFAULT_COLUMNS = 80;
-const AVG_WORDS_PER_80_COL = 5; // eyeballed
+const AVG_WORDS_PER_80_COL = 3; // eyeballed
 function colorize_and_layout(nodes, revised_node_costs,
 							 min_cost, max_cost, zlevel, suppress_leafs, curr) {
 
@@ -120,7 +120,7 @@ function colorize_and_layout(nodes, revised_node_costs,
 
 	// estimate columns to print.
 	var columns = (nodes.length < 40) ? DEFAULT_COLUMNS :
-		DEFAULT_COLUMNS + Math.floor(nodes.length/AVG_WORDS_PER_80_COL);
+		DEFAULT_COLUMNS + Math.floor((nodes.length - DEFAULT_COLUMNS) / AVG_WORDS_PER_80_COL);
 
     var n = nodes.length;
     while (ncur < n) {
@@ -195,8 +195,9 @@ function colorize_and_layout(nodes, revised_node_costs,
 
 }
 
-
+//
 // helper functions for print/display_adjacency_list above
+//
 
 function sigmoid(freq, max_freq) {
 
@@ -224,6 +225,62 @@ function center_line(line, nodecount, columns) {
         var centered_line = ' '.repeat(half) + line + ' '.repeat(half);
     return centered_line;
 }
+
+/*
+
+  Takes an existing synset and expands it by walking
+  neighbors for additional terms and merging them in.
+
+*/
+
+const EXPANSION_FACTOR = 1.2; // = 1.6; // eyeballed
+function expand_synset(synset, level) {
+
+	var synsets = [];
+	var final_set = [];
+	var expanded_list = [];
+	var visited = new Set();
+
+	var limit = synset.length * Math.floor(EXPANSION_FACTOR ** level);
+
+	// populate the final list to be shown with
+	// the nodes of the starting synsets.
+	if (synset !== undefined) {
+		for (var child of synset ) {
+			visited.add(child);
+			synsets.push(child);
+			final_set.push([child, node_data[child][TEXT]]);
+		}
+	}
+	// breadth first search for nearest terms completing when the requested
+	// limit has been reached. BUG - fix infinite loop
+	if (limit != 0) {
+
+		var count = 0;
+		for (var node of synsets) {
+			var children = graph[node];
+			for (child of children) {
+
+				if (!visited.has(child) && (child !== undefined)) {
+					visited.add(child);
+					synsets.push(child);
+					final_set.push([child, node_data[child][TEXT]]);
+					if (count++ > limit)
+						break;
+				}
+			}
+			if (count > limit)
+				break;
+		}
+	}
+
+	final_set = final_set.sort(compareFn);
+	for (var item of final_set)
+		expanded_list.push(item[0]);
+
+	return expanded_list;
+}
+
 
 /*--
 
@@ -319,60 +376,6 @@ function get_cost_and_distance(parent, goal, node_data) {
 }
 
 
-/*
-
-  Takes an existing synset and expands it by walking
-  neighbors for additional terms and merging them in.
-
-*/
-
-const EXPANSION_FACTOR = 1.5; // = 1.6; // eyeballed
-function expand_synset(synset, level) {
-
-	var synsets = [];
-	var final_set = [];
-	var expanded_list = [];
-	var visited = new Set();
-
-	var limit = synset.length * Math.floor(EXPANSION_FACTOR ** level);
-
-	// populate the final list to be shown with
-	// the nodes of the starting synsets.
-	if (synset !== undefined) {
-		for (var child of synset ) {
-			visited.add(child);
-			synsets.push(child);
-			final_set.push([child, node_data[child][TEXT]]);
-		}
-	}
-	// breadth first search for nearest terms completing when the requested
-	// limit has been reached. BUG - fix infinite loop
-	if (limit != 0) {
-
-		var count = 0;
-		for (var node of synsets) {
-			var children = graph[node];
-			for (child of children) {
-
-				if (!visited.has(child) && (child !== undefined)) {
-					visited.add(child);
-					synsets.push(child);
-					final_set.push([child, node_data[child][TEXT]]);
-					if (count++ > limit)
-						break;
-				}
-			}
-			if (count > limit)
-				break;
-		}
-	}
-
-	final_set = final_set.sort(compareFn);
-	for (var item of final_set)
-		expanded_list.push(item[0]);
-
-	return expanded_list;
-}
 
 
 // sort function for expand_synset

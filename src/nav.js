@@ -21,20 +21,20 @@ class Navigator {
         this.target = null; this.cost = 0; this.last_delta = 0;
 
         // zoom levels
-        this.zlevel = 1e6; this.xfactor = 0;
+        this.zlevel = 1e6; this.xfactor = 0; this.session = false;
 	}
 
 
 	set(ctx) {
 		this.current = ctx.curr; this.origin = ctx.origin; this.history = ctx.history;
 		this.target = ctx.target; this.cost = ctx.cost; this.last_delta = ctx.delta;
-		this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor;
+		this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor; this.session = ctx.session;
 	}
 
 	get() {
 		return { curr: this.current, origin: this.origin, history: this.history,
 				 target: this.target, cost: this.cost, delta: this.last_delta,
-				 zlevel: this.zlevel, xfactor: this.xfactor};
+				 zlevel: this.zlevel, xfactor: this.xfactor, session: this.session};
 	}
 
 
@@ -322,6 +322,27 @@ class Navigator {
         this.history = [this.current];
         this.zlevel = DEFAULT_ZOOM;
 	}
+
+	getTarget() {
+		if (this.target != null)
+			return node_data[this.target][TEXT];
+		else
+			return '';
+	}
+
+	getJumps() {
+		console.log('there');
+		if (this.target != null)
+		{
+			var parent = dijkstra(graph, node_data, this.current, this.target);
+			var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
+			console.log('target is: ', this.target, node_data[this.target][TEXT]);
+			return jumps;
+		}
+		else
+			return '';
+	}
+
 
 } // end class Navigator
 	/*
