@@ -2,11 +2,10 @@ import node_data from "./nodes.json";
 import graph  from "./graph.json";
 import {CreatePriorityQueue} from "./priorityQueue.js";
 
-export {getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance,
-		random_node, minmax, nodeid_from_text, getDisplayListInfo,
-		colors, zin, zout, color_from_cost, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM,
-		TEXT, COST };
-
+// mostly used by nav.js
+export {getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
+		random_node, minmax, nodeid_from_text, getDisplayListInfo, colors, zin,
+		zout, color_from_cost, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST };
 
 // temporary testing purposes
 var g_c1 = 1; var g_c2 = 1; var g_limit = 0;
@@ -16,6 +15,7 @@ const MIN_ZOOM = 5e4;
 const MAX_ZOOM = 12e9;
 const DEFAULT_ZOOM = 1e6;
 
+// color stuff
 const ztable = [12e9, 5e8, 1e8, 1e7, 1e6, 5e5, 3e5, 15e4, 5e4];
 const zin = {}; const zout = {};
 

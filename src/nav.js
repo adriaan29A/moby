@@ -1,14 +1,13 @@
 import graph from "./graph.json";
 import node_data from "./nodes.json";
 
-import  { getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance,
-		  random_node, minmax, nodeid_from_text, getDisplayListInfo, colors,
-		  zin, zout, color_from_cost, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST} from "./core.js";
+import  { getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
+		  random_node, minmax, nodeid_from_text, getDisplayListInfo, colors, zin,
+		  zout, color_from_cost, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST} from "./core.js";
 
 export function CreateNavigator () {
 	return new Navigator();
 }
-
 
 class Navigator {
 
@@ -195,12 +194,13 @@ class Navigator {
     next() {
 
         if (this.target == null) {
-            console.log('No target selected');
             return false;
 		}
+
         else if (this.current == this.target)
             return false;
 
+		console.log('got here');
         // find min cost path from current node
         var parent = dijkstra(graph, node_data, this.current, this.target);
         var [path, nodes] = make_path(parent, this.target, node_data);
@@ -208,25 +208,36 @@ class Navigator {
         if (nodes.length > 1) {
 
             // get next node in path, calculate new cost and delta
-            var next_node = nodes[1]; var new_cost;
+			var new_cost; var new_jumps;
+            var next_node = nodes[1];
             if (next_node != this.target) {
                 var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
                 new_cost = cost - node_data[next_node][COST];
+				new_cost = cost;
+				new_jumps = jumps - 1;
 			}
 			else
+			{
+				new_jumps = 0;
 				new_cost = 0;
+			}
 
 			this.last_delta = (next_node != this.target)? new_cost - this.cost : 0;
-
             this.current = next_node;
             this.history.push(next_node);
             this.cost = new_cost;
+			console.log('jumps: ', this.jumps, new_jumps);
+			this.jumps = new_jumps;
 
-			this.display();
+			//this.display();
 
-			var color = (this.last_delta <= 0)? green : red;
-            console.log('target:\t', node_data[this.target][TEXT]);
-			console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
+			/*--
+			  keep this around
+			--*/
+			//var color = (this.last_delta <= 0)? green : red;
+
+			//console.log('target:\t', node_data[this.target][TEXT]);
+			//console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
 		}
 		return true;
 	}

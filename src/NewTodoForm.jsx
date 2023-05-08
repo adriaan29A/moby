@@ -54,6 +54,9 @@ export function NewTodoForm({nav, onSubmit}) {
 		else if (e.target.id == "back") {
 			nav.back();
 		}
+		else if (e.target.id == "next") {
+			nav.next();
+		}
 
 		onSubmit(nav.get());
 	}
@@ -75,11 +78,11 @@ export function NewTodoForm({nav, onSubmit}) {
 				<button className="btn" id = "navigate" title = "Navigate to word or phrase" onClick = { handleOnClick }>Nav</button>
 
 				{/*-- Back/Next--*/}
-				<button className="btn" id = "back" style = {{"margin-left":"10px"}} title = "Back" onClick = { handleOnClick }>&laquo;</button>
-				<button className="btn" id = "next" title = "Next">&raquo;</button>
+				<button className="btn" id = "back" title = "Back" onClick={ handleOnClick } style = {{"margin-left":"10px"}}>&laquo;</button>
+				<button className="btn" id = "next" title = "Next" onClick = { handleOnClick }>&raquo;</button>
 
 				{/*-- ZoomIn/ZoomOut--*/}
-				<button className="btn" title = "Zoom in" id = "zoomin" style = {{"margin-left":"10px"}} onClick = { handleOnClick }>+</button>
+				<button className="btn" title = "Zoom in" id = "zoomin" onClick = { handleOnClick } style = {{"margin-left":"10px"}}>+</button>
 				<button className="btn" title = "Zoom out" id = "zoomout" onClick = { handleOnClick } >&minus;</button>
 
 				{/*-- Current Zoom level--*/}
