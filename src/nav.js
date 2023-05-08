@@ -18,23 +18,24 @@ class Navigator {
         this.current = null; this.origin = null; this.history = [];
 
         // game specific
-        this.target = null; this.cost = 0; this.last_delta = 0;
+        this.target = null; this.cost = 0; this.jumps = 0; this.last_delta = 0;
 
         // zoom levels
         this.zlevel = 1e6; this.xfactor = 0; this.session = false;
 	}
 
-
 	set(ctx) {
 		this.current = ctx.curr; this.origin = ctx.origin; this.history = ctx.history;
-		this.target = ctx.target; this.cost = ctx.cost; this.last_delta = ctx.delta;
-		this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor; this.session = ctx.session;
+		this.target = ctx.target; this.cost = ctx.cost; this.jumps = ctx.jumps;
+		this.last_delta = ctx.delta; this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor;
+		this.session = ctx.session;
 	}
 
 	get() {
 		return { curr: this.current, origin: this.origin, history: this.history,
-				 target: this.target, cost: this.cost, delta: this.last_delta,
-				 zlevel: this.zlevel, xfactor: this.xfactor, session: this.session};
+				 target: this.target, cost: this.cost, jumps: this.jumps, delta:
+				 this.last_delta, zlevel: this.zlevel, xfactor: this.xfactor, session:
+				 this.session};
 	}
 
 
@@ -137,11 +138,11 @@ class Navigator {
 		}
 */
 	}
-
+	// can remove I think
 	set_current(object) {
 
 		var nodeid = (typeof(object) == 'string') ?
-			this.nodeid_from_text(object, node_data) : object;
+			nodeid_from_text(object, node_data) : object;
 
 		if (nodeid == null || graph[nodeid].length == 0)
             return false;
@@ -153,30 +154,41 @@ class Navigator {
 
 
 	set_target(object) {
+		console.log('4\) ', object);
+		console.log('4.1\)', typeof(object));
 
-		var nodeid = (typeof(object) == 'string') ?
-			this.nodeid_from_text(object, node_data) : object;
+		var nodeid = (typeof(object) === 'string') ?
+			nodeid_from_text(object, node_data) : object;
+
+		console.log("4.2\) ", object, nodeid);
 
         if (nodeid == null || graph[nodeid].length == 0)
             return false;
+
+		console.log("4.3\) ", this.target);
 
         this.origin = this.current;
         this.target = nodeid;
         this.history = [this.current];
 
-		this.display();
+//		this.display();
 
-        console.log('goal:\t', node_data[this.target][TEXT]);
+//        console.log('goal:\t', node_data[this.target][TEXT]);
 
         var parent = dijkstra(graph, node_data, this.current, this.target);
         var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
-        console.log('\nmin cost:\t' + cost.toLocaleString('en-US') + ' / ' + jumps.toLocaleString('en-US'));
+//        console.log('\nmin cost:\t' + cost.toLocaleString('en-US') + ' / ' + jumps.toLocaleString('en-US'));
 
+        this.cost = cost; // current cost to target
+		this.jumps = jumps;
+
+/*
         this.cost = cost; // current cost to target
         parent = dijkstra(graph, node_data, this.current, this.target, 1e8);
         [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
         console.log('min jumps:\t' + cost.toLocaleString('en-US') + ' / ' + jumps.toLocaleString('en-US'));
-
+*/
+		console.log("4.5\) ", this.target);
         return true;
 	}
 
@@ -228,7 +240,7 @@ class Navigator {
 		}
 
 		this.current = this.history.slice(-1);
-		this.display();
+		//this.display();
 
         if (this.target != null) {
 
@@ -240,10 +252,12 @@ class Navigator {
 													  node_data);
             this.last_delta = cost - this.cost;
             this.cost = cost;
-
+			this.jumps = jumps;
+/*
 			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
             console.log('goal:\t', node_data[this.target][TEXT]);
             console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
+*/
 		}
 
 		return true;
@@ -254,13 +268,13 @@ class Navigator {
 	goto(object) {
 
 		var next_node = (typeof(object) == 'string') ?
-			this.nodeid_from_text(object, node_data) : object;
+			nodeid_from_text(object, node_data) : object;
 
         if (next_node == null || graph[next_node].length == 0)
             return false;
 
 		this.current = next_node;
-		this.display(graph[this.current]);
+//		this.display(graph[this.current]);
 
         // if tracking to a target
         if (this.target != null) {
@@ -271,10 +285,11 @@ class Navigator {
 
             this.last_delta = new_cost - this.cost;
             this.cost = new_cost;
+			this.jumps = jumps;
 
-			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
-            console.log('goal:\t', node_data[this.target][TEXT]);
-            console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
+//			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
+//            console.log('goal:\t', node_data[this.target][TEXT]);
+//            console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
 		}
 
         this.history.push(this.current);

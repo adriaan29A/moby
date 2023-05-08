@@ -419,8 +419,9 @@ function nodeid_from_text(text, node_data) {
     // This func is O(N), but it is rarely used and the
     // the need for an auxiliary dictionary is avoided.
 	for (var nodeid in node_data) {
-		if (node_data[nodeid][0] == text)
-			return nodeid;
+		if (node_data[nodeid][TEXT] == text) {
+			return parseInt(nodeid, 10);
+		}
 	}
 	return null;
 }

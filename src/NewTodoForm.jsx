@@ -4,7 +4,6 @@ import  { nodeid_from_text, TEXT} from "./core.js";
 
 var  session = false; // HACKOMATIC
 
-console.log('1\)', session );
 export function NewTodoForm({nav, onSubmit}) {
 
 	const [newItem, setNewItem] = useState("");
@@ -16,19 +15,18 @@ export function NewTodoForm({nav, onSubmit}) {
 //	    if (newItem === "") return
 
 		if (e.target.id == "navigate") {
-			if (nav.target != null) {
-				console.log("setting nav.target to null");
-				nav.target = null;
+
+			if (newItem != "") {
+				nav.set_target(nodeid_from_text(newItem, nodes));
 			}
-			else if (newItem != "") {
-				nav.target = nodeid_from_text(newItem, nodes);
-				console.log('2\)', session );
-				console.log("newItem: ", newItem);
+			else {
+				// move to reset_target or some such
+				nav.target = null; nav.jumps = 0; nav.cost = 0;
 			}
 			session = false;
 		}
 		else {
-			nav.current = nodeid_from_text(newItem, nodes);
+			nav.set_current(newItem);
 		}
 
 		onSubmit(nav.get());
@@ -40,8 +38,6 @@ export function NewTodoForm({nav, onSubmit}) {
 	// nav.xfactor to the appropriate
 	// values to acheive the desired zoom.
 	function handleOnClick(e) {
-		console.log('handlesClick:', e);
-
 		e.preventDefault();
 
 		if (e.target.id == "zoomin") {
@@ -52,10 +48,13 @@ export function NewTodoForm({nav, onSubmit}) {
 		}
 		else if (e.target.id == "navigate") {
 			session = true;
-			console.log('3\)', session );
 			handleSubmit(e);
-			return;
+			return; //avoids double call to onSubmit
 		}
+		else if (e.target.id == "back") {
+			nav.back();
+		}
+
 		onSubmit(nav.get());
 	}
 
@@ -71,29 +70,35 @@ export function NewTodoForm({nav, onSubmit}) {
 					placeholder = { nodes[nav.current][TEXT] }
 					id="item"/>
 
-
-				<button className="btn" title = "Search word or phrase" style = {{"margin-left":"1px"}} >Go</button>
+				{/*-- Go/Nav--*/}
+				<button className="btn" id = "go" title = "Search word or phrase" style = {{"margin-left":"1px"}} >Go</button>
 				<button className="btn" id = "navigate" title = "Navigate to word or phrase" onClick = { handleOnClick }>Nav</button>
 
-				<button className="btn"style = {{"margin-left":"10px"}} title = "Back">&laquo;</button>
-				<button className="btn" disabled title = "Next">&raquo;</button>
+				{/*-- Back/Next--*/}
+				<button className="btn" id = "back" style = {{"margin-left":"10px"}} title = "Back" onClick = { handleOnClick }>&laquo;</button>
+				<button className="btn" id = "next" title = "Next">&raquo;</button>
 
-				<label style = {{"margin-left":"2px"}}></label>
-				<button className="btn" title = "Zoom in" id = "zoomin" style = {{"margin-left":"10px"}} onClick = { handleOnClick } >+</button>
+				{/*-- ZoomIn/ZoomOut--*/}
+				<button className="btn" title = "Zoom in" id = "zoomin" style = {{"margin-left":"10px"}} onClick = { handleOnClick }>+</button>
 				<button className="btn" title = "Zoom out" id = "zoomout" onClick = { handleOnClick } >&minus;</button>
 
+				{/*-- Current Zoom level--*/}
 				<label style = {{"margin-left":"20px", color:"DeepSkyBlue"}}>Zoom:</label>
 				<label title = "Zoom level" style = {{"margin-left":"1Px"}}> {nav.zlevel.toExponential(0)} </label>
 
+				{/*-- Target--*/}
 				<label style = {{ color:"DeepSkyBlue", "margin-left":"20px"}}>
-					{(nav.target != null) ? "Target: " : ""}
+					{(nav.target != null) ? "Target:" : ""}
 				</label>
-
 				<label style = {{"margin-left":"5px"}}> { nav.getTarget() } </label>
 
-				<label style = {{color:"DeepSkyBlue", "margin-left":"10px"}}> {(nav.target != null) ? "Jumps: " : ""} </label>
+				{/*-- Jumps--*/}
+				<label style = {{color:"DeepSkyBlue", "margin-left":"20px"}}> {(nav.target != null) ? "Jumps:" : ""} </label>
+				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.jumps : ""  } </label>
 
-				<label style = {{"margin-left":"5px"}}> { nav.getJumps()  } </label>
+				{/*-- Cost -- */}
+				<label style = {{color:"DeepSkyBlue", "margin-left":"20px"}}> {(nav.target != null) ? "Cost:" : ""} </label>
+				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.cost : ""  } </label>
 
 			</div>
 

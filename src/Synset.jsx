@@ -4,11 +4,10 @@ import { SynsetRow } from  "./SynsetRow";
 export function Synset({nav, onClick}) {
 
 	function handleOnClick(e) {
-		nav.current = e.target.id;
+		nav.goto(parseInt(e.target.id));
 		onClick(nav.get());
 	}
 
-//	const displayList = nav.getDisplayListInfo();
 	const displayList = nav.getDisplayInfo();
 
 	return (
