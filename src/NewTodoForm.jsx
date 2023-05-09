@@ -20,7 +20,7 @@ export function NewTodoForm({nav, onSubmit}) {
 				nav.set_target(nodeid_from_text(newItem, nodes));
 			}
 			else {
-				// move to reset_target or some such
+				// move this to reset_target or some such
 				nav.target = null; nav.jumps = 0; nav.cost = 0;
 			}
 			session = false;
@@ -31,7 +31,6 @@ export function NewTodoForm({nav, onSubmit}) {
 
 		onSubmit(nav.get());
 		setNewItem("");
-
 	}
 
 	// nav.integrated_zoom sets nav.zlevel and
@@ -47,7 +46,7 @@ export function NewTodoForm({nav, onSubmit}) {
 			nav.integrated_zoom(false);
 		}
 		else if (e.target.id == "navigate") {
-			session = true;
+			session = true; // hackomatic
 			handleSubmit(e);
 			return; //avoids double call to onSubmit
 		}
@@ -86,7 +85,7 @@ export function NewTodoForm({nav, onSubmit}) {
 				<button className="btn" title = "Zoom out" id = "zoomout" onClick = { handleOnClick } >&minus;</button>
 
 				{/*-- Current Zoom level--*/}
-				<label style = {{"margin-left":"20px", color:"DeepSkyBlue"}}>Zoom:</label>
+				<label style = {{"margin-left":"10px", color:"DeepSkyBlue"}}>Zoom:</label>
 				<label title = "Zoom level" style = {{"margin-left":"1Px"}}> {nav.zlevel.toExponential(0)} </label>
 
 				{/*-- Target--*/}
@@ -96,14 +95,17 @@ export function NewTodoForm({nav, onSubmit}) {
 				<label style = {{"margin-left":"5px"}}> { nav.getTarget() } </label>
 
 				{/*-- Jumps--*/}
-				<label style = {{color:"DeepSkyBlue", "margin-left":"20px"}}> {(nav.target != null) ? "Jumps:" : ""} </label>
+				<label style = {{color:"DeepSkyBlue", "margin-left":"10px"}}> {(nav.target != null) ? "Jumps:" : ""} </label>
 				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.jumps : ""  } </label>
 
 				{/*-- Cost -- */}
-				<label style = {{color:"DeepSkyBlue", "margin-left":"20px"}}> {(nav.target != null) ? "Cost:" : ""} </label>
-				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.cost : ""  } </label>
+				<label style = {{color:"DeepSkyBlue", "margin-left":"10px"}}> {(nav.target != null) ? "Cost:" : ""} </label>
+				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.cost.toLocaleString() : ""  } </label>
 
 			</div>
+			{/*--<div style = {{"padding-top": "5px"}} >
+			<label > { nav.getHistory() } </label>
+			</div> */}
 
 		</form>
 

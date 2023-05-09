@@ -137,7 +137,7 @@ class Navigator {
 		}
 */
 	}
-	// can remove I think
+
 	set_current(object) {
 
 		var nodeid = (typeof(object) == 'string') ?
@@ -213,7 +213,7 @@ class Navigator {
             if (next_node != this.target) {
                 var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
                 new_cost = cost - node_data[next_node][COST];
-				new_cost = cost;
+				//new_cost = cost;
 				new_jumps = jumps - 1;
 			}
 			else
@@ -228,6 +228,7 @@ class Navigator {
             this.cost = new_cost;
 			console.log('jumps: ', this.jumps, new_jumps);
 			this.jumps = new_jumps;
+			console.log('6\): ', this.history);
 
 			//this.display();
 
@@ -277,7 +278,7 @@ class Navigator {
 
     // jump to a given word, possibly in a navigation session
 	goto(object) {
-
+		console.log('7\): ', this.history);
 		var next_node = (typeof(object) == 'string') ?
 			nodeid_from_text(object, node_data) : object;
 
@@ -297,7 +298,7 @@ class Navigator {
             this.last_delta = new_cost - this.cost;
             this.cost = new_cost;
 			this.jumps = jumps;
-
+			console.log('5\): ', node_data[next_node][0], this.cost, this.jumps);
 //			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
 //            console.log('goal:\t', node_data[this.target][TEXT]);
 //            console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
@@ -369,6 +370,13 @@ class Navigator {
 			return '';
 	}
 
+	getHistory() {
+		var hist = '';
+		for (var node of this.history.reverse()) {
+			hist += node_data[node][TEXT] + ' : ';
+		}
+		return hist;
+	}
 
 } // end class Navigator
 	/*
