@@ -22,7 +22,7 @@ export function NewTodoForm({nav, onSubmit}) {
 			session = false;
 		}
 		else {
-			nav.set_current(newItem);
+			nav.goto(newItem);
 		}
 		onSubmit(nav.get());
 		setNewItem("");
@@ -97,6 +97,10 @@ export function NewTodoForm({nav, onSubmit}) {
 				{/*-- Cost -- */}
 				<label style = {{color:"DeepSkyBlue", "margin-left":"10px"}}> {(nav.target != null) ? "Cost:" : ""} </label>
 				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.cost.toLocaleString() : ""  } </label>
+
+				{/*-- Total Cost -- */}
+				<label style = {{color:"DeepSkyBlue", "margin-left":"10px"}}> {(nav.target != null) ? "Total:" : ""} </label>
+				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.total.toLocaleString() : ""  } </label>
 
 			</div>
 			{/*--<div style = {{"padding-top": "5px"}} >

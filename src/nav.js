@@ -17,23 +17,24 @@ class Navigator {
         this.current = null; this.origin = null; this.history = [];
 
         // game specific
-        this.target = null; this.cost = 0; this.jumps = 0; this.last_delta = 0;
+        this.target = null; this.cost = 0; this.jumps = 0; this.delta = 0;
 
         // zoom levels
-        this.zlevel = 1e6; this.xfactor = 0;
+        this.zlevel = 1e6; this.xfactor = 0; this.total = 0;
 	}
 
 	set(ctx) {
 		this.current = ctx.curr; this.origin = ctx.origin; this.history = ctx.history;
 		this.target = ctx.target; this.cost = ctx.cost; this.jumps = ctx.jumps;
-		this.last_delta = ctx.delta; this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor;
+		this.delta = ctx.delta; this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor;
+		this.total = ctx.total;
 	}
 
 	get() {
 		return { curr: this.current, origin: this.origin, history: this.history,
 				 target: this.target, cost: this.cost, jumps: this.jumps, delta:
-				 this.last_delta, zlevel: this.zlevel, xfactor: this.xfactor, session:
-				 this.session};
+				 this.delta, zlevel: this.zlevel, xfactor: this.xfactor,
+				 total: this.total };
 	}
 
 	getDisplayInfo() {
@@ -100,7 +101,7 @@ class Navigator {
 			}
 		}
 	}
-
+/*
 	set_current(object) {
 
 		var nodeid = (typeof(object) == 'string') ?
@@ -113,7 +114,7 @@ class Navigator {
         this.history.push(this.current);
         return true;
 	}
-
+*/
 	set_target(object) {
 
 		var nodeid = (typeof(object) === 'string') ?
@@ -130,6 +131,7 @@ class Navigator {
         var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
 
         this.cost = cost;
+		this.total = 0;
 		this.jumps = jumps;
 
         return true;
@@ -161,13 +163,18 @@ class Navigator {
 				new_cost = 0;
 			}
 
-			this.last_delta = (next_node != this.target)? new_cost - this.cost : 0;
+			this.delta = (next_node != this.target)? new_cost - this.cost : 0;
             this.current = next_node;
-            this.history.push(next_node);
             this.cost = new_cost;
 			this.jumps = new_jumps;
+			console.log(next_node);
+			console.log(this.history);
+			if (!(this.current in this.history))
+				this.total += node_data[this.current][COST];
 
-			//var color = (this.last_delta <= 0)? green : red;
+            this.history.push(next_node);
+
+			//var color = (this.delta <= 0)? green : red;
 		}
 		return true;
 	}
@@ -190,11 +197,11 @@ class Navigator {
 
             var [cost, jumps] = get_cost_and_distance(parent, this.target,
 													  node_data);
-            this.last_delta = cost - this.cost;
+            this.delta = cost - this.cost;
             this.cost = cost;
 			this.jumps = jumps;
 
-			//	var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
+			//	var color = (this.delta <= 0 || this.current == this.origin) ? green : red;
 		}
 
 		return true;
@@ -209,7 +216,6 @@ class Navigator {
         if (next_node == null || graph[next_node].length == 0)
             return false;
 
-		this.current = next_node;
 
         // if tracking to a target
         if (this.target != null) {
@@ -218,12 +224,17 @@ class Navigator {
             var parent = dijkstra(graph, node_data, next_node, this.target);
             var [new_cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
 
-            this.last_delta = new_cost - this.cost;
+            this.delta = new_cost - this.cost;
             this.cost = new_cost;
+			console.log(this.history);
+			if (!(next_node in this.history))
+				this.total += node_data[next_node][COST];
+
 			this.jumps = jumps;
-//			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
+//			var color = (this.delta <= 0 || this.current == this.origin) ? green : red;
 		}
 
+		this.current = next_node;
         this.history.push(this.current);
         return true;
 	}
@@ -255,9 +266,11 @@ class Navigator {
 
         this.target = null;
         this.cost = 0;
-        this.last_delta = 0;
+        this.delta = 0;
+		this.total = 0;
         this.history = [this.current];
         this.zlevel = DEFAULT_ZOOM;
+		this.xlevel = 0;
 	}
 
 	getTarget() {
@@ -266,7 +279,7 @@ class Navigator {
 		else
 			return '';
 	}
-
+/*
 	getJumps() {
 
 		if (this.target != null)
@@ -278,7 +291,7 @@ class Navigator {
 		else
 			return '';
 	}
-
+*/
 	getHistory() {
 		var hist = '';
 		for (var node of this.history.reverse()) {

@@ -183,18 +183,9 @@ function colorize_and_layout(nodes, revised_node_costs,
         ncur += 1;
 		nprev = ncur;
 
-		// figure out how to handle centerline later
-		//console.log(center_line(line, nodecount, columns));
-
 	}  // end while(ncur < n)
 
 	return center_pad(displayInfo, columns);
-
-	/*
-	  [foo, bar, baz]
-	  [quux, ziggy, umlaut, zoot]
-
-*/
 
 }
 
@@ -220,6 +211,8 @@ function minmax(nodes) {
 }
 
 
+// Prepends eache node list with a blank node sized
+// to acheive a center-line effect for each row
 function center_pad(displayInfo, columns) {
 
 	for (var i in displayInfo) {
@@ -228,10 +221,9 @@ function center_pad(displayInfo, columns) {
 		for (var node of displayInfo[i])
 			line += node.text + ' '.length;
 
-		// half of slack is what I want to add on to the beginning
-		// of the display text in order to give a centered effect.
+		// Add half of slack on to the beginning of the
+		// row in order to give a line-center effect
 		var slack = columns - line.length;
-
 		if (slack > 2)
 		{
 			var half = Math.floor(slack / 2);
@@ -240,7 +232,6 @@ function center_pad(displayInfo, columns) {
 						color: "Black", cost: 0 };
 
 			displayInfo[i].unshift(pad);
-			displayInfo[i].push(pad);
 		}
 /*
 		displayInfo[i].push({ nodeid: -1, text: columns.toString(),

@@ -11,7 +11,7 @@ export default function App() {
 	var nav = CreateNavigator();
 
 	const [navctx, setNavctx] = useState(() => {
-		const localValue = localStorage.getItem("NAVCTX2")
+		const localValue = localStorage.getItem("NAVCTX3")
 		if (localValue == null) {
 			console.log('localValue null')
 
@@ -24,7 +24,7 @@ export default function App() {
 	})
 
 	useEffect(() => {
-		localStorage.setItem("NAVCTX2", JSON.stringify(navctx))
+		localStorage.setItem("NAVCTX3", JSON.stringify(navctx))
 	}, [navctx])
 
 
