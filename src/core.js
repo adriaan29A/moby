@@ -107,7 +107,7 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
 --*/
 
 const DEFAULT_COLUMNS = 80;
-const AVG_WORDS_PER_80_COL = 3; // eyeballed
+const ASPECT_RATIO = 3; // eyeballed
 function colorize_and_layout(nodes, revised_node_costs,
 							 min_cost, max_cost, zlevel, suppress_leafs, curr) {
 
@@ -118,9 +118,9 @@ function colorize_and_layout(nodes, revised_node_costs,
 	var ncur = 0;
     var nprev = 0;
 
-	// estimate columns to print.
+	// estimate columns (#chars/line) to lay out.
 	var columns = (nodes.length < 40) ? DEFAULT_COLUMNS :
-		DEFAULT_COLUMNS + Math.floor((nodes.length - DEFAULT_COLUMNS) / AVG_WORDS_PER_80_COL);
+		DEFAULT_COLUMNS + Math.floor((nodes.length - DEFAULT_COLUMNS) / ASPECT_RATIO);
 
     var n = nodes.length;
     while (ncur < n) {
@@ -143,7 +143,7 @@ function colorize_and_layout(nodes, revised_node_costs,
             ncur += 1;
 		}
 
-        // Print one line
+        // Format one line
         var line = '';
         var nodecount = 0;
 		var displayLine = [];
@@ -159,8 +159,6 @@ function colorize_and_layout(nodes, revised_node_costs,
                     else
                         id = Math.floor((revised_node_costs[nodes[i]] - min_cost) /
                                         (max_cost - min_cost) * (colors.length - 1));
-
-
 					color = colors[id];
 				}
 				else
@@ -176,12 +174,11 @@ function colorize_and_layout(nodes, revised_node_costs,
 
 			displayLine.push( { nodeid: nodes[i], text: node_data[nodes[i]][TEXT],
 								   color: color, cost: node_data[nodes[i]][COST]} );
-
 			nodecount += 1;
 
 		} // end for (i = nprev; i < ncur; i++)
 
-        // Done printing line
+        // Done formatting line
 		displayInfo.push(displayLine);
         ncur += 1;
 		nprev = ncur;
@@ -191,7 +188,13 @@ function colorize_and_layout(nodes, revised_node_costs,
 
 	}  // end while(ncur < n)
 
-	return displayInfo;
+	return center_pad(displayInfo, columns);
+
+	/*
+	  [foo, bar, baz]
+	  [quux, ziggy, umlaut, zoot]
+
+*/
 
 }
 
@@ -216,15 +219,42 @@ function minmax(nodes) {
 	return [Math.min(...values), Math.max(...values)];
 }
 
-function center_line(line, nodecount, columns) {
-    var slack = columns - (line.length - (nodecount + nodecount * (black.length + dim.length)));
-    var half = Math.floor(slack / 2);
-    if (half < 2)
-        return line;
-    else
-        var centered_line = ' '.repeat(half) + line + ' '.repeat(half);
-    return centered_line;
+
+function center_pad(displayInfo, columns) {
+
+	for (var i in displayInfo) {
+
+		var line = '';
+		for (var node of displayInfo[i])
+			line += node.text + ' '.length;
+
+		// half of slack is what I want to add on to the beginning
+		// of the display text in order to give a centered effect.
+		var slack = columns - line.length;
+
+		if (slack > 2)
+		{
+			var half = Math.floor(slack / 2);
+
+			var pad = { nodeid: -1, text: '.'.repeat(half),
+						color: "Black", cost: 0 };
+
+			displayInfo[i].unshift(pad);
+			displayInfo[i].push(pad);
+		}
+/*
+		displayInfo[i].push({ nodeid: -1, text: columns.toString(),
+							  color: "Yellow", cost: 0 });
+		displayInfo[i].push({ nodeid: -1, text: line.length,
+							  color: "Green", cost: 0 });
+		displayInfo[i].push({ nodeid: -1, text: slack.toString(),
+							  color: "Red", cost: 0 });
+*/
+	}
+
+	return displayInfo;
 }
+
 
 /*
 
@@ -322,7 +352,11 @@ function dijkstra(G, C, start, goal, edge_weight = 0) {
 				continue;
 
             var old_cost = cost[neighbor] ?? Infinity;
-			var cvertex = (C[vertex][COST] != 0) ? C[vertex][COST] : Infinity;
+
+			// serious bug I should have caught
+			//var cvertex = (C[vertex][COST] != 0) ? C[vertex][COST] : Infinity;
+			var cvertex = ((vertex == start) || (C[vertex][COST] != 0)) ? C[vertex][COST] : Infinity;
+
             var new_cost = cost[vertex] + cvertex + edge_weight;
 
             if (new_cost < old_cost) {
@@ -487,7 +521,6 @@ function makeStruct(keys) {
 	}
 	return constructor;
 }
-
 
 
 

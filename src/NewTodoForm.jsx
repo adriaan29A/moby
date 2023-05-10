@@ -9,13 +9,9 @@ export function NewTodoForm({nav, onSubmit}) {
 	const [newItem, setNewItem] = useState("");
 
 	function handleSubmit(e) {
-		console.log('handlesubmit:', e);
 		e.preventDefault()
 
-//	    if (newItem === "") return
-
 		if (e.target.id == "navigate") {
-
 			if (newItem != "") {
 				nav.set_target(nodeid_from_text(newItem, nodes));
 			}
@@ -28,14 +24,12 @@ export function NewTodoForm({nav, onSubmit}) {
 		else {
 			nav.set_current(newItem);
 		}
-
 		onSubmit(nav.get());
 		setNewItem("");
 	}
 
-	// nav.integrated_zoom sets nav.zlevel and
-	// nav.xfactor to the appropriate
-	// values to acheive the desired zoom.
+	// nav.integrated_zoom sets nav.zlevel and nav.xfactor to the
+	// appropriate values to acheive the desired zoom.
 	function handleOnClick(e) {
 		e.preventDefault();
 
@@ -56,7 +50,6 @@ export function NewTodoForm({nav, onSubmit}) {
 		else if (e.target.id == "next") {
 			nav.next();
 		}
-
 		onSubmit(nav.get());
 	}
 
@@ -84,12 +77,15 @@ export function NewTodoForm({nav, onSubmit}) {
 				<button className="btn" title = "Zoom in" id = "zoomin" onClick = { handleOnClick } style = {{"margin-left":"10px"}}>+</button>
 				<button className="btn" title = "Zoom out" id = "zoomout" onClick = { handleOnClick } >&minus;</button>
 
+				{/*-- Current --*/}
+				<label style = {{"margin-left":"20px"}}> &quot;{ nodes[nav.current][TEXT] }&quot;</label>
+
 				{/*-- Current Zoom level--*/}
-				<label style = {{"margin-left":"10px", color:"DeepSkyBlue"}}>Zoom:</label>
+				<label style = {{"margin-left":"20px", color:"DeepSkyBlue"}}>Zoom:</label>
 				<label title = "Zoom level" style = {{"margin-left":"1Px"}}> {nav.zlevel.toExponential(0)} </label>
 
 				{/*-- Target--*/}
-				<label style = {{ color:"DeepSkyBlue", "margin-left":"20px"}}>
+				<label style = {{ color:"DeepSkyBlue", "margin-left":"10px"}}>
 					{(nav.target != null) ? "Target:" : ""}
 				</label>
 				<label style = {{"margin-left":"5px"}}> { nav.getTarget() } </label>

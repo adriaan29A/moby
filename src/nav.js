@@ -20,14 +20,13 @@ class Navigator {
         this.target = null; this.cost = 0; this.jumps = 0; this.last_delta = 0;
 
         // zoom levels
-        this.zlevel = 1e6; this.xfactor = 0; this.session = false;
+        this.zlevel = 1e6; this.xfactor = 0;
 	}
 
 	set(ctx) {
 		this.current = ctx.curr; this.origin = ctx.origin; this.history = ctx.history;
 		this.target = ctx.target; this.cost = ctx.cost; this.jumps = ctx.jumps;
 		this.last_delta = ctx.delta; this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor;
-		this.session = ctx.session;
 	}
 
 	get() {
@@ -36,7 +35,6 @@ class Navigator {
 				 this.last_delta, zlevel: this.zlevel, xfactor: this.xfactor, session:
 				 this.session};
 	}
-
 
 	getDisplayInfo() {
 
@@ -51,44 +49,13 @@ class Navigator {
 		}
 	}
 
-/*
-    list() {
-
-		this.display();
-
-		if (this.target != null) {
-			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
-			console.log('goal:\t', node_data[this.target][TEXT]);
-			console.log('cost:\t' + color + this.cost.toLocaleString('en-US') + reset);
-		}
-	}
-
-*/
-
 	zoom(z) {
 
         if (z == true && this.zlevel > MIN_ZOOM)
             this.zlevel = zin[this.zlevel];
         else if (z == false && this.zlevel < MAX_ZOOM)
 			this.zlevel = zout[this.zlevel];
-
-//		this.display();
-
-/*
-
-        if (this.target != null) {
-			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
-            console.log('goal:\t', node_data[this.target][TEXT]);
-			console.log('cost:\t' + color + this.cost.toLocaleString('en-US') + reset);
-		}
-*/
 	}
-
-
-	// zlevel (filtering) and xfactor (synset expansion) can be modified
-	// independently but this function chains them to give an intgrated
-	// zoom effect. zlevel = MAX_ZOOM and xfactor = 0 are used to transition
-	// betwen the two regimes.
 
 	xoom(x) {
 
@@ -101,7 +68,10 @@ class Navigator {
 			this.xfactor++;
 	}
 
-
+	// zlevel (filtering) and xfactor (synset expansion) can be modified
+	// independently but this function chains them to give an intgrated
+	// zoom effect. zlevel = MAX_ZOOM and xfactor = 0 are used to transition
+	// betwen the two regimes.
 	integrated_zoom(z) {
 
 		// zoom out
@@ -129,13 +99,6 @@ class Navigator {
 				this.xfactor--; // unexpand synset
 			}
 		}
-/*
-		if (this.target != null) {
-			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
-			console.log('goal:\t', node_data[this.target][TEXT]);
-			console.log('cost:\t' + color + this.cost.toLocaleString('en-US') + reset);
-		}
-*/
 	}
 
 	set_current(object) {
@@ -151,56 +114,32 @@ class Navigator {
         return true;
 	}
 
-
 	set_target(object) {
-		console.log('4\) ', object);
-		console.log('4.1\)', typeof(object));
 
 		var nodeid = (typeof(object) === 'string') ?
 			nodeid_from_text(object, node_data) : object;
 
-		console.log("4.2\) ", object, nodeid);
-
         if (nodeid == null || graph[nodeid].length == 0)
             return false;
-
-		console.log("4.3\) ", this.target);
 
         this.origin = this.current;
         this.target = nodeid;
         this.history = [this.current];
 
-//		this.display();
-
-//        console.log('goal:\t', node_data[this.target][TEXT]);
-
         var parent = dijkstra(graph, node_data, this.current, this.target);
         var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
-//        console.log('\nmin cost:\t' + cost.toLocaleString('en-US') + ' / ' + jumps.toLocaleString('en-US'));
 
-        this.cost = cost; // current cost to target
+        this.cost = cost;
 		this.jumps = jumps;
 
-/*
-        this.cost = cost; // current cost to target
-        parent = dijkstra(graph, node_data, this.current, this.target, 1e8);
-        [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
-        console.log('min jumps:\t' + cost.toLocaleString('en-US') + ' / ' + jumps.toLocaleString('en-US'));
-*/
-		console.log("4.5\) ", this.target);
         return true;
 	}
 
     next() {
 
-        if (this.target == null) {
-            return false;
-		}
-
-        else if (this.current == this.target)
+        if (this.target == null || this.current == this.target)
             return false;
 
-		console.log('got here');
         // find min cost path from current node
         var parent = dijkstra(graph, node_data, this.current, this.target);
         var [path, nodes] = make_path(parent, this.target, node_data);
@@ -210,10 +149,10 @@ class Navigator {
             // get next node in path, calculate new cost and delta
 			var new_cost; var new_jumps;
             var next_node = nodes[1];
+
             if (next_node != this.target) {
                 var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
                 new_cost = cost - node_data[next_node][COST];
-				//new_cost = cost;
 				new_jumps = jumps - 1;
 			}
 			else
@@ -226,19 +165,9 @@ class Navigator {
             this.current = next_node;
             this.history.push(next_node);
             this.cost = new_cost;
-			console.log('jumps: ', this.jumps, new_jumps);
 			this.jumps = new_jumps;
-			console.log('6\): ', this.history);
 
-			//this.display();
-
-			/*--
-			  keep this around
-			--*/
 			//var color = (this.last_delta <= 0)? green : red;
-
-			//console.log('target:\t', node_data[this.target][TEXT]);
-			//console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
 		}
 		return true;
 	}
@@ -252,7 +181,6 @@ class Navigator {
 		}
 
 		this.current = this.history.slice(-1);
-		//this.display();
 
         if (this.target != null) {
 
@@ -265,20 +193,16 @@ class Navigator {
             this.last_delta = cost - this.cost;
             this.cost = cost;
 			this.jumps = jumps;
-/*
-			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
-            console.log('goal:\t', node_data[this.target][TEXT]);
-            console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
-*/
+
+			//	var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
 		}
 
 		return true;
 	}
 
-
     // jump to a given word, possibly in a navigation session
 	goto(object) {
-		console.log('7\): ', this.history);
+
 		var next_node = (typeof(object) == 'string') ?
 			nodeid_from_text(object, node_data) : object;
 
@@ -286,7 +210,6 @@ class Navigator {
             return false;
 
 		this.current = next_node;
-//		this.display(graph[this.current]);
 
         // if tracking to a target
         if (this.target != null) {
@@ -298,24 +221,11 @@ class Navigator {
             this.last_delta = new_cost - this.cost;
             this.cost = new_cost;
 			this.jumps = jumps;
-			console.log('5\): ', node_data[next_node][0], this.cost, this.jumps);
 //			var color = (this.last_delta <= 0 || this.current == this.origin) ? green : red;
-//            console.log('goal:\t', node_data[this.target][TEXT]);
-//            console.log('cost:\t' + color  + this.cost.toLocaleString() + reset); // dropped another endl
 		}
 
         this.history.push(this.current);
-
         return true;
-	}
-
-    print_history() {
-        var path = '';
-        if (this.history.length == 0)
-            this.history.push(this.current);
-        for (var nodeid of this.history)
-            path += node_data[nodeid][TEXT] + ' ';
-        console.log(path);
 	}
 
     print_color_scale() {
@@ -337,8 +247,8 @@ class Navigator {
             var level = scaled_level.toExponential(0);
 			color_scale += color + level + ' ';
 		}
-        console.log('\n' + color_scale);
-        console.log(reset);
+//        console.log('\n' + color_scale);
+//        console.log(reset);
 	}
 
     clear() {
@@ -358,12 +268,11 @@ class Navigator {
 	}
 
 	getJumps() {
-		console.log('there');
+
 		if (this.target != null)
 		{
 			var parent = dijkstra(graph, node_data, this.current, this.target);
 			var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
-			console.log('target is: ', this.target, node_data[this.target][TEXT]);
 			return jumps;
 		}
 		else
@@ -379,15 +288,3 @@ class Navigator {
 	}
 
 } // end class Navigator
-	/*
-
-	   DEFAULT_ZOOM,
-	   colors,
-	   MIN_ZOOM
-	   TEXT, COST
-	   dijkstra
-	   get_cost_and_distance
-	   minmax
-	   MIN_ZOOM
-
-	 */
