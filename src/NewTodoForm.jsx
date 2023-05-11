@@ -2,7 +2,7 @@ import {useState} from "react"
 import nodes from "./nodes.json"
 import  { nodeid_from_text, TEXT} from "./core.js";
 
-var  session = false; // HACKOMATIC
+var  f_hack_start_nav_session = false; // HACKOMATIC
 
 export function NewTodoForm({nav, onSubmit}) {
 
@@ -16,10 +16,11 @@ export function NewTodoForm({nav, onSubmit}) {
 				nav.set_target(nodeid_from_text(newItem, nodes));
 			}
 			else {
+				nav.clear(true);
 				// move this to reset_target or some such
-				nav.target = null; nav.jumps = 0; nav.cost = 0;
+				// nav.target = null; nav.jumps = 0; nav.cost = 0;
 			}
-			session = false;
+			f_hack_start_nav_session = false;
 		}
 		else {
 			nav.goto(newItem);
@@ -40,7 +41,7 @@ export function NewTodoForm({nav, onSubmit}) {
 			nav.integrated_zoom(false);
 		}
 		else if (e.target.id == "navigate") {
-			session = true; // hackomatic
+			f_hack_start_nav_session = true;
 			handleSubmit(e);
 			return; //avoids double call to onSubmit
 		}
@@ -62,7 +63,7 @@ export function NewTodoForm({nav, onSubmit}) {
 					value={newItem}
 					onChange={e => setNewItem(e.target.value)}
 					type="text"
-					placeholder = { nodes[nav.current][TEXT] }
+					placeholder = { "word or phrase"  }
 					id="item"/>
 
 				{/*-- Go/Nav--*/}
@@ -77,18 +78,21 @@ export function NewTodoForm({nav, onSubmit}) {
 				<button className="btn" title = "Zoom in" id = "zoomin" onClick = { handleOnClick } style = {{"margin-left":"10px"}}>+</button>
 				<button className="btn" title = "Zoom out" id = "zoomout" onClick = { handleOnClick } >&minus;</button>
 
-				{/*-- Current --*/}
-				<label style = {{"margin-left":"20px"}}> &quot;{ nodes[nav.current][TEXT] }&quot;</label>
-
 				{/*-- Current Zoom level--*/}
+				<label title = "Zoom level" style = {{"margin-left":"10px"}}> {nav.zlevel.toExponential(0)} </label>
+
+				{/*-- Current --
+				<label style = {{"margin-left":"10px"}}> &quot;{ nodes[nav.current][TEXT] }&quot;</label> */}
+
+				{/*-- Current Zoom level--
 				<label style = {{"margin-left":"20px", color:"DeepSkyBlue"}}>Zoom:</label>
-				<label title = "Zoom level" style = {{"margin-left":"1Px"}}> {nav.zlevel.toExponential(0)} </label>
+				<label title = "Zoom level" style = {{"margin-left":"1px"}}> {nav.zlevel.toExponential(0)} </label> */}
 
 				{/*-- Target--*/}
 				<label style = {{ color:"DeepSkyBlue", "margin-left":"10px"}}>
 					{(nav.target != null) ? "Target:" : ""}
 				</label>
-				<label style = {{"margin-left":"5px"}}> { nav.getTarget() } </label>
+				<label style = {{"margin-left":"5px"}}>{nav.getTargetText()}</label>
 
 				{/*-- Jumps--*/}
 				<label style = {{color:"DeepSkyBlue", "margin-left":"10px"}}> {(nav.target != null) ? "Jumps:" : ""} </label>
@@ -96,16 +100,20 @@ export function NewTodoForm({nav, onSubmit}) {
 
 				{/*-- Cost -- */}
 				<label style = {{color:"DeepSkyBlue", "margin-left":"10px"}}> {(nav.target != null) ? "Cost:" : ""} </label>
-				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.cost.toLocaleString() : ""  } </label>
+				<label style = {{"margin-left":"5px", color: (nav.delta <= 0 || nav.current == nav.origin) ? "Lime" : "Red" }}>
+				{ (nav.target != null) ? nav.cost.toLocaleString() : ""  } </label>
 
-				{/*-- Total Cost -- */}
-				<label style = {{color:"DeepSkyBlue", "margin-left":"10px"}}> {(nav.target != null) ? "Total:" : ""} </label>
-				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.total.toLocaleString() : ""  } </label>
+				{/*-- Totals -- */}
+				<label style = {{color:"DeepSkyBlue", "margin-left":"10px"}}> {(nav.target != null) ? "Totals:" : ""} </label>
+				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.total.toLocaleString() + " / " + nav.jumpstot : ""  }
+
+
+				</label>
 
 			</div>
-			{/*--<div style = {{"padding-top": "5px"}} >
-			<label > { nav.getHistory() } </label>
-			</div> */}
+			<div style = {{"padding-top": "5px"}} >
+				<label > { (nav.target != null) ? nav.getHistory() : "" } </label>
+			</div>
 
 		</form>
 

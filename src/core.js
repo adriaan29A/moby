@@ -148,7 +148,7 @@ function colorize_and_layout(nodes, revised_node_costs,
         var nodecount = 0;
 		var displayLine = [];
 
-		for (i = nprev; i < ncur; i++) {
+		for (i = nprev; i < ncur + 1; i++) {
 
 			var color = '';
             if (graph[nodes[i]].length != 0) {
@@ -172,8 +172,16 @@ function colorize_and_layout(nodes, revised_node_costs,
 					color = "Black";
 			}
 
-			displayLine.push( { nodeid: nodes[i], text: node_data[nodes[i]][TEXT],
-								   color: color, cost: node_data[nodes[i]][COST]} );
+			var text = node_data[nodes[i]][TEXT];
+
+			// visually mark root term with brackets
+			if (nodes[i] == curr) {
+				text = '[ ' + text + ' ]';
+				color = (color == "Black") ? "Red" : color;
+			}
+
+			displayLine.push( { nodeid: nodes[i], text: text,
+								color: color, cost: node_data[nodes[i]][COST]} );
 			nodecount += 1;
 
 		} // end for (i = nprev; i < ncur; i++)

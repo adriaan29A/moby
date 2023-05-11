@@ -36,13 +36,14 @@ silver teal white yellow
 .form-row {
   display: flex;
   flex-direction: row;
+  white-space: nowrap;
   gap: 0.1rem;
 }
 
 
 .quux {
 	position: absolute;
-	top: 10%;
+	top: 12%;
 	left: 5%;
 }
 

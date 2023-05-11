@@ -20,21 +20,23 @@ class Navigator {
         this.target = null; this.cost = 0; this.jumps = 0; this.delta = 0;
 
         // zoom levels
-        this.zlevel = 1e6; this.xfactor = 0; this.total = 0;
+        this.zlevel = 1e6; this.xfactor = 0; this.total = 0; this.trvlog = [];
+
+		this.jumpstot = 0;
 	}
 
 	set(ctx) {
 		this.current = ctx.curr; this.origin = ctx.origin; this.history = ctx.history;
 		this.target = ctx.target; this.cost = ctx.cost; this.jumps = ctx.jumps;
 		this.delta = ctx.delta; this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor;
-		this.total = ctx.total;
+		this.total = ctx.total; this.trvlog = ctx.trvlog; this.jumpstot = ctx.jumpstot;
 	}
 
 	get() {
 		return { curr: this.current, origin: this.origin, history: this.history,
 				 target: this.target, cost: this.cost, jumps: this.jumps, delta:
 				 this.delta, zlevel: this.zlevel, xfactor: this.xfactor,
-				 total: this.total };
+				 total: this.total, trvlog: this.trvlog, jumpstot: this.jumpstot };
 	}
 
 	getDisplayInfo() {
@@ -126,6 +128,7 @@ class Navigator {
         this.origin = this.current;
         this.target = nodeid;
         this.history = [this.current];
+		this.trvlog = [this.current];
 
         var parent = dijkstra(graph, node_data, this.current, this.target);
         var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
@@ -133,7 +136,7 @@ class Navigator {
         this.cost = cost;
 		this.total = 0;
 		this.jumps = jumps;
-
+		this.jumpstot = 0;
         return true;
 	}
 
@@ -167,12 +170,14 @@ class Navigator {
             this.current = next_node;
             this.cost = new_cost;
 			this.jumps = new_jumps;
-			console.log(next_node);
-			console.log(this.history);
-			if (!(this.current in this.history))
+
+			if (this.trvlog.find(node => node == this.current) == undefined) {
 				this.total += node_data[this.current][COST];
+				this.jumpstot += 1;
+			}
 
             this.history.push(next_node);
+            this.trvlog.push(next_node);
 
 			//var color = (this.delta <= 0)? green : red;
 		}
@@ -199,9 +204,7 @@ class Navigator {
 													  node_data);
             this.delta = cost - this.cost;
             this.cost = cost;
-			this.jumps = jumps;
-
-			//	var color = (this.delta <= 0 || this.current == this.origin) ? green : red;
+			this.jumps = jumps; // jumpstot not affected
 		}
 
 		return true;
@@ -216,7 +219,6 @@ class Navigator {
         if (next_node == null || graph[next_node].length == 0)
             return false;
 
-
         // if tracking to a target
         if (this.target != null) {
 
@@ -226,16 +228,18 @@ class Navigator {
 
             this.delta = new_cost - this.cost;
             this.cost = new_cost;
-			console.log(this.history);
-			if (!(next_node in this.history))
+
+			if (this.trvlog.find(node => node == next_node) == undefined) {
 				this.total += node_data[next_node][COST];
+				this.jumpstot += 1;
+			}
 
 			this.jumps = jumps;
-//			var color = (this.delta <= 0 || this.current == this.origin) ? green : red;
 		}
 
 		this.current = next_node;
         this.history.push(this.current);
+        this.trvlog.push(this.current);
         return true;
 	}
 
@@ -262,20 +266,26 @@ class Navigator {
 //        console.log(reset);
 	}
 
-    clear() {
+    clear(f_targeting_data_only = false) {
 
         this.target = null;
         this.cost = 0;
-        this.delta = 0;
+		this.jumps = 0;
 		this.total = 0;
-        this.history = [this.current];
-        this.zlevel = DEFAULT_ZOOM;
-		this.xlevel = 0;
+		this.jumpstot = 0;
+	    this.delta = 0;
+		this.trvlog = [this.current];
+
+		if (!f_targeting_data_only) {
+			this.history = [this.current];
+			this.zlevel = DEFAULT_ZOOM;
+			this.xlevel = 0;
+		}
 	}
 
-	getTarget() {
+	getTargetText() {
 		if (this.target != null)
-			return node_data[this.target][TEXT];
+			return "\"" + node_data[this.target][TEXT] + "\"";
 		else
 			return '';
 	}
@@ -292,10 +302,16 @@ class Navigator {
 			return '';
 	}
 */
+	// bugbug - cache like the others
 	getHistory() {
 		var hist = '';
-		for (var node of this.history.reverse()) {
-			hist += node_data[node][TEXT] + ' : ';
+		for (var i = 0; i < this.history.length; i++) {
+			if (i == this.history.length -1)
+				var c = ' ';
+			else
+				c = ' > ';
+//			hist += (node_data[this.history[i]][TEXT] + (i == this.history.length -1) ? ' ' : ' > ');
+			hist += (node_data[this.history[i]][TEXT] + c);
 		}
 		return hist;
 	}
