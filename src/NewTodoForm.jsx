@@ -16,14 +16,12 @@ export function NewTodoForm({nav, onSubmit}) {
 				nav.set_target(nodeid_from_text(newItem, nodes));
 			}
 			else {
-				nav.clear(true);
-				// move this to reset_target or some such
-				// nav.target = null; nav.jumps = 0; nav.cost = 0;
+				nav.clear(false); // clear targeting info
 			}
 			f_hack_start_nav_session = false;
 		}
 		else {
-			nav.goto(newItem);
+			nav.goto(newItem); // bug - resetting history twice?
 		}
 		onSubmit(nav.get());
 		setNewItem("");
@@ -66,9 +64,11 @@ export function NewTodoForm({nav, onSubmit}) {
 					placeholder = { "word or phrase"  }
 					id="item"/>
 
-				{/*-- Go/Nav--*/}
+				{/*-- Go/Nav/Stop--*/}
 				<button className="btn" id = "go" title = "Search word or phrase" style = {{"margin-left":"1px"}} >Go</button>
-				<button className="btn" id = "navigate" title = "Navigate to word or phrase" onClick = { handleOnClick }>Nav</button>
+				<button className="btn" id = "navigate" title = "Navigate to word or phrase" onClick = { handleOnClick }>
+
+				{ (nav.target == null) ? "Nav" : "Stop" } </button>
 
 				{/*-- Back/Next--*/}
 				<button className="btn" id = "back" title = "Back" onClick={ handleOnClick } style = {{"margin-left":"10px"}}>&laquo;</button>
@@ -81,38 +81,38 @@ export function NewTodoForm({nav, onSubmit}) {
 				{/*-- Current Zoom level--*/}
 				<label title = "Zoom level" style = {{"margin-left":"10px"}}> {nav.zlevel.toExponential(0)} </label>
 
-				{/*-- Current --
-				<label style = {{"margin-left":"10px"}}> &quot;{ nodes[nav.current][TEXT] }&quot;</label> */}
-
-				{/*-- Current Zoom level--
-				<label style = {{"margin-left":"20px", color:"DeepSkyBlue"}}>Zoom:</label>
-				<label title = "Zoom level" style = {{"margin-left":"1px"}}> {nav.zlevel.toExponential(0)} </label> */}
-
 				{/*-- Target--*/}
-				<label style = {{ color:"DeepSkyBlue", "margin-left":"10px"}}>
+				<label style = {{ color:"DeepSkyBlue", "margin-left":"15px"}}>
 					{(nav.target != null) ? "Target:" : ""}
 				</label>
-				<label style = {{"margin-left":"5px"}}>{nav.getTargetText()}</label>
+				<label style = {{"margin-left":"5px"}}> {nav.getTargetText()}</label>
 
-				{/*-- Jumps--*/}
-				<label style = {{color:"DeepSkyBlue", "margin-left":"10px"}}> {(nav.target != null) ? "Jumps:" : ""} </label>
-				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.jumps : ""  } </label>
+				{/*-- Jumps-- */}
+				<label style = {{color:"DeepSkyBlue", "margin-left":"15px"}}> {(nav.target != null) ? "Min jumps / cost:" : ""} </label>
 
-				{/*-- Cost -- */}
-				<label style = {{color:"DeepSkyBlue", "margin-left":"10px"}}> {(nav.target != null) ? "Cost:" : ""} </label>
-				<label style = {{"margin-left":"5px", color: (nav.delta <= 0 || nav.current == nav.origin) ? "Lime" : "Red" }}>
-				{ (nav.target != null) ? nav.cost.toLocaleString() : ""  } </label>
+				<label style = {{"margin-left":"5px", color: (nav.deltaj <= 0 || nav.current == nav.origin) ? "Lime" : "Red" }}>
+				{ (nav.target != null) ? nav.jumps : "" } </label>
 
-				{/*-- Totals -- */}
-				<label style = {{color:"DeepSkyBlue", "margin-left":"10px"}}> {(nav.target != null) ? "Totals:" : ""} </label>
-				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.total.toLocaleString() + " / " + nav.jumpstot : ""  }
+				{/*-- Cost-- */}
+				<label style = {{"margin-left":"4px", "margin-right":"4px"}} > { (nav.target != null) ? " / " : "" } </label>
+				<label style = {{color: (nav.delta <= 0 || nav.current == nav.origin) ? "Lime" : "Red" }}>
+				{ (nav.target != null) ? nav.cost.toExponential(1) : "" } </label>
 
+				{/*-- Score -- */}
+				<label style = {{color:"DeepSkyBlue", "margin-left":"15px"}}> {(nav.target != null) ? "Score:" : ""} </label>
+				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.jumpstot + " / " +  nav.total.toExponential(1) : ""  }
+				</label>
 
+				{/*-- Cheats -- */}
+				<label style = {{color:"DeepSkyBlue", "margin-left":"15px"}}> {(nav.target != null) ? "Cheats:" : "" }
+				</label>
+
+				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.cheats : "" }
 				</label>
 
 			</div>
 			<div style = {{"padding-top": "5px"}} >
-				<label > { (nav.target != null) ? nav.getHistory() : "" } </label>
+				<label > { (nav.target != null) ? nav.getHistoryText() : nav.getCurrentText() } </label>
 			</div>
 
 		</form>

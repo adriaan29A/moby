@@ -22,7 +22,7 @@ class Navigator {
         // zoom levels
         this.zlevel = 1e6; this.xfactor = 0; this.total = 0; this.trvlog = [];
 
-		this.jumpstot = 0;
+		this.jumpstot = 0; this.deltaj = 0; this.cheats = 0;
 	}
 
 	set(ctx) {
@@ -30,13 +30,15 @@ class Navigator {
 		this.target = ctx.target; this.cost = ctx.cost; this.jumps = ctx.jumps;
 		this.delta = ctx.delta; this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor;
 		this.total = ctx.total; this.trvlog = ctx.trvlog; this.jumpstot = ctx.jumpstot;
+		this.deltaj = ctx.deltaj; this.cheats = ctx.cheats;
 	}
 
 	get() {
 		return { curr: this.current, origin: this.origin, history: this.history,
 				 target: this.target, cost: this.cost, jumps: this.jumps, delta:
 				 this.delta, zlevel: this.zlevel, xfactor: this.xfactor,
-				 total: this.total, trvlog: this.trvlog, jumpstot: this.jumpstot };
+				 total: this.total, trvlog: this.trvlog, jumpstot: this.jumpstot,
+			     deltaj: this.deltaj, cheats: this.cheats };
 	}
 
 	getDisplayInfo() {
@@ -103,20 +105,7 @@ class Navigator {
 			}
 		}
 	}
-/*
-	set_current(object) {
 
-		var nodeid = (typeof(object) == 'string') ?
-			nodeid_from_text(object, node_data) : object;
-
-		if (nodeid == null || graph[nodeid].length == 0)
-            return false;
-
-        this.current = nodeid;
-        this.history.push(this.current);
-        return true;
-	}
-*/
 	set_target(object) {
 
 		var nodeid = (typeof(object) === 'string') ?
@@ -137,6 +126,8 @@ class Navigator {
 		this.total = 0;
 		this.jumps = jumps;
 		this.jumpstot = 0;
+		this.deltaj = 0;
+
         return true;
 	}
 
@@ -167,6 +158,7 @@ class Navigator {
 			}
 
 			this.delta = (next_node != this.target)? new_cost - this.cost : 0;
+			this.deltaj = (next_node != this.target)? new_jumps - this.jumps : 0;
             this.current = next_node;
             this.cost = new_cost;
 			this.jumps = new_jumps;
@@ -178,8 +170,7 @@ class Navigator {
 
             this.history.push(next_node);
             this.trvlog.push(next_node);
-
-			//var color = (this.delta <= 0)? green : red;
+			this.cheats++;
 		}
 		return true;
 	}
@@ -203,6 +194,7 @@ class Navigator {
             var [cost, jumps] = get_cost_and_distance(parent, this.target,
 													  node_data);
             this.delta = cost - this.cost;
+            this.deltaj = jumps - this.jumps;
             this.cost = cost;
 			this.jumps = jumps; // jumpstot not affected
 		}
@@ -227,6 +219,7 @@ class Navigator {
             var [new_cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
 
             this.delta = new_cost - this.cost;
+            this.deltaj = jumps - this.jumps;
             this.cost = new_cost;
 
 			if (this.trvlog.find(node => node == next_node) == undefined) {
@@ -243,77 +236,50 @@ class Navigator {
         return true;
 	}
 
-    print_color_scale() {
 
-        var color_scale = '';
+    clear(f_all) {
 
-        // Get max cost in current view
-        var node_costs = {};
-        var adj_list = graph[this.current];
-        for (var nodeid of adj_list)
-            if (node_data[nodeid][COST] < this.zlevel)
-                node_costs[nodeid] = node_data[nodeid][COST];
-
-        var [min_cost, max_cost] = minmax(node_costs);
-        for (i = 0; i < colors.length; i++) {
-            var color = colors[i];
-            var flat_level = i * (max_cost - min_cost)/colors.length + min_cost;
-            var scaled_level = flat_level; // = Math.floor(flat_level * sigmoid(flat_level, max_cost));
-            var level = scaled_level.toExponential(0);
-			color_scale += color + level + ' ';
-		}
-//        console.log('\n' + color_scale);
-//        console.log(reset);
-	}
-
-    clear(f_targeting_data_only = false) {
-
+		// doesn't clear current node
         this.target = null;
         this.cost = 0;
 		this.jumps = 0;
 		this.total = 0;
 		this.jumpstot = 0;
 	    this.delta = 0;
+		this.deltaj = 0;
+		this.cheats = 0;
 		this.trvlog = [this.current];
+		this.history = [this.current];
 
-		if (!f_targeting_data_only) {
-			this.history = [this.current];
+
+		if (f_all) {
 			this.zlevel = DEFAULT_ZOOM;
 			this.xlevel = 0;
 		}
 	}
 
+	getCurrentText() {
+		return node_data[this.current][TEXT];
+	}
+
 	getTargetText() {
 		if (this.target != null)
-			return "\"" + node_data[this.target][TEXT] + "\"";
+			return node_data[this.target][TEXT];
 		else
 			return '';
 	}
-/*
-	getJumps() {
 
-		if (this.target != null)
-		{
-			var parent = dijkstra(graph, node_data, this.current, this.target);
-			var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
-			return jumps;
-		}
-		else
-			return '';
-	}
-*/
-	// bugbug - cache like the others
-	getHistory() {
+	getHistoryText() {
 		var hist = '';
 		for (var i = 0; i < this.history.length; i++) {
 			if (i == this.history.length -1)
 				var c = ' ';
 			else
 				c = ' > ';
-//			hist += (node_data[this.history[i]][TEXT] + (i == this.history.length -1) ? ' ' : ' > ');
 			hist += (node_data[this.history[i]][TEXT] + c);
 		}
 		return hist;
 	}
+
 
 } // end class Navigator

@@ -73,6 +73,8 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
         if (graph[node].length == 0)
             node_costs[node] = 0;
 
+	nodes = nodes.sort(compareFn2);
+
 	// compute min and max cost before applying sigmoid
     var [min_cost, max_cost] = minmax(node_costs);
     for (node of nodes)
@@ -95,10 +97,27 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
                 break;
 			}
 
+	// speifically to put root term in already alphatized list
+	nodes = nodes.sort(compareFn2);
+
 	// colorize by cost and lay out with ~constant aspect ratio
     return colorize_and_layout(nodes, revised_node_costs,
                          min_cost, max_cost, zlevel, suppress_leafs, curr);
 }
+
+
+// sort function for getDisplayInfo
+function compareFn2(a, b) {
+
+	var sa = node_data[a][TEXT];
+	var sb = node_data[b][TEXT];
+
+	//sa = (a[1][0] == '[') ? a[1].slice(1, a[1].length - 1) : a[1];
+	//sb = (b[1][0] == ']') ? b[1].slice(1, b[1].length - 1) : b[1];
+
+	return (sa < sb) ? -1 : (sa > sb) ? 1 : 0;
+}
+
 
 /*--
 
@@ -254,6 +273,12 @@ function center_pad(displayInfo, columns) {
 	return displayInfo;
 }
 
+// sort function for expand_synset below
+function compareFn(a, b) {
+	var sa = (a[1][0] == '\'') ? a[1].slice(1, a[1].length - 1) : a[1];
+	var sb = (b[1][0] == '\'') ? b[1].slice(1, b[1].length - 1) : b[1];
+	return (sa < sb)? -1 : (sa > sb) ? 1 : 0;
+}
 
 /*
 
@@ -409,14 +434,6 @@ function get_cost_and_distance(parent, goal, node_data) {
 }
 
 
-
-
-// sort function for expand_synset
-function compareFn(a, b) {
-	var sa = (a[1][0] == '\'') ? a[1].slice(1, a[1].length - 1) : a[1];
-	var sb = (b[1][0] == '\'') ? b[1].slice(1, b[1].length - 1) : b[1];
-	return (sa < sb)? -1 : (sa > sb) ? 1 : 0;
-}
 
 //
 //
