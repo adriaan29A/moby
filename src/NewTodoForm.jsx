@@ -2,7 +2,6 @@ import {useState} from "react"
 import nodes from "./nodes.json"
 import  { nodeid_from_text, TEXT} from "./core.js";
 
-var  f_hack_start_nav_session = false; // HACKOMATIC
 
 export function NewTodoForm({nav, onSubmit}) {
 
@@ -11,14 +10,28 @@ export function NewTodoForm({nav, onSubmit}) {
 	function handleSubmit(e) {
 		e.preventDefault()
 
-		if (e.target.id == "navigate") {
+		if (e.target.id == "navigate") { // bug -ambiguous
+
+			if (newItem != "") {
+				if (nav.target == null)
+					nav.set_target(nodeid_from_text(newItem, nodes));
+				else {
+					nav.clear();
+				}
+			}
+			else {
+				nav.clear(false); // clear targeting info
+			}
+/*
+
+
 			if (newItem != "") {
 				nav.set_target(nodeid_from_text(newItem, nodes));
 			}
 			else {
 				nav.clear(false); // clear targeting info
 			}
-			f_hack_start_nav_session = false;
+*/
 		}
 		else {
 			nav.goto(newItem); // bug - resetting history twice?
@@ -39,9 +52,8 @@ export function NewTodoForm({nav, onSubmit}) {
 			nav.integrated_zoom(false);
 		}
 		else if (e.target.id == "navigate") {
-			f_hack_start_nav_session = true;
 			handleSubmit(e);
-			return; //avoids double call to onSubmit
+			return; //avoids double call to onSubmit (below)
 		}
 		else if (e.target.id == "back") {
 			nav.back();
@@ -51,6 +63,12 @@ export function NewTodoForm({nav, onSubmit}) {
 		}
 		onSubmit(nav.get());
 	}
+
+	function funky(e) {
+		nav.clear(false);
+		setNewItem(e.target.value);
+	}
+//					onChange={e => setNewItem(e.target.value)}
 
     // One big honkin form.
 	return (
@@ -64,11 +82,11 @@ export function NewTodoForm({nav, onSubmit}) {
 					placeholder = { "word or phrase"  }
 					id="item"/>
 
-				{/*-- Go/Nav/Stop--*/}
+				{/*-- Go/Nav/Clear--*/}
 				<button className="btn" id = "go" title = "Search word or phrase" style = {{"margin-left":"1px"}} >Go</button>
 				<button className="btn" id = "navigate" title = "Navigate to word or phrase" onClick = { handleOnClick }>
 
-				{ (nav.target == null) ? "Nav" : "Stop" } </button>
+				{ (nav.target == null) ? "Nav" : "Clear" } </button>
 
 				{/*-- Back/Next--*/}
 				<button className="btn" id = "back" title = "Back" onClick={ handleOnClick } style = {{"margin-left":"10px"}}>&laquo;</button>
@@ -79,7 +97,7 @@ export function NewTodoForm({nav, onSubmit}) {
 				<button className="btn" title = "Zoom out" id = "zoomout" onClick = { handleOnClick } >&minus;</button>
 
 				{/*-- Current Zoom level--*/}
-				<label title = "Zoom level" style = {{"margin-left":"10px"}}> {nav.zlevel.toExponential(0)} </label>
+				<label title = "Zoom level" style = {{"margin-left":"10px"}}> {nav.getCostText(nav.zlevel)} </label>
 
 				{/*-- Target--*/}
 				<label style = {{ color:"DeepSkyBlue", "margin-left":"15px"}}>
@@ -88,19 +106,26 @@ export function NewTodoForm({nav, onSubmit}) {
 				<label style = {{"margin-left":"5px"}}> {nav.getTargetText()}</label>
 
 				{/*-- Jumps-- */}
-				<label style = {{color:"DeepSkyBlue", "margin-left":"15px"}}> {(nav.target != null) ? "Min jumps / cost:" : ""} </label>
+				<label style = {{color:"DeepSkyBlue", "margin-left":"15px"}}> {(nav.target != null) ? "Jumps / Cost:" : ""} </label>
 
 				<label style = {{"margin-left":"5px", color: (nav.deltaj <= 0 || nav.current == nav.origin) ? "Lime" : "Red" }}>
 				{ (nav.target != null) ? nav.jumps : "" } </label>
 
 				{/*-- Cost-- */}
 				<label style = {{"margin-left":"4px", "margin-right":"4px"}} > { (nav.target != null) ? " / " : "" } </label>
+
+				{/*
 				<label style = {{color: (nav.delta <= 0 || nav.current == nav.origin) ? "Lime" : "Red" }}>
 				{ (nav.target != null) ? nav.cost.toExponential(1) : "" } </label>
+				 */}
+
+				<label style = {{color: (nav.delta <= 0 || nav.current == nav.origin) ? "Lime" : "Red" }}>
+				{ (nav.target != null) ? nav.getCostText() : "" } </label>
+
 
 				{/*-- Score -- */}
 				<label style = {{color:"DeepSkyBlue", "margin-left":"15px"}}> {(nav.target != null) ? "Score:" : ""} </label>
-				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.jumpstot + " / " +  nav.total.toExponential(1) : ""  }
+				<label style = {{"margin-left":"5px"}}> { (nav.target != null) ? nav.jumpstot + " / " +  nav.getCostText(nav.total) : ""  }
 				</label>
 
 				{/*-- Cheats -- */}
@@ -111,7 +136,7 @@ export function NewTodoForm({nav, onSubmit}) {
 				</label>
 
 			</div>
-			<div style = {{"padding-top": "5px"}} >
+			<div style = {{ color: "Grey", "padding-top": "5px"}} >
 				<label > { (nav.target != null) ? nav.getHistoryText() : nav.getCurrentText() } </label>
 			</div>
 

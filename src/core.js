@@ -4,19 +4,22 @@ import {CreatePriorityQueue} from "./priorityQueue.js";
 
 // mostly used by nav.js
 export {getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
-		random_node, minmax, nodeid_from_text, getDisplayListInfo, colors, zin,
-		zout, color_from_cost, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST };
+		random_node, minmax, nodeid_from_text, colors, zin,
+		zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST };
 
 // temporary testing purposes
 var g_c1 = 1; var g_c2 = 1; var g_limit = 0;
+
+// color stuff
+const ztable = [2e9, 5e8, 1e8, 1e7, 1e6, 5e5, 3e5, 20e4, 5e4];
+var colors = ["Blue",  "DeepSkyBlue", "BlueViolet", "", "LightGreen", "Lime",
+              "Yellow", "LightYellow", "Orange", "Red"];
 
 // zoom stuff
 const MIN_ZOOM = 5e4;
 const MAX_ZOOM = 12e9;
 const DEFAULT_ZOOM = 1e6;
 
-// color stuff
-const ztable = [12e9, 5e8, 1e8, 1e7, 1e6, 5e5, 3e5, 15e4, 5e4];
 const zin = {}; const zout = {};
 
 for (var i = 0; i < ztable.length - 1; i++) {
@@ -31,25 +34,6 @@ const COST = 1;
 
 /*--
 
-Unused, keep around for now
-
-// ansi/console codes mapped from orig defines using ansi2html node package
-const blue = "#00A"; const lightblue ="#55F"; const cyan = "#0AA"; const lightcyan = "#5FF";
-const magenta ="#A0A"; const lightmagenta ="#F5F"; const green="#0A0"; const lightgreen ="#5F5";
-const yellow ="#A50"; const lightyellow="#FF8"; const red="#A00"; const lightred="#F55";
-const black = "#000"; const lightblack = "#555";
-
-var colors = [blue, lightblue, cyan, lightcyan, magenta, lightmagenta,
-              green, lightgreen, yellow, lightyellow, red, lightred];
-
- --*/
-
-var colors = ["Blue",  "DeepSkyBlue", "BlueViolet", "LightMagenta", "LightGreen", "Lime",
-              "Yellow", "LighttYellow", "Orange", "Red"];
-
-
-/*--
-
   Constructs main synset display list ready to convert --> HTML
 
   --*/
@@ -61,7 +45,7 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
     var revised_node_costs = {};
 
     for (var node of raw_nodes) {
-		if ((node_data[node] !== 'undefined') && (node_data[node][COST] != Infinity)) { // Infinity no longer used
+		if ((node_data[node] !== 'undefined') && (node_data[node][COST] != Infinity)) { // Infinity is no longer used *in this context*
 			nodes.push(node);
 			node_costs[node] = node_data[node][COST];
 		}
@@ -73,11 +57,12 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
         if (graph[node].length == 0)
             node_costs[node] = 0;
 
-	nodes = nodes.sort(compareFn2);
 
 	// compute min and max cost before applying sigmoid
     var [min_cost, max_cost] = minmax(node_costs);
-    for (node of nodes)
+	console.log('1. getDisplayinfo: ', min_cost.toLocaleString(), max_cost.toLocaleString());
+
+	for (node of nodes)
         if (node_data[node][COST] < zlevel)
             revised_node_costs[node] = Math.floor(node_costs[node]
 												  * sigmoid(node_costs[node], max_cost));
@@ -87,6 +72,7 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
 
     // post-sigmoid recompute max and min cost
     [min_cost, max_cost] = minmax(revised_node_costs);
+	console.log('2. postsigmoid getDisplayinfo: ', min_cost.toLocaleString(), max_cost.toLocaleString());
 
     // leaf nodes blanked when any other nodes are.
     var suppress_leafs = false;
@@ -130,6 +116,7 @@ const ASPECT_RATIO = 3; // eyeballed
 function colorize_and_layout(nodes, revised_node_costs,
 							 min_cost, max_cost, zlevel, suppress_leafs, curr) {
 
+	console.log('3. colorize_and_layout: ', min_cost.toLocaleString(), max_cost.toLocaleString(), zlevel.toLocaleString());
 	// contains list of list of colorized nodes with list lengths
 	// adjusted to maintain an approximate constant aspect ratio
 	var displayInfo = [];
@@ -201,6 +188,7 @@ function colorize_and_layout(nodes, revised_node_costs,
 
 			displayLine.push( { nodeid: nodes[i], text: text,
 								color: color, cost: node_data[nodes[i]][COST]} );
+
 			nodecount += 1;
 
 		} // end for (i = nprev; i < ncur; i++)
@@ -434,14 +422,6 @@ function get_cost_and_distance(parent, goal, node_data) {
 }
 
 
-
-//
-//
-//--------------------------------------------------------------------------
-//   currently exported functions
-//
-
-
 // CHANGE ME WHEN YOU CHANGE GRAPH/NODES SIZES
 function random_node() {
 	var r = 0;
@@ -453,18 +433,6 @@ function random_node() {
 	return r;
 }
 
-/*
-const NUM_ROOT_WORDS = 30260;
-function find_random_node(mincost, node_data) {
-    while(true) {
-        var nodeid = Math.floor(Math.random() * NUM_ROOT_WORDS);
-        var cost = node_data[nodeid][COST];
-        if (cost != Infinity && cost > mincost)
-            return nodeid;
-	}
-}
-*/
-
 function nodeid_from_text(text, node_data) {
     // This func is O(N), but it is rarely used and the
     // the need for an auxiliary dictionary is avoided.
@@ -474,54 +442,6 @@ function nodeid_from_text(text, node_data) {
 		}
 	}
 	return null;
-}
-
-// this to be returned from Nav
-function getDisplayListInfo(node) {
-	var synset = graph[node];
-	var listInfo = []; var row = 0;
-
-	for (var i = 0; i < synset.length; i++) {
-		var nodeid = synset[i];
-
-		var elem = {nodeid: nodeid, text: node_data[nodeid][0],
-					color: color_from_cost(node_data[nodeid][1]) };
-
-		if ((i % 12) == 0) {
-			listInfo.push([elem]);
-			row++;
-		}
-		else
-			listInfo[row-1].push(elem);
-	}
-	return listInfo;
-}
-
-
-// super temporary
-function color_from_cost(cost) {
-	if (cost < 5e4)
-		return "Blue";
-	else if (cost < 3e5)
-		return "DeepSkyBlue";
-	else if (cost < 5e5)
-		return "BlueViolet";
-	else if (cost < 1e6)
-		return "LightMagenta";
-	else if (cost < 5e6)
-		return "LightGreen";
-	else if (cost < 1e7)
-		return "Lime";
-	else if (cost < 5e7)
-		return "Yellow";
-	else if (cost < 1e8)
-		return "lightyellow";
-	else if (cost < 2e8)
-		return "Orange";
-	else if (cost < 1.5e10)
-		return "Red";
-	else
-		return "Gray";
 }
 
 
@@ -537,45 +457,3 @@ function makeStruct(keys) {
 	}
 	return constructor;
 }
-
-
-
-/*
-navy, blue, fuchsia, gray, green, lime, maroon, olive, purple, red, silver, teal, white, yellow
-aqua black blue fuchsia gray green lime maroon navy olive purple red
-silver teal white yellow
-
-
-// ansi/console codes mapped from orig defines using ansi2html node package
-const blue = "#00A"; const lightblue ="#55F"; const cyan = "#0AA"; const lightcyan = "#5FF";
-const magenta ="#A0A"; const lightmagenta ="#F5F"; const green="#0A0"; const lightgreen ="#5F5";
-const yellow ="#A50"; const lightyellow="#FF8"; const red="#A00"; const lightred="#F55";
-const black = "#000"; const lightblack = "#555";
-
-
-// make this binary search
-export function color_from_cost(cost) {
-	if (cost < 5e4)
-		return "Blue";
-	else if (cost < 3e5)
-		return "DeepSkyBlue";
-	else if (cost < 5e5)
-		return "BlueViolet";
-	else if (cost < 1e6)
-		return "LightMagenta";
-	else if (cost < 5e6)
-		return "LightGreen";
-	else if (cost < 1e7)
-		return "Lime";
-	else if (cost < 5e7)
-		return "Yellow";
-	else if (cost < 1e8)
-		return "lightyellow";
-	else if (cost < 2e8)
-		return "Orange";
-	else if (cost < 1.5e10)
-		return "Red";
-	else
-		return Gray;
-}
-*/

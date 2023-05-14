@@ -2,8 +2,8 @@ import graph from "./graph.json";
 import node_data from "./nodes.json";
 
 import  { getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
-		  random_node, minmax, nodeid_from_text, getDisplayListInfo, colors, zin,
-		  zout, color_from_cost, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST} from "./core.js";
+		  random_node, minmax, nodeid_from_text, colors, zin,
+		  zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST} from "./core.js";
 
 export function CreateNavigator () {
 	return new Navigator();
@@ -23,6 +23,32 @@ class Navigator {
         this.zlevel = 1e6; this.xfactor = 0; this.total = 0; this.trvlog = [];
 
 		this.jumpstot = 0; this.deltaj = 0; this.cheats = 0;
+	}
+
+	getCostText(num = this.cost) {
+
+		var p; var v = 0;
+
+		var expstr = num.toExponential(1);
+		var parts = expstr.split('e');
+		var e = parseInt(parts[1], 10);
+
+		if (e > 8) {
+			p = 'G';
+			v = Math.floor(num/1e9);
+		}
+		else if (e > 5) {
+			p = 'M';
+			v = Math.floor(num/1e6);
+		}
+		else if (e > 2) {
+			p = 'K';
+		    v = Math.floor(num/1e3);
+		}
+		else {
+			p = '';
+		}
+		return (v.toString() + p);
 	}
 
 	set(ctx) {
@@ -195,8 +221,13 @@ class Navigator {
 													  node_data);
             this.delta = cost - this.cost;
             this.deltaj = jumps - this.jumps;
-            this.cost = cost;
-			this.jumps = jumps; // jumpstot not affected
+
+			var lastcost = cost;
+			this.cost = lastcost;
+
+			this.jumps = jumps;
+			if (lastcost == 0)
+				this.jumpstot--;
 		}
 
 		return true;
@@ -263,6 +294,7 @@ class Navigator {
 	}
 
 	getTargetText() {
+
 		if (this.target != null)
 			return node_data[this.target][TEXT];
 		else
