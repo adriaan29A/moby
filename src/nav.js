@@ -25,31 +25,6 @@ class Navigator {
 		this.jumpstot = 0; this.deltaj = 0; this.cheats = 0;
 	}
 
-	getCostText(num = this.cost) {
-
-		var p; var v = 0;
-
-		var expstr = num.toExponential(1);
-		var parts = expstr.split('e');
-		var e = parseInt(parts[1], 10);
-
-		if (e > 8) {
-			p = 'G';
-			v = Math.floor(num/1e9);
-		}
-		else if (e > 5) {
-			p = 'M';
-			v = Math.floor(num/1e6);
-		}
-		else if (e > 2) {
-			p = 'K';
-		    v = Math.floor(num/1e3);
-		}
-		else {
-			p = '';
-		}
-		return (v.toString() + p);
-	}
 
 	set(ctx) {
 		this.current = ctx.curr; this.origin = ctx.origin; this.history = ctx.history;
@@ -57,6 +32,10 @@ class Navigator {
 		this.delta = ctx.delta; this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor;
 		this.total = ctx.total; this.trvlog = ctx.trvlog; this.jumpstot = ctx.jumpstot;
 		this.deltaj = ctx.deltaj; this.cheats = ctx.cheats;
+
+		// HACK Just in case
+		if (this.zlevel ==  undefined)
+			this.zlevel = 1e6;
 	}
 
 	get() {
@@ -86,6 +65,7 @@ class Navigator {
             this.zlevel = zin[this.zlevel];
         else if (z == false && this.zlevel < MAX_ZOOM)
 			this.zlevel = zout[this.zlevel];
+		console.log('zlevel: ', this.zlevel);
 	}
 
 	xoom(x) {
@@ -299,6 +279,32 @@ class Navigator {
 			return node_data[this.target][TEXT];
 		else
 			return '';
+	}
+
+
+	getCostText(num = this.cost) {
+		var p; var v = 0;
+
+		var expstr = num.toExponential(1);
+		var parts = expstr.split('e');
+		var exp = parseInt(parts[1], 10);
+
+		if (exp > 8) {
+			p = 'G';
+			v = Math.floor(num/1e9);
+		}
+		else if (exp > 5) {
+			p = 'M';
+			v = Math.floor(num/1e6);
+		}
+		else if (exp > 2) {
+			p = 'K';
+		    v = Math.floor(num/1e3);
+		}
+		else {
+			p = '';
+		}
+		return (v.toString() + p);
 	}
 
 	getHistoryText() {

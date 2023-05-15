@@ -136,7 +136,7 @@ export function NewTodoForm({nav, onSubmit}) {
 				</label>
 
 			</div>
-			<div style = {{ color: "Grey", "padding-top": "5px"}} >
+			<div style = {{ color: "SteelBlue", "padding-top": "5px"}} >
 				<label > { (nav.target != null) ? nav.getHistoryText() : nav.getCurrentText() } </label>
 			</div>
 

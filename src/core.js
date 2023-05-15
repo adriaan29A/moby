@@ -17,7 +17,7 @@ var colors = ["Blue",  "DeepSkyBlue", "BlueViolet", "", "LightGreen", "Lime",
 
 // zoom stuff
 const MIN_ZOOM = 5e4;
-const MAX_ZOOM = 12e9;
+const MAX_ZOOM = 2e9;
 const DEFAULT_ZOOM = 1e6;
 
 const zin = {}; const zout = {};
@@ -60,7 +60,6 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
 
 	// compute min and max cost before applying sigmoid
     var [min_cost, max_cost] = minmax(node_costs);
-	console.log('1. getDisplayinfo: ', min_cost.toLocaleString(), max_cost.toLocaleString());
 
 	for (node of nodes)
         if (node_data[node][COST] < zlevel)
@@ -72,7 +71,6 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
 
     // post-sigmoid recompute max and min cost
     [min_cost, max_cost] = minmax(revised_node_costs);
-	console.log('2. postsigmoid getDisplayinfo: ', min_cost.toLocaleString(), max_cost.toLocaleString());
 
     // leaf nodes blanked when any other nodes are.
     var suppress_leafs = false;
@@ -98,9 +96,6 @@ function compareFn2(a, b) {
 	var sa = node_data[a][TEXT];
 	var sb = node_data[b][TEXT];
 
-	//sa = (a[1][0] == '[') ? a[1].slice(1, a[1].length - 1) : a[1];
-	//sb = (b[1][0] == ']') ? b[1].slice(1, b[1].length - 1) : b[1];
-
 	return (sa < sb) ? -1 : (sa > sb) ? 1 : 0;
 }
 
@@ -116,8 +111,7 @@ const ASPECT_RATIO = 3; // eyeballed
 function colorize_and_layout(nodes, revised_node_costs,
 							 min_cost, max_cost, zlevel, suppress_leafs, curr) {
 
-	console.log('3. colorize_and_layout: ', min_cost.toLocaleString(), max_cost.toLocaleString(), zlevel.toLocaleString());
-	// contains list of list of colorized nodes with list lengths
+	// contains the list of list of colorized nodes with list lengths
 	// adjusted to maintain an approximate constant aspect ratio
 	var displayInfo = [];
 
@@ -421,6 +415,19 @@ function get_cost_and_distance(parent, goal, node_data) {
     return [cost, distance];
 }
 
+//----------------- sundry ----------------
+
+// This func is O(N), but it is rarely used and the
+// the need for an auxiliary dictionary is avoided.
+function nodeid_from_text(text, node_data) {
+	for (var nodeid in node_data) {
+		if (node_data[nodeid][TEXT] == text) {
+			return parseInt(nodeid, 10);
+		}
+	}
+	return null;
+}
+
 
 // CHANGE ME WHEN YOU CHANGE GRAPH/NODES SIZES
 function random_node() {
@@ -432,19 +439,6 @@ function random_node() {
 	}
 	return r;
 }
-
-function nodeid_from_text(text, node_data) {
-    // This func is O(N), but it is rarely used and the
-    // the need for an auxiliary dictionary is avoided.
-	for (var nodeid in node_data) {
-		if (node_data[nodeid][TEXT] == text) {
-			return parseInt(nodeid, 10);
-		}
-	}
-	return null;
-}
-
-
 
 // unused
 function makeStruct(keys) {
