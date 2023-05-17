@@ -34,8 +34,8 @@ class Navigator {
 		this.deltaj = ctx.deltaj; this.cheats = ctx.cheats;
 
 		// HACK Just in case
-		if (this.zlevel ==  undefined)
-			this.zlevel = 1e6;
+		//if (this.zlevel ==  undefined)
+		//	this.zlevel = 1e6;
 	}
 
 	get() {
@@ -44,6 +44,7 @@ class Navigator {
 				 this.delta, zlevel: this.zlevel, xfactor: this.xfactor,
 				 total: this.total, trvlog: this.trvlog, jumpstot: this.jumpstot,
 			     deltaj: this.deltaj, cheats: this.cheats };
+
 	}
 
 	getDisplayInfo() {
@@ -65,7 +66,6 @@ class Navigator {
             this.zlevel = zin[this.zlevel];
         else if (z == false && this.zlevel < MAX_ZOOM)
 			this.zlevel = zout[this.zlevel];
-		console.log('zlevel: ', this.zlevel);
 	}
 
 	xoom(x) {
