@@ -36,8 +36,7 @@ const COST = 1;
 
   Constructs main synset display list ready to convert --> HTML
 
-  --*/
-//
+--*/
 function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
 
     var nodes = [];
@@ -105,14 +104,16 @@ function compareFn2(a, b) {
   Low-level display processing api called by display_adjacency_list
 
 --*/
-
 const DEFAULT_COLUMNS = 80;
 const ASPECT_RATIO = 3; // eyeballed
 function colorize_and_layout(nodes, revised_node_costs,
 							 min_cost, max_cost, zlevel, suppress_leafs, curr) {
 
-	// contains the list of list of colorized nodes with list lengths
-	// adjusted to maintain an approximate constant aspect ratio
+	// displayInfo contains the list of list of colorized nodes with list
+	// sizes adjusted to maintain an approximate constant aspect ratio
+	// [node1, node2, ....] => [ [node1, node2, ...],
+	//                           [nodex, nodey, ...],
+	//                            ...]
 	var displayInfo = [];
 
 	var ncur = 0;
@@ -143,7 +144,7 @@ function colorize_and_layout(nodes, revised_node_costs,
             ncur += 1;
 		}
 
-        // Format one line
+        // colorize and format one line
         var line = '';
         var nodecount = 0;
 		var displayLine = [];
@@ -154,19 +155,20 @@ function colorize_and_layout(nodes, revised_node_costs,
             if (graph[nodes[i]].length != 0) {
                 if (node_data[nodes[i]][COST] < zlevel) {
 
-					if (max_cost == 0)
+					if (max_cost == 0) // handle special case
                         var id = 0;
+					// scale colors linearly
                     else
                         id = Math.floor((revised_node_costs[nodes[i]] - min_cost) /
                                         (max_cost - min_cost) * (colors.length - 1));
 					color = colors[id];
 				}
 				else
-					color = "Black";
+					color = "Black"; // >= zlevel blanks the node
 			}
 			else {
 
-				if (!suppress_leafs)
+				if (!suppress_leafs) // show or blank leafs
 					color = "Grey";
 				else
 					color = "Black";
@@ -242,7 +244,7 @@ function center_pad(displayInfo, columns) {
 
 			displayInfo[i].unshift(pad);
 		}
-/*
+/* testing
 		displayInfo[i].push({ nodeid: -1, text: columns.toString(),
 							  color: "Yellow", cost: 0 });
 		displayInfo[i].push({ nodeid: -1, text: line.length,
@@ -268,7 +270,6 @@ function compareFn(a, b) {
   neighbors for additional terms and merging them in.
 
 */
-
 const EXPANSION_FACTOR = 1.2; // = 1.6; // eyeballed
 function expand_synset(synset, level) {
 
@@ -427,7 +428,6 @@ function nodeid_from_text(text, node_data) {
 	}
 	return null;
 }
-
 
 // CHANGE ME WHEN YOU CHANGE GRAPH/NODES SIZES
 function random_node() {

@@ -1,7 +1,7 @@
 import {useState} from "react"
 import nodes from "./nodes.json"
 import  { nodeid_from_text, TEXT} from "./core.js";
-
+// ?newxfinity!5.5
 
 export function NewTodoForm({nav, onSubmit}) {
 
@@ -23,7 +23,6 @@ export function NewTodoForm({nav, onSubmit}) {
 				nav.clear(false); // clear targeting info
 			}
 /*
-
 
 			if (newItem != "") {
 				nav.set_target(nodeid_from_text(newItem, nodes));
@@ -68,7 +67,6 @@ export function NewTodoForm({nav, onSubmit}) {
 		nav.clear(false);
 		setNewItem(e.target.value);
 	}
-//					onChange={e => setNewItem(e.target.value)}
 
     // One big honkin form.
 	return (
