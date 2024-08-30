@@ -6,5 +6,8 @@
 
 ## Introduction
 
-The Moby Thesaurus is a delightful and eclectic work released into the public domain by Grady Ward in 1995 (see Wikipedia article). I combined it with a word frequency list and Dyjkstra's algrithm for finding minimum cost paths in an attempt at creating a game in which the goal is to find a path between two words through the rarest of their shared synonyms (hence the need for Dykstra). True masochists will heartily enjoy the game but with the colors and zooming needed to make the game even playable make it fun just to browse around as well
+The Moby Thesaurus is a delightful and eclectic work released into the public domain by Grady Ward in 1995 (see Wikipedia articles and contains 30,260 unique words and phrases in English. Here it is combined it with word frequencies from Google's Million Word Corpus to create a word game. The game consists of finding a path between two words or phrases consisting of the *rarest* of their shared synonyms as determined from their fequencies. 
+
+
+
 
