@@ -3,7 +3,9 @@
 # The Moby Thesaurus
 Game Edition
 
-![Screenshot from 2024-08-26 18-35-00](https://github.com/user-attachments/assets/6ac8bf8a-cba2-4639-bf10-5234478660ea)
+![Screenshot from 2024-09-04 10-27-50](https://github.com/user-attachments/assets/e99c6011-fcc1-4133-96ab-bb9f1a434072)
+
+
 ## Introduction
 
 The Moby Thesaurus is a delightful and eclectic work released into the public domain by Grady Ward in 1995 (see Wikipedia articles and contains 30,260 root terms and phrases in English. I combined it with word frequencies from Google's Trillion Word Corpus to create a word game as an alternative to the way one normally uses a thesaurus, where finding paths between synonyms is the goal.
