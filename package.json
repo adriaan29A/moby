@@ -1,6 +1,6 @@
 {
   "name": "moby",
-  "homepage": "https://adriaanc29A.github.com/adriaan29A/moby.git",
+  "homepage": "https://adriaan29A.github.io/adriaan29A/moby.git",
   "private": false,
   "version": "0.0.1",
   "type": "module",
@@ -14,7 +14,8 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "readline-sync": "^1.4.10"
+    "readline-sync": "^1.4.10",
+    "save-dev": "^0.0.1-security"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
