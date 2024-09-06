@@ -5,7 +5,7 @@ Game Edition
 
 ## Introduction
 
-The Moby Thesaurus is a fun and eclectic work released into the public domain by Grady Ward in 1995 (see Wikipedia articles and contains 30,260 root terms and over 2.5 million synoyms & related terms in English. I combined it with word frequencies from Google's Trillion Word Corpus to see what kind of word game I could come up with and ended up with a kind of a word scavenger hunt. Along the way a kind of natural hyperlinked way of browsing the thesaurus fell out of it and you can also just browse without playing the game. Synonyms are displayed as "heat map word clouds" colored by raw word frequenies. These are also used to to provide a filtered view over the synonym sets, adding a "3rd" dimension in effect by simply redacting terms in an alphabetized paragraph. 
+The Moby Thesaurus is a fun and eclectic work released into the public domain by Grady Ward in 1995 [Wikipedia Article](https://en.wikipedia.org/wiki/Moby_Project) and contains 30,260 root terms and over 2.5 million synoyms & related terms in English. I combined it with word frequencies from Google's Trillion Word Corpus to see what kind of word game I could come up with and ended up with a kind of a word scavenger hunt. Along the way a kind of natural hyperlinked way of browsing the thesaurus fell out of it and you can also just browse without playing the game. Synonyms are displayed as "heat map word clouds" colored by raw word frequenies. These are also used to to provide a filtered view over the synonym sets, adding a "3rd" dimension in effect by simply redacting terms in an alphabetized paragraph. 
 
 ![Screenshot from 2024-09-04 10-27-50](https://github.com/user-attachments/assets/e99c6011-fcc1-4133-96ab-bb9f1a434072)
 
