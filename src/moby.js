@@ -128,6 +128,7 @@ function gogogadget() {
 // Start of major functions
 
 function read_file_data(filename) {
+	debugger;
 	var data = '';
 	try {data = fs.readFileSync(filename, 'utf8');
 		} catch (err) {
@@ -229,6 +230,7 @@ function make_path(parent, goal, node_data) {
 
 function get_cost_and_distance(parent, goal, node_data) {
 
+	debugger;
 	if (!(goal in parent))
         return [Infinity, Infinity];
 
