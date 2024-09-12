@@ -4,7 +4,8 @@ Game Edition (Now With Cheats!®)
 
 ## Introduction
 
-The Moby Thesaurus is a delightful and eclectic compendium released into the public domain by Grady Ward in 1995 [Wikipedia](https://en.wikipedia.org/wiki/Moby_Project). It contains 30,260 root terms and over 2.5 million synoyms & related terms in English, replete with Americana and old colloquialisms through to the 1970s. I combined it with word frequencies from Google's Trillion Word Corpus with the vague idea of making a semantic word game. What I ended up with is a kind of a logophile's scavenger hunt with the goal of finding paths along shared synonyms forming chains between different entries in the thesaurus. In the process I stumbled upon a way of browsing the thesaurus in which synonyms are displayed in a 2D "heat map word cloud" of hyperlinks colored and filtered by their word frequencies. This provides an alternate way of browsing the thesaurus independent of it's usage in the game.  
+The Moby Thesaurus is a delightful and eclectic compendium released into the public domain by Grady Ward in 1995 [Wikipedia](https://en.wikipedia.org/wiki/Moby_Project). It contains 30,260 root terms and over 2.5 million synoyms & related terms in English, replete with Americana and old colloquialisms through to the 1970s. I combined it with word frequencies from Google's Trillion Word Corpus with the vague idea of making a semantic word game. What I ended up with is a kind of a logophile's scavenger hunt with the goal of finding paths along shared synonyms between different entries. In the process I found a simple way of incorporating the frequencies into a main view such that sets of synonyms (synsets) are displayed in a 2D "heat map word cloud" of hyperlinks colored and filtered by their respective frequencies. While originally intended with the game in mind, I think it ends up being a reasonable way to browse the thesaurus on its own. 
+
 
 Browse Mode
 
@@ -12,11 +13,20 @@ Browse Mode
 
 Game Mode
 
-The object of the game is to find a path between two different entries through their shared synonyms subject to the constraint that the sum of the word freqencies for each synonym along the path is to be minimized (ideally consists of the "rarest" shared synonyms).  
+The object of the game is to find a path between two different entries through their shared synonyms. Common synonyms have high cost, ones less frequently used cost less and the range spans 9 ordders of magnitude.Finding any path can be challenging. I added a concept of "cheats" to the game because it would be just too hard to play otherwise. I think they play something akin to par in golf.  In game mode (see below) click the ">>" button (fwd/next) and you will be navigated to the next synonym along a minimum cost path path towards the target from your current location. This is true for any location you happen to be and repeatedly clicking ">>" will always take you to the target along the/a minimum cost path. Dyjkstra's algorithm in action! The # cheats is tracked as a second component to the score and the two (cost, #cheats) comprise your compound game score, the #jumps (navigations) is just fyi data. Not to overemphasize the metrics, the idea here is to provide a semi-structured way of browsing through the work with a little playful competitiveness thrown in. 
 
-To play - Choose two words or phrases in advance: the start and target. Navigate to the start. Type in the target and click "Nav" (for navigate). You'll see some new info pop up, note particularly "Min Cost/Jumps" which always gives the lowest possible cost (& the # required jumps) to reach the target from the current location (without revealing the path). As you navigate you will see your path being tracked just under the text input form. 
 
-Finding any path can be challenging. When you're stumped hit the >> (forward) button and you will be navigated to the next best synonym at the cost of 1 cheat. The << (back) button takes you back and use +/- buttons to zoom in and out (games are typically played at the lowest levels, 50k - 200k). The cumulative score is updated at each step and has three components: 1) The total path cost (summed frequencies of all the synonyms visited), 2) the total number of synonyms visited (usually the # jumps) and 3) the total # of cheats resorted to. There are frequently multiple paths to the target and it is actually possible sometimes to beat the algorithm... 
+To play - 
+- To navigate either click on a term you see or type one in, click "Go" or hit "<ret>" Use the "+/-" to zoom in/out and "<<" to go back.
+- Start from your current location or navigate to the word/phrase you'd like to start from Type in a term and click "Nav"
+- Type in the target and click the "Nav" button (for Navigate) You will see additional info pop up
+- Note the "Min Cost/Jumps" - this is the minimum cost to meet or beat*
+- Mouse over synynoms to see their raw frequencies
+- Click on synonyms you think will get you to the target
+- Click on ">>" to cheat and be moved 1 synonym towards the target
+
+* It's actually possible to beat Dyjkstra's altgoritm *as implemented* which is kind of cute. I didn't plan it, it's just a happy circumstance of how the thesaurus is designed and the way Dyjkstra's works. I don't want to say how until I figure out if it can be used as a general strategy in practice or people might figure it out anyway, so lmk! :-) 
+
 
 [Screencast from 2024-09-11 10-12-56.webm](https://github.com/user-attachments/assets/b022f348-5793-42c9-881f-3f6793020eee)
 
