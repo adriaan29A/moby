@@ -139,8 +139,10 @@ function read_file_data(filename) {
 
 function load_moby_graph() {
 
-	var nodes_string = read_file_data('nodes.json');
-	var graph_string = read_file_data('graph.json');
+	var nodes_string = read_file_data('/home/ac/dev/moby/src/nodes.json');
+	var graph_string = read_file_data('/home/ac/dev/moby/src/graph.json');
+//	var nodes_string = read_file_data('./src/nodes.json');
+//	var graph_string = read_file_data('./src/graph.json');
 
 	var nodes = JSON.parse(nodes_string);
 	var graph = JSON.parse(graph_string);
