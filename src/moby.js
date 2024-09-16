@@ -866,9 +866,11 @@ function print_info (data, graph, node_data) {
 
 function test(nav, ui) {
 
-	g_limit = Math.floor(parseFloat(ui[1]));
-	nav.display();
-	g_limit = 0;
+    debugger;
+    print_info(ui, nav.graph, nav.node_data);
+    //g_limit = Math.floor(parseFloat(ui[1]));
+//	nav.display();
+//	g_limit = 0;
 }
 
 
