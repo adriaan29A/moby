@@ -215,8 +215,8 @@ function dijkstra(G, C, start, goal, edge_weight = 0) {
 
 function make_path(parent, goal, node_data) {
 
-    if (!(goal in parent))
-        return null;
+//    if (!(goal in parent))
+//        return null;
 
     var v = goal; var path = []; var nodes = [];
 
@@ -232,9 +232,9 @@ function make_path(parent, goal, node_data) {
 
 function get_cost_and_distance(parent, goal, node_data) {
 
-	debugger;
-	if (!(goal in parent))
-        return [Infinity, Infinity];
+//	debugger;
+//	if (!(goal in parent))
+  //      return [Infinity, Infinity];
 
     var v = goal; var cost = 0; var distance = 0;
 
@@ -466,7 +466,7 @@ function display_adjacency_list(raw_nodes, node_data, graph, zlevel, xfactor, cu
                          min_cost, max_cost, zlevel, suppress_leafs, curr);
 
 	console.log('\nzoom:\t' + zlevel.toExponential(1));
-	console.log('#syns:\t', nodes.length);
+	console.log('syns:\t', nodes.length);
 
 	// if (xfactor != 0)
 		// console.log('expand:\t', xfactor);
@@ -648,7 +648,7 @@ class Navigator
             // get next node in path, calculate new cost and delta
             var next_node = nodes[1]; var new_cost;
             if (next_node != this.target) {
-                var [cost, jumps] = get_cost_and_distance(next_node, this.target, this.node_data);
+                var [cost, jumps] = get_cost_and_distance(parent, this.target, this.node_data);
                 new_cost = cost - this.node_data[next_node][COST];
 			}
 			else
@@ -823,7 +823,7 @@ function nodeid_from_text(text, node_data) {
     // the need for an auxiliary dictionary is avoided.
 	for (var nodeid in node_data) {
 		if (node_data[nodeid][TEXT] == text)
-			return nodeid;
+		    return parseInt(nodeid, 10);
 	}
 	return null;
 }
