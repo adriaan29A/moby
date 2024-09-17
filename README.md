@@ -13,7 +13,7 @@ Browse Mode
 
 Game Mode
 
-The object of the game is to find a path between two different entries through their shared synonyms. Common synonyms (high frequency) cost the most, less commonplace ones cost less, range spans 7 orders of magnitude. Finding any path can be challenging. I added a concept of "cheats" to the game because it would be just too hard to play otherwise. They play something akin to a "par" score in golf.  In game mode (see below) click the ">>" button (fwd/next) and you will be navigated 1 step to the next synonym along a minimum cost path path towards the target. This is true for any location you happen to be - repeatedly clicking ">>" will always take you to the target along the/a minimum cost path. Dyjkstra's algorithm in action! The #cheats is tracked as a second component to the score and the two (cost, #cheats) comprise your compound game score. The #jumps (navigations) is informational. Not to overemphasize the metrics, the idea here is to provide a semi-structured way of browsing through the work with a little playful competitiveness thrown in. 
+The object of the game is to find a path between two different entries through their shared synonyms. Common synonyms (high frequency) cost the most, less commonplace ones cost less, range spans 7 orders of magnitude. Finding any path can be challenging. I added a concept of "cheats" to the game because it would be just too hard to play otherwise. They play something akin to a "par" score in golf.  In game mode (see below) click the ">>" button (fwd/next) and you will be navigated 1 step to the next synonym along a minimum cost path path towards the target. This is true for any location you happen to be - repeatedly clicking ">>" will always take you to the target along the/a minimum cost path. Dijkstra's algorithm in action! The #cheats is tracked as a second component to the score and the two (cost, #cheats) comprise your compound game score. The #jumps (navigations) is informational. Not to overemphasize the metrics, the idea here is to provide a semi-structured way of browsing through the work with a little playful competitiveness thrown in. 
 
 
 To play - 
@@ -25,7 +25,7 @@ To play -
 - Click on synonyms you think will get you to the target
 - Click on ">>" to cheat and be moved 1 synonym towards the target
 
-* It's actually sometimes possible to beat Dyjkstra's altgoritm *as implemented* which is kind of cheeky. It wasn't planned, rather just a happy circumstance of combining the thesaurus with word frequencies and the way Dyjkstra's works. I need to figure out if it can be used as a general strategy in practice but I'm sure people will figure it out quickly anyway, so lmk! :-) 
+* It's actually sometimes possible to beat Dijkstra's altgoritm *as implemented* which is kind of cheeky. It wasn't planned, rather just a happy circumstance of combining the thesaurus with word frequencies and the way Dijkstra's works. I need to figure out if it can be used as a general strategy in practice but I'm sure people will figure it out quickly anyway, so lmk! :-) 
 
 [Screencast from 2024-09-11 10-12-56.webm](https://github.com/user-attachments/assets/b022f348-5793-42c9-881f-3f6793020eee)
 
