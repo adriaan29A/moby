@@ -1,3 +1,4 @@
+# Currently down to a dependabot issue, working on it at newbie speed.
 
 # The Moby Thesaurus
 Game Edition (Now With Cheats!®)
