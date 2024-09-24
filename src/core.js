@@ -11,14 +11,14 @@ export {getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_pat
 var g_c1 = 1; var g_c2 = 1; var g_limit = 0;
 
 // color stuff
-const ztable = [2e9, 5e8, 1e8, 1e7, 1e6, 5e5, 3e5, 20e4, 5e4];
+const ztable = [3e9, 5e8, 1e8, 1e7, 1e6, 5e5, 3e5, 20e4, 5e4];
 var colors = ["Blue",  "DeepSkyBlue", "BlueViolet", "", "LightGreen", "Lime",
               "Yellow", "LightYellow", "Orange", "Red"];
 
 // zoom stuff
 const MIN_ZOOM = 5e4;
-const MAX_ZOOM = 2e9;
-const DEFAULT_ZOOM = 1e6;
+const MAX_ZOOM = 3e9;
+const DEFAULT_ZOOM = 5e5;
 
 const zin = {}; const zout = {};
 
@@ -71,12 +71,14 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
     // post-sigmoid recompute max and min cost
     [min_cost, max_cost] = minmax(revised_node_costs);
 
-    // leaf nodes blanked when any other nodes are.
+    // leaf nodes blanked when (any other nodes are and
+	// xfactor is 0), i.e. are in expando mode.
+	// 
     var suppress_leafs = false;
     for (node of nodes)
         if (graph[node].length != 0)
-            if (node_data[node][COST] > zlevel) {
-                suppress_leafs = true;
+            if ((node_data[node][COST] > zlevel) & (xfactor == 0)) {
+				suppress_leafs = true;
                 break;
 			}
 
@@ -104,26 +106,28 @@ function compareFn2(a, b) {
   Low-level display processing api called by display_adjacency_list
 
 --*/
-const DEFAULT_COLUMNS = 80;
-const ASPECT_RATIO = 3; // eyeballed
+const DEFAULT_COLUMNS = 80 ;
+const AVG_WORDS_PER_80_COL = 8 ;
 function colorize_and_layout(nodes, revised_node_costs,
-							 min_cost, max_cost, zlevel, suppress_leafs, curr) {
-
+	min_cost, max_cost, zlevel, suppress_leafs, curr) {
+    
 	// displayInfo contains the list of list of colorized nodes with list
 	// sizes adjusted to maintain an approximate constant aspect ratio
 	// [node1, node2, ....] => [ [node1, node2, ...],
 	//                           [nodex, nodey, ...],
-	//                            ...]
+	//                                          ...]
 	var displayInfo = [];
 
 	var ncur = 0;
     var nprev = 0;
 
-	// estimate columns (#chars/line) to lay out.
-	var columns = (nodes.length < 40) ? DEFAULT_COLUMNS :
-		DEFAULT_COLUMNS + Math.floor((nodes.length - DEFAULT_COLUMNS) / ASPECT_RATIO);
+    // Start with 80 columns of single characters. Grow the #columns with the
+    // #lines at the rate of 1 column per line. The #lines is simply the
+    // #words/10, (at the average of 10 words per line)
+	var columns = (nodes.length < DEFAULT_COLUMNS) ? DEFAULT_COLUMNS :
+	DEFAULT_COLUMNS + Math.floor((nodes.length - DEFAULT_COLUMNS) / (AVG_WORDS_PER_80_COL));
 
-    var n = nodes.length;
+var n = nodes.length;
     while (ncur < n) {
 
         // determines the number of nodes that can be printed on

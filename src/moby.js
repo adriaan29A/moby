@@ -58,7 +58,7 @@ function help(nav,ui) { console.log(HelpText); }
 function clear_screen(nav, ui) { nav.clear_screan(); }
 function downfilter(nav, ui) { nav.zoom(true); }
 function upfilter(nav, ui) { nav.zoom(false); }
-function play_loop(nav, ui) { nav.play_loop(10); }
+function play_loop(nav, ui) { nav.play_loop(1000); }
 function do_test(nav, ui) { test(nav, ui); }
 function set_target(nav, ui) { if (!nav.set_target(ui[1])) console.log('error');}
 function next(nav, ui) { nav.next(); }
@@ -199,8 +199,12 @@ function dijkstra(G, C, start, goal, edge_weight = 0) {
 			if (visited.has(neighbor))
 				continue;
 
-            var old_cost = cost[neighbor] ?? Infinity;
-			var cvertex = (C[vertex][COST] != 0) ? C[vertex][COST] : Infinity;
+		    var old_cost = cost[neighbor] ?? Infinity;
+
+
+		    // serious bug I should have caught
+		    //var cvertex = (C[vertex][COST] != 0) ? C[vertex][COST] : Infinity;
+		    var cvertex = ((vertex == start) || (C[vertex][COST] != 0)) ? C[vertex][COST] : Infinity;
             var new_cost = cost[vertex] + cvertex + edge_weight;
 
             if (new_cost < old_cost) {
@@ -336,16 +340,19 @@ function center_line(line, nodecount, columns) {
     return centered_line;
 }
 
-const DEFAULT_COLUMNS = 80;
-const AVG_WORDS_PER_80_COL = 9; // eyeballed
+const DEFAULT_COLUMNS = 80 ;
+const AVG_WORDS_PER_80_COL = 8 ;
 function print_adjacency_list(nodes, node_data, graph, revised_node_costs,
 							  min_cost, max_cost, zlevel, suppress_leafs, curr) {
     var ncur = 0;
     var nprev = 0;
 
-	// estimate columns to print.
-	var columns = (nodes.length < 40) ? DEFAULT_COLUMNS :
-		DEFAULT_COLUMNS + Math.floor(nodes.length/AVG_WORDS_PER_80_COL);
+	// Start with 80 columns of single characters. Grow the #columns with the
+    // #lines at the rate of 1 column per line. The #lines is simply the
+    // #words/10, (at the average of 10 words per line)
+	var columns = (nodes.length < DEFAULT_COLUMNS) ? DEFAULT_COLUMNS :
+	DEFAULT_COLUMNS + Math.floor((nodes.length - DEFAULT_COLUMNS) / (AVG_WORDS_PER_80_COL /2 ));
+
 
     var n = nodes.length;
     while (ncur < n) {
@@ -473,7 +480,6 @@ function display_adjacency_list(raw_nodes, node_data, graph, zlevel, xfactor, cu
 
     console.log('curr:\t' + node_data[curr][TEXT] + ' (' + curr + ')');
 
-
     return true;
 }
 
@@ -527,7 +533,8 @@ class Navigator
 			console.log('goal:\t', this.node_data[this.target][TEXT]);
 			console.log('cost:\t' + color + this.cost.toLocaleString('en-US') + reset);
 		}
-	}
+
+    }
 
 	zoom(z) {
 

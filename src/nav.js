@@ -22,7 +22,7 @@ class Navigator {
         // zoom levels
         this.zlevel = 1e6; this.xfactor = 0; this.total = 0; this.trvlog = [];
 
-		this.jumpstot = 0; this.deltaj = 0; this.cheats = 0;
+		this.jumpstot = 0; this.deltaj = 0; this.cheats = 0; this.nsyns = 0;
 	}
 
 
@@ -31,7 +31,7 @@ class Navigator {
 		this.target = ctx.target; this.cost = ctx.cost; this.jumps = ctx.jumps;
 		this.delta = ctx.delta; this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor;
 		this.total = ctx.total; this.trvlog = ctx.trvlog; this.jumpstot = ctx.jumpstot;
-		this.deltaj = ctx.deltaj; this.cheats = ctx.cheats;
+		this.deltaj = ctx.deltaj; this.cheats = ctx.cheats; this.nsyns =ctx.nsyns;
 
 		// HACK Just in case
 		//if (this.zlevel ==  undefined)
@@ -43,42 +43,37 @@ class Navigator {
 				 target: this.target, cost: this.cost, jumps: this.jumps, delta:
 				 this.delta, zlevel: this.zlevel, xfactor: this.xfactor,
 				 total: this.total, trvlog: this.trvlog, jumpstot: this.jumpstot,
-			     deltaj: this.deltaj, cheats: this.cheats };
+			     deltaj: this.deltaj, cheats: this.cheats, nsyns: this.nsyns };
 
 	}
 
 	getDisplayInfo() {
 
 		if ( this.xfactor == 0) {
-			return getDisplayInfo(graph[this.current], this.zlevel,
-								  this.xfactor, this.current);
+			this.nsyns = graph[this.current].length + 1;
+			return [this.nsyns, getDisplayInfo(graph[this.current], this.zlevel,
+								  this.xfactor, this.current)];
 		}
 		else {
 			var expanded_synset = expand_synset(graph[this.current], this.xfactor);
-			return getDisplayInfo(expanded_synset, this.zlevel,
-								  this.xfactor, this.current);
+			this.nsyns = expanded_synset.length;
+			return [this.nsyns, getDisplayInfo(expanded_synset, this.zlevel,
+								  this.xfactor, this.current)];
 		}
 	}
 
 	zoom(z) {
 
-        if (z == true && this.zlevel > MIN_ZOOM)
-            this.zlevel = zin[this.zlevel];
-        else if (z == false && this.zlevel < MAX_ZOOM)
-			this.zlevel = zout[this.zlevel];
+            if (z == true && this.zlevel > MIN_ZOOM)
+	    {
+		this.zlevel = zin[this.zlevel];
+	    }
+
+            else if (z == false && this.zlevel < MAX_ZOOM)
+	    {
+		this.zlevel = zout[this.zlevel];
+	    }
 	}
-
-	xoom(x) {
-
-		if (x == false) {
-			if (this.xfactor != 0) {
-				this.xfactor--;
-			}
-		}
-		else
-			this.xfactor++;
-	}
-
 	// zlevel (filtering) and xfactor (synset expansion) can be modified
 	// independently but this function chains them to give an intgrated
 	// zoom effect. zlevel = MAX_ZOOM and xfactor = 0 are used to transition
@@ -283,6 +278,19 @@ class Navigator {
 
 
 	getCostText(num = this.cost) {
+/*
+		if (this.xfactor != 0) {
+			var str = 'X' + this.xfactor.toString() 
+			return (str);
+		}
+*/
+		if (this.xfactor != 0) {
+			var str = 'X' + this.xfactor.toString() 
+				+ ' (' + this.nsyns.toString()
+				+ ' Synonyms)';
+			return (str);
+		}
+
 		var p; var v = 0;
 
 		var expstr = num.toExponential(1);
