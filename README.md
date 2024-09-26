@@ -5,6 +5,8 @@ Game Edition (Now With Cheats!®)
 
 The Moby Thesaurus is an eclectic and delightful compendium released into the public domain by Grady Ward in 1995 [(Wikipedia)](https://en.wikipedia.org/wiki/Moby_Project). The English version contains 30,260 root terms and over 103,000 *see note) synoyms & related terms replete with Americana and oft amusing colloquialisms ranging from antedeluvian through 1960s Hippiedom. I combined it with word frequencies from [Google's Trillion Word Corpus](https://research.google/blog/all-our-n-gram-are-belong-to-you/) with the vague idea of making a semantic word game. What I ended up with is a kind of a logophile's scavenger hunt with the goal of finding synonyms along paths between different entries. Along the way a simple method of incorporating the frequencies into a view fell out such that sets of synonyms (synsets) are displayed in a 2D "heat map word cloud" of hyperlinks colored and filtered by their respective frequencies. While originally intended with the game in mind it ends up being the main view by which the thesaurus is browsed.
 
+*The Wikipedia Project claims upwards of 2.5 million terms but that may be for the entire multi-language Moby Project including the Hyphenator Project and other works in the Guttenberg Project, I'm not sure.
+
 
 Browse Mode
 
