@@ -1,11 +1,12 @@
 import {useState} from "react"
 import { SynsetRow } from  "./SynsetRow";
 
-export function Synset({nav, onClick}) {
+export function Synset({nav, width, height, onClick}) {
 
+	console.log("portal values w, h = " + width + " " + height);
+	
 	function handleOnClick(e) {
 		nav.goto(parseInt(e.target.id));
-		
 		onClick(nav.get());
 	}
 
@@ -34,9 +35,8 @@ export function Synset({nav, onClick}) {
 	else 
 		fontsize = ".2em";	
 
-		
-	return(
-		<ul className="quux" style = {{"font-size" : fontsize}}>
+		return(
+        <ul className="quux" style = {{"font-size" : fontsize}}>
 			{displayList.map(function(displayList, index, array) {
 				return (
 					<SynsetRow onClick = {handleOnClick}

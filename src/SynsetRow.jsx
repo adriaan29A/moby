@@ -3,6 +3,7 @@ export function SynsetRow({row, onClick}) {
 
 	function handleOnClick(e) {
 		e.preventDefault()
+		console.log('SynsetRow Click');
 		onClick(e);
 	}
 
@@ -11,6 +12,7 @@ export function SynsetRow({row, onClick}) {
 		<li className = "quux1">
 		{
 			row.map(function(node, index, array) {
+
 				return (<><button id = {row[index].nodeid} title = {(row[index].color == "Black")? null : row[index].cost.toLocaleString() } onClick = {(row[index].color == "Black") ? null : handleOnClick}
 								  style = {{ "color": row[index].color }} className="quuxbutton1">
 
