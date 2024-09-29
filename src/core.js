@@ -2,7 +2,7 @@ import node_data from "./nodes.json";
 import graph  from "./graph.json";
 import {CreatePriorityQueue} from "./priorityQueue.js";
 
-// mostly used by nav.js
+// used by nav.js
 export {getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
 		random_node, minmax, nodeid_from_text, colors, zin,
 		zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST };
@@ -444,7 +444,7 @@ function random_node() {
 	return r;
 }
 
-// unused
+// unloved
 function makeStruct(keys) {
 
 	if (!keys) return null;
@@ -455,3 +455,4 @@ function makeStruct(keys) {
 	}
 	return constructor;
 }
+

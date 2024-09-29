@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { NewTodoForm } from "./NewTodoForm"
-import { TodoList } from "./TodoList"
+import { TodoList } from "./TodoList" // remove ?
 import { Synset } from "./Synset.jsx"
 import { CreateNavigator } from "./nav.js"
 import { random_node } from "./core.js"
@@ -36,8 +36,6 @@ export default function App() {
 
 	var nav = CreateNavigator();
 
-	const { height, width } = useWindowDimensions();
-
 	const [navctx, setNavctx] = useState(() => {
 		const localValue = localStorage.getItem("NAVCTX15")
 		if (localValue == null) {
@@ -60,11 +58,15 @@ export default function App() {
 
 	}
 
+	// nav object is set and ready to go.
 	nav.set(navctx);
+
+	// Get the main window dimensions
+	const extent = useWindowDimensions();
 
 	return (
 		<>
-			<Synset nav = {nav} width = {width} height = {height} onClick = { setCtx } />
+			<Synset nav = {nav} extent = {extent} onClick = { setCtx } />
 			<NewTodoForm nav = { nav } onSubmit = { setCtx } />	
 		</>
 	)
