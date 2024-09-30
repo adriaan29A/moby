@@ -37,25 +37,27 @@ const COST = 1;
   Constructs main synset display list ready to convert --> HTML
 
 --*/
-function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
+function getDisplayInfo(raw_nodes, zlevel, xfactor, curr, extent) {
 
     var nodes = [];
     var node_costs = {};
     var revised_node_costs = {};
-
-    for (var node of raw_nodes) {
+	var charcount = 0;
+    
+	for (var node of raw_nodes) {
 		if ((node_data[node] !== 'undefined') && (node_data[node][COST] != Infinity)) { // Infinity is no longer used *in this context*
+			if (graph[node].length == 0)
+				node_costs[node] = 0;
+			
 			nodes.push(node);
 			node_costs[node] = node_data[node][COST];
+
+			charcount += node_data[node][TEXT].length + 1;
 		}
 	}
-    if (nodes.length == 0)
-        return false;
-
-    for (node of nodes)
-        if (graph[node].length == 0)
-            node_costs[node] = 0;
-
+		
+	if (nodes.length == 0)
+        return false; // bug - different type return 
 
 	// compute min and max cost before applying sigmoid
     var [min_cost, max_cost] = minmax(node_costs);
@@ -82,12 +84,44 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr) {
                 break;
 			}
 
-	// speifically to put root term in already alphatized list
+	// specifically to put root term in already alphatized list
 	nodes = nodes.sort(compareFn2);
 
+	// Now determine the number of columns and rows of 
+	// characters required based on window dims and char
+	// count, along with the font size
+
+	// Find #rows, #cols required to display
+	// from #chars and ar (aspect ratio)
+	// rows * cols = chars, 
+	// cols /(1.5 * rows) = ar
+    /// ..
+	// ==> rows = chars / cols
+	// ==> cols^2 = ar * chars
+
+	var ar = extent.width / extent.height;
+	var cols = Math.sqrt(2.25 * charcount * ar);
+	var rows = charcount / cols; 
+	var font_size = extent.width / cols;
+	var nsyns = nodes.length;
+
+	if (font_size > 16) 
+		font_size = 16;
+
+
+	var params = { 
+		nsyns,
+		extent,    // everything below
+		charcount, // is derived from these
+		ar,
+		rows,
+		cols,
+		font_size
+	}
+
 	// colorize by cost and lay out with ~constant aspect ratio
-    return colorize_and_layout(nodes, revised_node_costs,
-                         min_cost, max_cost, zlevel, suppress_leafs, curr);
+    return [params, colorize_and_layout(nodes, revised_node_costs,
+                         min_cost, max_cost, zlevel, suppress_leafs, curr, params)];
 }
 
 
@@ -106,10 +140,13 @@ function compareFn2(a, b) {
   Low-level display processing api called by display_adjacency_list
 
 --*/
-const DEFAULT_COLUMNS = 80 ;
-const AVG_WORDS_PER_80_COL = 8 ;
+
+
+//
+//
+//
 function colorize_and_layout(nodes, revised_node_costs,
-	min_cost, max_cost, zlevel, suppress_leafs, curr) {
+	min_cost, max_cost, zlevel, suppress_leafs, curr, params) {
     
 	// displayInfo contains the list of list of colorized nodes with list
 	// sizes adjusted to maintain an approximate constant aspect ratio
@@ -121,11 +158,7 @@ function colorize_and_layout(nodes, revised_node_costs,
 	var ncur = 0;
     var nprev = 0;
 
-    // Start with 80 columns of single characters. Grow the #columns with the
-    // #lines at the rate of 1 column per line. The #lines is simply the
-    // #words/10, (at the average of 10 words per line)
-	var columns = (nodes.length < DEFAULT_COLUMNS) ? DEFAULT_COLUMNS :
-	DEFAULT_COLUMNS + Math.floor((nodes.length - DEFAULT_COLUMNS) / (AVG_WORDS_PER_80_COL));
+	var columns = params.cols;
 
 var n = nodes.length;
     while (ncur < n) {
@@ -150,7 +183,6 @@ var n = nodes.length;
 
         // colorize and format one line
         var line = '';
-        var nodecount = 0;
 		var displayLine = [];
 
 		for (i = nprev; i < ncur + 1; i++) {
@@ -189,7 +221,6 @@ var n = nodes.length;
 			displayLine.push( { nodeid: nodes[i], text: text,
 								color: color, cost: node_data[nodes[i]][COST]} );
 
-			nodecount += 1;
 
 		} // end for (i = nprev; i < ncur; i++)
 
@@ -234,7 +265,7 @@ function center_pad(displayInfo, columns) {
 
 		var line = '';
 		for (var node of displayInfo[i])
-			line += node.text + ' '.length;
+			line += node.text + ' ';
 
 		// Add half of slack on to the beginning of the
 		// row in order to give a line-center effect
@@ -243,10 +274,11 @@ function center_pad(displayInfo, columns) {
 		{
 			var half = Math.floor(slack / 2);
 
-			var pad = { nodeid: -1, text: '.'.repeat(half),
+			var pad = { nodeid: -1, text: '*'.repeat(half),
 						color: "Black", cost: 0 };
 
 			displayInfo[i].unshift(pad);
+
 		}
 /* testing
 		displayInfo[i].push({ nodeid: -1, text: columns.toString(),

@@ -47,33 +47,22 @@ class Navigator {
 
 	}
 
-	getCharCount(nodeList){
-		var count = 0;
-		for (var node of nodeList){
-//			console.log("text = " + (node_data[node])[TEXT]);
-			count += (node_data[node])[TEXT].length + 1 // 1 ws per
-//			console.log("end");
-		}
-		return count;
-	}
+	getDisplayInfo(extent) {
 
-	getDisplayInfo() {
-
-		var nodeList = null;
-
+		var params = null; var displayInfo = null;
 		if ( this.xfactor == 0) {
-			nodeList = graph[this.current];
-			this.nsyns = nodeList.length + 1;
-//			console.log(nodeList);
-			return [this.getCharCount(nodeList), this.nsyns, getDisplayInfo(graph[this.current], this.zlevel,
-								  this.xfactor, this.current)];
+			[params, displayInfo] = getDisplayInfo(graph[this.current], this.zlevel,
+								  this.xfactor, this.current, extent);
 		}
 		else {
 			var expanded_synset = expand_synset(graph[this.current], this.xfactor);
-			this.nsyns = expanded_synset.length + 1;
-			return [this.getCharCount(expanded_synset), this.nsyns, getDisplayInfo(expanded_synset, this.zlevel,
-								  this.xfactor, this.current)];
+			[params, displayInfo] = getDisplayInfo(expanded_synset, this.zlevel,
+								  this.xfactor, this.current, extent);
 		}
+
+		this.nsyns = params.nsyns;
+		return [params, displayInfo]
+
 	}
 
 	zoom(z) {
