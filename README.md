@@ -3,7 +3,7 @@ Game Edition (Now With Cheats!®)
 
 ## Introduction
 
-The Moby Thesaurus is an eclectic and delightful compendium released into the public domain by Grady Ward in 1995 [(Wikipedia)](https://en.wikipedia.org/wiki/Moby_Project). This English version contains 30,260 root terms and over 2.5 million related synonym and related sayings replete with Americana and oft amusing colloquialisms ranging from the antedeluvian through 1960s Hippiedom. I combined it with word frequencies from [Google's Trillion Word Corpus](https://research.google/blog/all-our-n-gram-are-belong-to-you/) with the vague idea of making a semantic word game. What I ended up with is a kind of a logophile's scavenger hunt with the goal of finding synonyms along paths between different entries. Along the way a simple method of incorporating the frequencies into a view fell out such that sets of synonyms (synsets) are displayed in a 2D "heat map word cloud" of hyperlinks colored and filtered by their respective frequencies. While originally intended with the game in mind it ends up being the main view by which the thesaurus is browsed.
+The Moby Thesaurus is an eclectic and delightful compendium released into the public domain by Grady Ward in 1995 [(Wikipedia)](https://en.wikipedia.org/wiki/Moby_Project). This English version contains 30,260 root terms and over 2.5 million related synonyms and related sayings replete with Americana and oft amusing colloquialisms ranging from the antedeluvian through 1960s Hippiedom. I combined it with word frequencies from [Google's Trillion Word Corpus](https://research.google/blog/all-our-n-gram-are-belong-to-you/) with the vague idea of making a semantic word game. What I ended up with is a kind of a logophile's scavenger hunt with the goal of finding synonyms along paths between different entries. Along the way a simple method of incorporating the frequencies into a view fell out such that sets of synonyms (synsets) are displayed in a 2D "heat map word cloud" of hyperlinks colored and filtered by their respective frequencies. While originally intended with the game in mind it ends up being the main view by which the thesaurus is browsed.
 
 
 Browse Mode
@@ -26,9 +26,17 @@ To play -
 - Click on ">>" to cheat and be moved 1 synonym towards the target at the cost of 1 cheat and the cost of the word
 - Click on "Clear" to exit game mode.
 
-* It's actually sometimes possible to beat Dijkstra's altgoritm which is kind of cheeky. This is *as implemented* and wasn't planned, rather just a happy circumstance of combining the thesaurus with word frequencies and the way Dijkstra's works.
+* It's actually possible to beat Dijkstra's altgorithm which is kind of cheeky. This is *as implemented* and wasn't planned, rather just a happy circumstance of combining the rich interconnectedness of the thesaurus with word frequencies and the way Dijkstra's algorithm works.
 
 [Screencast from 2024-09-11 10-12-56.webm](https://github.com/user-attachments/assets/b022f348-5793-42c9-881f-3f6793020eee)
+
+## Future Directions - "Wall of Words" project:
+Keep zooming out past the 4G level and you'll see the synset "expand" to include more synonyms than the original set, creating in effect a "synthetic synset" which adjusts to fit the page. This is an example of synset expansion (> 3,000 in the starting view) that might be useful in a focus + context view ultimately, but it might just be stupid. Anyway I'm just playing around with it & will talk about it more on the discussion page.
+
+
+
+
+[Screencast from 2024-10-01 06-31-29.webm](https://github.com/user-attachments/assets/ad1788d2-5107-43ad-9437-822dfba18bc0)
 
 ## Notes:
 - Self contained ("static") React + Vite app, no server side component.
