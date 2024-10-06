@@ -1,7 +1,7 @@
 import graph from "./graph.json";
 import node_data from "./nodes.json";
 
-import  { getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
+import  { getDisplayInfo, getDisplayInfo2, expand_synset, dijkstra, get_cost_and_distance, make_path,
 		  random_node, minmax, nodeid_from_text, colors, zin,
 		  zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST} from "./core.js";
 
@@ -25,7 +25,7 @@ class Navigator {
 		this.jumpstot = 0; this.deltaj = 0; this.cheats = 0; this.nsyns = 0;
 	}
 
-
+        // put this in a dict
 	set(ctx) {
 		this.current = ctx.curr; this.origin = ctx.origin; this.history = ctx.history;
 		this.target = ctx.target; this.cost = ctx.cost; this.jumps = ctx.jumps;
@@ -33,9 +33,6 @@ class Navigator {
 		this.total = ctx.total; this.trvlog = ctx.trvlog; this.jumpstot = ctx.jumpstot;
 		this.deltaj = ctx.deltaj; this.cheats = ctx.cheats; this.nsyns =ctx.nsyns;
 
-		// HACK Just in case
-		//if (this.zlevel ==  undefined)
-		//	this.zlevel = 1e6;
 	}
 
 	get() {
@@ -61,9 +58,19 @@ class Navigator {
 		}
 
 		this.nsyns = params.nsyns;
-		return [params, displayInfo]
+	        return [params, displayInfo];
 
 	}
+
+        getDisplayInfo2(extent) {
+
+            var params = null; var displayInfo = null;
+	        [params, displayInfo] = getDisplayInfo2(this.zlevel,
+                    this.xfactor, this.current, extent);
+	    		this.nsyns = params.nsyns;
+	    return [params, displayInfo];
+	}
+
 
 	zoom(z) {
 
@@ -281,12 +288,7 @@ class Navigator {
 
 
 	getCostText(num = this.cost) {
-/*
-		if (this.xfactor != 0) {
-			var str = 'X' + this.xfactor.toString() 
-			return (str);
-		}
-*/
+
 		if (this.xfactor != 0) {
 			var str = 'X' + this.xfactor.toString() 
 				+ ' (' + this.nsyns.toString()

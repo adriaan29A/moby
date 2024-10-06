@@ -867,21 +867,86 @@ function print_info (data, graph, node_data) {
         var cost = node_data[nodeid][COST];
 		console.log('\ncost: ' + cost.toLocaleString('en-US'));
 	}
+    else if (data.length == 3) {
+        var nodeid1 = nodeid_from_text(data[1], node_data);
+        var nodeid2 = nodeid_from_text(data[2], node_data);
+	var cost1 = node_data[nodeid1][COST];
+	var cost2 = node_data[nodeid2][COST];
+	console.log('\ncost1: ' + cost1.toLocaleString('en-US'));
+	console.log('\ncost2: ' + cost2.toLocaleString('en-US'));
+    }
 }
 
 
 
 function test(nav, ui) {
 
-    debugger;
-    print_info(ui, nav.graph, nav.node_data);
-    //g_limit = Math.floor(parseFloat(ui[1]));
-//	nav.display();
-//	g_limit = 0;
+    console.log('here')
+    print_info(ui[1], nav.graph, nav.node_data);
+    print_info(ui[2], nav.graph, nav.node_data);
+
 }
 
 
 gogogadget();
+
+
+/*
+const [graph, nodes] = load_moby_graph();
+
+var synsetx = graph[find_random_node(1e2, nodes)];
+var synsety = graph[find_random_node(1e2, nodes)];
+
+var expandx = expand_synset(synsetx, graph, nodes, 7);
+var expandy = expand_synset(synsety, graph, nodes, 7);
+
+console.log(expandx);
+console.log(expandy);
+
+const dupes = [];
+
+for (s of expandx) {
+
+    if (expandy.includes(s)) {
+	const index = expandy.indexOf(s);
+	dupes.push(expandy.splice(index, 1));
+    }
+}
+
+for (s of expandy) {
+    if (expandx.includes(s)) {
+	const index = expandx.indexOf(s);
+	dupes.push(expandx.splice(index, 1));
+    }
+}
+
+console.log("dupes.len:" + dupes.length);
+
+var [big, small] = ((expandy.length > expandx.length) ? [expandy, expandx] : [expandx, expandy]);
+
+
+
+
+var bl = big.length;
+var sl = small.length;
+
+var ratio = 0;
+
+if (bl > 9e4)
+    ratio = 1;
+else if (bl > 7e4)
+    ratio =.9;
+else if (bl > 5e4)
+    ratio = .6;
+else
+    ratio = .2;
+
+var estimate = ratio * sl;
+
+console.log('estimate = ' + estimate);
+
+*/
+
 
 //        1         2         3         4         5         6         7         8         9        10        11        12        13        14
 //2345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890

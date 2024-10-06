@@ -3,7 +3,7 @@ import graph  from "./graph.json";
 import {CreatePriorityQueue} from "./priorityQueue.js";
 
 // used by nav.js
-export {getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
+export {getDisplayInfo, getDisplayInfo2, expand_synset, dijkstra, get_cost_and_distance, make_path,
 		random_node, minmax, nodeid_from_text, colors, zin,
 		zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST };
 
@@ -32,6 +32,18 @@ const ID = 0;
 const TEXT = 0;
 const COST = 1;
 
+// Gets all the nodes.
+function getDisplayInfo2( zlevel, xfactor, curr, extent) {
+
+    var keys = [];
+
+    for (var key in node_data)
+	keys.push(key);
+    console.log('length = ' + keys.length);
+    return getDisplayInfo(keys, zlevel, xfactor, curr, extent);
+}
+
+
 /*--
 
   Constructs main synset display list ready to convert --> HTML
@@ -43,21 +55,29 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr, extent) {
     var node_costs = {};
     var revised_node_costs = {};
 	var charcount = 0;
-    
-	for (var node of raw_nodes) {
-		if ((node_data[node] !== 'undefined') && (node_data[node][COST] != Infinity)) { // Infinity is no longer used *in this context*
-			if (graph[node].length == 0)
-				node_costs[node] = 0;
-			
-			nodes.push(node);
-			node_costs[node] = node_data[node][COST];
 
-			charcount += node_data[node][TEXT].length + 1;
-		}
+    // A little pre-processing
+    for (var node of raw_nodes) {
+
+	// No children means it's cost is 0
+	//	if ((node_data[node] !== 'undefined')
+	//	    && (node_data[node][COST] != Infinity))
+	{   // Infinity is no longer used *in this context*
+
+	if (graph[node].length == 0)
+		node_costs[node] = 0;
+
+	    // why are you doing this?????????
+		nodes.push(node);
+
+	    node_costs[node] = node_data[node][COST];
+
+	    charcount += node_data[node][TEXT].length + 1;
 	}
-		
-	if (nodes.length == 0)
-        return false; // bug - different type return 
+    }
+
+    if (nodes.length == 0)
+        return false; // bug - different type return
 
 	// compute min and max cost before applying sigmoid
     var [min_cost, max_cost] = minmax(node_costs);
@@ -75,7 +95,7 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr, extent) {
 
     // leaf nodes blanked when (any other nodes are and
 	// xfactor is 0), i.e. are in expando mode.
-	// 
+	//
     var suppress_leafs = false;
     for (node of nodes)
         if (graph[node].length != 0)
@@ -87,21 +107,20 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr, extent) {
 	// specifically to put root term in already alphatized list
 	nodes = nodes.sort(compareFn2);
 
-	// Now determine the number of columns and rows of 
+	// Now determine the number of columns and rows of
 	// characters required based on window dims and char
 	// count, along with the font size
 
 	// Find #rows, #cols required to display
 	// from #chars and ar (aspect ratio)
-	// rows * cols = chars, 
+	// rows * cols = chars,
 	// cols /(1.5 * rows) = ar
-    /// ..
 	// ==> rows = chars / cols
 	// ==> cols^2 = ar * chars
 
 	var ar = extent.width / extent.height;
 	var cols = Math.sqrt(2.25 * charcount * ar);
-	var rows = charcount / cols; 
+	var rows = charcount / cols;
 	var font_size = extent.width / cols;
 	var nsyns = nodes.length;
 
@@ -109,7 +128,7 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr, extent) {
 		font_size = 16;
 
 
-	var params = { 
+	var params = {
 		nsyns,
 		extent,    // everything below
 		charcount, // is derived from these
@@ -117,9 +136,11 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr, extent) {
 		rows,
 		cols,
 		font_size
-	}
+	};
 
-	// colorize by cost and lay out with ~constant aspect ratio
+    console.log('params: ' + params);
+
+    // colorize by cost and lay out with ~constant aspect ratio
     return [params, colorize_and_layout(nodes, revised_node_costs,
                          min_cost, max_cost, zlevel, suppress_leafs, curr, params)];
 }
@@ -147,7 +168,6 @@ function compareFn2(a, b) {
 //
 function colorize_and_layout(nodes, revised_node_costs,
 	min_cost, max_cost, zlevel, suppress_leafs, curr, params) {
-    
 	// displayInfo contains the list of list of colorized nodes with list
 	// sizes adjusted to maintain an approximate constant aspect ratio
 	// [node1, node2, ....] => [ [node1, node2, ...],
@@ -487,4 +507,3 @@ function makeStruct(keys) {
 	}
 	return constructor;
 }
-

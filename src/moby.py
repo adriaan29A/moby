@@ -107,7 +107,7 @@ def read_word_data(filename):
          f.close()
     return lines
 
-GRAPH_REDUCE_FACTOR = 4
+GRAPH_REDUCE_FACTOR = 0
 def create_moby_graph():
     """
     Run at build time - makes the two files used at runtime
@@ -131,14 +131,14 @@ def create_moby_graph():
 
     i = 0
     # Read in Google word frequencies
-    lines = read_word_data('.\\google_word_frequencies.txt')
+    lines = read_word_data('./junkyard/google_word_frequencies.txt')
     for line in lines:
         data = line.split('\t')
         frequencies[data[0]] = int(data[1])
 
     # Read in Moby thesaurus, combine with word frequencies.
     # ordinals is keyed off word to yield (nodeid, freq)
-    lines = read_word_data('.\\words.txt')
+    lines = read_word_data('./junkyard/words.txt')
     for line in lines:
         root_word = (line.split(',', 1))[0]
         if frequencies.get(root_word) is not None:
@@ -185,14 +185,14 @@ def create_moby_graph():
     if (GRAPH_REDUCE_FACTOR != 0):
         graph, node_data = reduce_graph_size(GRAPH_REDUCE_FACTOR, node_data, graph)
 
-    with open('nodes4.js', 'w') as convert_file:
+    with open('./junkyard/nodes.json', 'w') as convert_file:
         convert_file.write(json.dumps(node_data))
 
-    with open('graph4.js', 'w') as convert_file:
+    with open('./junkyard/graph.json', 'w') as convert_file:
         convert_file.write(json.dumps(graph))
 
     print('graph:', len(graph))
-    print('nd: ', len(node_data))
+    print('nodes: ', len(node_data))
 
     return graph, node_data
 
@@ -220,11 +220,11 @@ def load_moby_graph():
 
     graph = {}; node_data = {}; json_graph = {}
 
-    with open('graph4.js') as f:
+    with open('graph.json') as f:
         data = f.read()
         json_graph = json.loads(data)
 
-    with open('nodes4.js') as f:
+    with open('nodes.json') as f:
         data = f.read()
         json_nodes = json.loads(data)
 
@@ -813,6 +813,9 @@ def gogogadget():
         elif data[0] == 'p': # path back to start
             nav.print_path()
 
+        elif data[0] =='-t' : # test
+            nav.test();
+
         elif data[0] == '-i': # node & path information
             print_info(data, graph, node_data)
 
@@ -861,5 +864,7 @@ def gogogadget():
 
     # end while(True)
 
-#create_moby_graph()
-gogogadget()
+
+# uncomment to create nodes.json and graph.json
+create_moby_graph()
+#gogogadget()
