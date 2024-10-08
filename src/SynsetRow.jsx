@@ -1,5 +1,6 @@
 
-export function SynsetRow({row, onClick}) {
+const FONT_SIZE_HACK_MIN = 6;
+export function SynsetRow({row, font_size, onClick}) {
 
 	function handleOnClick(e) {
 		e.preventDefault()
@@ -13,7 +14,7 @@ export function SynsetRow({row, onClick}) {
 		{
 			row.map(function(node, index, array) {
 
-				return (<><button id = {row[index].nodeid} title = {(row[index].color == "Black")? null : row[index].cost.toLocaleString() } onClick = {(row[index].color == "Black") ? null : handleOnClick}
+			    return (<><button id = {row[index].nodeid} title = {(row[index].color == "Black")? null : ((font_size < FONT_SIZE_HACK_MIN ? row[index].text + ' '  : '') + row[index].cost.toLocaleString()) } onClick = {(row[index].color == "Black") ? null : handleOnClick}
 								  style = {{ "color": row[index].color }} className="quuxbutton1">
 
 							   {array[index].text}

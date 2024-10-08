@@ -5,6 +5,13 @@ import { Synset } from "./Synset.jsx"
 import { CreateNavigator } from "./nav.js"
 import { random_node } from "./core.js"
 
+
+
+//------------------------------------------------------------------------------
+// Hooks
+
+// Windows dimensions
+
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
   return {
@@ -14,7 +21,7 @@ function getWindowDimensions() {
 }
 
 function useWindowDimensions() {
- 
+
 	const [windowDimensions, setWindowDimensions] = useState(
     getWindowDimensions()
   );
@@ -30,6 +37,38 @@ function useWindowDimensions() {
 
   return windowDimensions;
 }
+
+
+// performance timer hook
+
+/*
+import React, { useState, useEffect } from 'react';
+
+function MyComponent() {
+  const [timeElapsed, setTimeElapsed] = useState(0);
+
+  useEffect(() => {
+    const startTime = performance.now();
+
+    const intervalId = setInterval(() => {
+      const endTime = performance.now();
+      setTimeElapsed(endTime - startTime);
+    }, 1000); // Update every 1 second
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, []);
+
+  return (
+    <div>
+      Time elapsed: {timeElapsed / 1000} seconds
+    </div>
+  );
+}
+*/
+
+
+//------------------------------------------------------------------------------
+// App
 
 
 export default function App() {
@@ -66,9 +105,8 @@ export default function App() {
 
 	return (
 		<>
-			<Synset nav = {nav} extent = {extent} onClick = { setCtx } />
-			<NewTodoForm nav = { nav } onSubmit = { setCtx } />	
+		<Synset nav = {nav} extent = {extent} onClick = { setCtx } />
+		<NewTodoForm nav = { nav } onSubmit = { setCtx } />
 		</>
 	)
-
 }

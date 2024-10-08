@@ -49,15 +49,14 @@ function getDisplayInfo2( zlevel, xfactor, curr, extent) {
   Constructs main synset display list ready to convert --> HTML
 
 --*/
-function getDisplayInfo(raw_nodes, zlevel, xfactor, curr, extent) {
-
-    var nodes = [];
+function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
+    const FONT_SIZE_HACK_MAX = 16;
     var node_costs = {};
     var revised_node_costs = {};
 	var charcount = 0;
 
     // A little pre-processing
-    for (var node of raw_nodes) {
+    for (var node of nodes) {
 
 	// No children means it's cost is 0
 	//	if ((node_data[node] !== 'undefined')
@@ -66,9 +65,6 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr, extent) {
 
 	if (graph[node].length == 0)
 		node_costs[node] = 0;
-
-	    // why are you doing this?????????
-		nodes.push(node);
 
 	    node_costs[node] = node_data[node][COST];
 
@@ -124,8 +120,8 @@ function getDisplayInfo(raw_nodes, zlevel, xfactor, curr, extent) {
 	var font_size = extent.width / cols;
 	var nsyns = nodes.length;
 
-	if (font_size > 16) 
-		font_size = 16;
+	if (font_size > FONT_SIZE_HACK_MAX)
+	    font_size = FONT_SIZE_HACK_MAX;
 
 
 	var params = {
@@ -337,7 +333,8 @@ function expand_synset(synset, level) {
 	var limit = synset.length * Math.floor(EXPANSION_FACTOR ** level);
 
 	// populate the final list to be shown with
-	// the nodes of the starting synsets.
+    // the nodes of the starting synsets.
+    // bug - synset already used just above.
 	if (synset !== undefined) {
 		for (var child of synset ) {
 			visited.add(child);
@@ -367,12 +364,22 @@ function expand_synset(synset, level) {
 		}
 	}
 
+
+
+    final_set = final_set.sort(compareFn);
+    expanded_list = final_set.map(([key, value]) => (key));
+
+/*
+
 	final_set = final_set.sort(compareFn);
 	for (var item of final_set)
 		expanded_list.push(item[0]);
-
+*/
 	return expanded_list;
 }
+
+
+
 
 
 /*--

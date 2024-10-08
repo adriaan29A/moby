@@ -290,7 +290,7 @@ class Navigator {
 	getCostText(num = this.cost) {
 
 		if (this.xfactor != 0) {
-			var str = 'X' + this.xfactor.toString() 
+			var str = 'X' + this.xfactor.toString()
 				+ ' (' + this.nsyns.toString()
 				+ ' Synonyms)';
 			return (str);

@@ -13,14 +13,15 @@ export function Synset({nav, extent, onClick}) {
 	[params, displayList] = nav.getDisplayInfo(extent);
 //	[params, displayList] = nav.getDisplayInfo2(extent);
 
-	console.log(params)
+    console.log('params: ' + params)
 
 	return(
         <ul className="quux" style = {{"font-size" : params.font_size}}>
 			{displayList.map(function(displayList, index, array) {
 				return (
 					<SynsetRow onClick = {handleOnClick}
-						row = {displayList}
+						   //font_size = {params.font_size}
+						   row = {displayList}
 					/>
 				)
 			})}
