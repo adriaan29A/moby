@@ -866,5 +866,5 @@ def gogogadget():
 
 
 # uncomment to create nodes.json and graph.json
-create_moby_graph()
-#gogogadget()
+#create_moby_graph()
+gogogadget()

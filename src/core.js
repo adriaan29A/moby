@@ -1,6 +1,22 @@
+import * as fs from 'fs';
+
 import node_data from "./nodes.json";
 import graph  from "./graph.json";
 import {CreatePriorityQueue} from "./priorityQueue.js";
+
+/*
+
+import { readFile } from 'fs/promises';
+const node_data = JSON.parse(
+    await readFile(
+	new URL('./nodes.json', import.meta.url)));
+
+const graph = JSON.parse(
+    await readFile(
+	new URL('./graph.json', import.meta.url)));
+
+*/
+
 
 // used by nav.js
 export {getDisplayInfo, getDisplayInfo2, expand_synset, dijkstra, get_cost_and_distance, make_path,
@@ -32,15 +48,18 @@ const ID = 0;
 const TEXT = 0;
 const COST = 1;
 
+// there are 1,181,180 chars
+// there are 103,316/306/360 synonyms.
+
 // Gets all the nodes.
 function getDisplayInfo2( zlevel, xfactor, curr, extent) {
 
-    var keys = [];
+   var keys = Object.keys(node_data).map(key => {
+       return (key) });
 
-    for (var key in node_data)
-	keys.push(key);
-    console.log('length = ' + keys.length);
-    return getDisplayInfo(keys, zlevel, xfactor, curr, extent);
+    const [params, displayList] = getDisplayInfo(keys, zlevel, xfactor, curr, extent);
+    console.log(params);
+    return [params, displayList];
 }
 
 
@@ -58,30 +77,24 @@ function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
     // A little pre-processing
     for (var node of nodes) {
 
-	// No children means it's cost is 0
-	//	if ((node_data[node] !== 'undefined')
-	//	    && (node_data[node][COST] != Infinity))
-	{   // Infinity is no longer used *in this context*
-
 	if (graph[node].length == 0)
 		node_costs[node] = 0;
 
 	    node_costs[node] = node_data[node][COST];
 
 	    charcount += node_data[node][TEXT].length + 1;
-	}
     }
 
     if (nodes.length == 0)
         return false; // bug - different type return
 
-	// compute min and max cost before applying sigmoid
+    // compute min and max cost before applying sigmoid
     var [min_cost, max_cost] = minmax(node_costs);
 
-	for (node of nodes)
+    for (node of nodes)
         if (node_data[node][COST] < zlevel)
             revised_node_costs[node] = Math.floor(node_costs[node]
-												  * sigmoid(node_costs[node], max_cost));
+		* sigmoid(node_costs[node], max_cost));
         else
             // Important so these nodes don't contribute to scaling
             revised_node_costs[node] = 0;
@@ -90,49 +103,48 @@ function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
     [min_cost, max_cost] = minmax(revised_node_costs);
 
     // leaf nodes blanked when (any other nodes are and
-	// xfactor is 0), i.e. are in expando mode.
-	//
+    // xfactor is 0), i.e. are in expando mode.
     var suppress_leafs = false;
     for (node of nodes)
         if (graph[node].length != 0)
             if ((node_data[node][COST] > zlevel) & (xfactor == 0)) {
-				suppress_leafs = true;
+		suppress_leafs = true;
                 break;
-			}
+	    }
 
-	// specifically to put root term in already alphatized list
-	nodes = nodes.sort(compareFn2);
+    // specifically to put root term in already alphatized list
+    nodes = nodes.sort(compareFn2);
 
-	// Now determine the number of columns and rows of
-	// characters required based on window dims and char
-	// count, along with the font size
+    // Now determine the number of columns and rows of
+    // characters required based on window dims and char
+    // count, along with the font size
 
-	// Find #rows, #cols required to display
-	// from #chars and ar (aspect ratio)
-	// rows * cols = chars,
-	// cols /(1.5 * rows) = ar
-	// ==> rows = chars / cols
-	// ==> cols^2 = ar * chars
+    // Find #rows, #cols required to display
+    // from #chars and ar (aspect ratio)
+    // rows * cols = chars,
+    // cols /(1.5 *rows)  = ar
+    // ==> rows = chars / cols
+    // ==> cols^2 = ar * chars
 
-	var ar = extent.width / extent.height;
-	var cols = Math.sqrt(2.25 * charcount * ar);
-	var rows = charcount / cols;
-	var font_size = extent.width / cols;
-	var nsyns = nodes.length;
+    var ar = extent.width / extent.height;
+    var cols = Math.sqrt(2.25 * charcount * ar);
+    var rows = charcount / cols;
+    var font_size = extent.width / cols;
+    var nsyns = nodes.length;
 
-	if (font_size > FONT_SIZE_HACK_MAX)
-	    font_size = FONT_SIZE_HACK_MAX;
+    if (font_size > FONT_SIZE_HACK_MAX)
+	font_size = FONT_SIZE_HACK_MAX;
 
 
-	var params = {
-		nsyns,
-		extent,    // everything below
-		charcount, // is derived from these
-		ar,
-		rows,
-		cols,
-		font_size
-	};
+    var params = {
+	nsyns,
+	extent,    // everything below
+	charcount, // is derived from these
+	ar,
+	rows,
+	cols,
+	font_size
+    };
 
     console.log('params: ' + params);
 
@@ -500,7 +512,7 @@ function random_node() {
 		if (r % 3 == 0)
 			break;
 	}
-	return r;
+    return r;
 }
 
 // unloved
@@ -514,3 +526,69 @@ function makeStruct(keys) {
 	}
 	return constructor;
 }
+
+
+// Doesn't work
+//import node_data from "./nodes.json" with { type: "json" };
+//import graph  from "./graph.json" with { type: "json" };
+
+// works
+// process.stdout.write(JSON.stringify(fullList) + '\n');
+
+
+
+
+//        1         2         3         4         5         6         7         8
+//2345678901234567890123456789012345678901234567890123456789012345678901234567890
+//
+
+/*
+const ROWS = 16;
+const COLS = 20;
+const START_I = 200;
+const START_J = 100;
+
+const [params, fullList] = getDisplayInfo2(5e9, 0, 0, {width:1920, height:1080});
+
+for (var i = START_I; i < (START_I + ROWS); i++) {
+
+    var linebuf = [];
+
+    for (var j = START_J; j < (START_J + COLS); j++) {
+	var text = fullList[i][j].text;
+	console.log(i,j, text);
+	linebuf[j] = text;
+    }
+
+    for (var j = START_J; j < START_J + ROWS; j++) {
+	process.stdout.write(JSON.stringify(linebuf[j]) + ' ');
+    }
+    process.stdout.write('\n\n');
+}
+
+
+//process.stdout.write(JSON.stringify(fullList) + '\n');
+
+// function getDisplayInfo2( zlevel, xfactor, curr, extent)
+//const [params, fullList] = getDisplayInfo(4e9, 0, 0, {width:1920, height:1080});
+
+// const jsonString = JSON.stringify(fullList);
+
+//for (var i = 0; i < fullList.length; i++) {
+//    console.log(fullList[i]);
+//}
+*/
+
+
+
+/*
+fs.writeFile('data.json', jsonString, (err) => {
+  if (err) {
+    console.error('Error writing file:', err);
+  } else {
+    console.log('Hash table written to file successfully!');
+  }
+
+});
+
+*/

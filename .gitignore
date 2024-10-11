@@ -1,3 +1,21 @@
+# my files
+\#*
+.emacs.desktop
+.gitignore.swp
+.stash/
+delme.txt
+launch.json.0
+moby.code-workspace
+src/#*
+src/.emacs.desktop
+src/junkyard/graph.json
+src/junkyard/nodes.json
+src/scratch.txt
+src/wtf.js
+vite.config.js.dev
+vite.config.js.production
+
+
 # Logs
 logs
 *.log
