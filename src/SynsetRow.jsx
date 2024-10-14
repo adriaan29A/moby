@@ -1,5 +1,5 @@
 
-const FONT_SIZE_HACK_MIN = 6;
+const FONT_SIZE_HACK_MIN = 8;
 export function SynsetRow({row, font_size, onClick}) {
 
 	function handleOnClick(e) {

@@ -1,25 +1,9 @@
-import * as fs from 'fs';
-
 import node_data from "./nodes.json";
 import graph  from "./graph.json";
 import {CreatePriorityQueue} from "./priorityQueue.js";
 
-/*
-
-import { readFile } from 'fs/promises';
-const node_data = JSON.parse(
-    await readFile(
-	new URL('./nodes.json', import.meta.url)));
-
-const graph = JSON.parse(
-    await readFile(
-	new URL('./graph.json', import.meta.url)));
-
-*/
-
-
 // used by nav.js
-export {getDisplayInfo, getDisplayInfo2, expand_synset, dijkstra, get_cost_and_distance, make_path,
+export {getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
 		random_node, minmax, nodeid_from_text, colors, zin,
 		zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST };
 
@@ -48,20 +32,10 @@ const ID = 0;
 const TEXT = 0;
 const COST = 1;
 
+
+// there are 30,260 root entries
 // there are 1,181,180 chars
-// there are 103,316/306/360 synonyms.
-
-// Gets all the nodes.
-function getDisplayInfo2( zlevel, xfactor, curr, extent) {
-
-   var keys = Object.keys(node_data).map(key => {
-       return (key) });
-
-    const [params, displayList] = getDisplayInfo(keys, zlevel, xfactor, curr, extent);
-    console.log(params);
-    return [params, displayList];
-}
-
+// there are 103,316/306/360 synonyms depending.
 
 /*--
 
@@ -70,6 +44,7 @@ function getDisplayInfo2( zlevel, xfactor, curr, extent) {
 --*/
 function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
     const FONT_SIZE_HACK_MAX = 16;
+    const FONT_SIZE_HACK_MIN = 8; // BUGBUG CHANGE THIS IN SYNSETROW TOO.
     var node_costs = {};
     var revised_node_costs = {};
 	var charcount = 0;
@@ -122,19 +97,20 @@ function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
     // Find #rows, #cols required to display
     // from #chars and ar (aspect ratio)
     // rows * cols = chars,
-    // cols /(1.5 *rows)  = ar
+    // cols / (1.5 *rows)  = ar
     // ==> rows = chars / cols
     // ==> cols^2 = ar * chars
 
     var ar = extent.width / extent.height;
-    var cols = Math.sqrt(2.25 * charcount * ar);
+    var cols = Math.sqrt(2.25 * charcount * ar); // 2.25 = 1.5^2
     var rows = charcount / cols;
     var font_size = extent.width / cols;
     var nsyns = nodes.length;
 
-    if (font_size > FONT_SIZE_HACK_MAX)
+    if (font_size >= FONT_SIZE_HACK_MAX)
 	font_size = FONT_SIZE_HACK_MAX;
-
+    else if (font_size <= FONT_SIZE_HACK_MIN)
+	font_size = FONT_SIZE_HACK_MIN;
 
     var params = {
 	nsyns,
@@ -528,7 +504,93 @@ function makeStruct(keys) {
 }
 
 
-// Doesn't work
+
+
+//        1         2         3         4         5         6         7         8
+//2345678901234567890123456789012345678901234567890123456789012345678901234567890
+//
+
+
+/*
+
+  experimental code to collapse buttons in a list in to one.
+  it didn't pan out.
+
+// Gets all the nodes.
+function getDisplayInfo2( zlevel, xfactor, curr, extent) {
+
+   var keys = Object.keys(node_data).map(key => {
+       return (key) });
+
+    var subkeys = keys.slice(0,5000);
+
+    var  [params, displayList] = getDisplayInfo(subkeys, zlevel, xfactor, curr, extent);
+
+    var buttonizedList = collapseMerge(5, displayList);
+
+    return [params, buttonizedList];
+}
+
+
+// buttonSize is the # enties to collapse into one.
+function collapseMerge(buttonSize, displayList) {
+
+    var displayInfo = [];
+
+    for (var li of displayList) {
+
+	var count = 0;
+	var adjlist = [];
+	var group = [];
+
+	for (var node of li) {
+
+	    group.push({...node});
+	    count++;
+
+	    // add nodes until buttonsize reached or last node
+	    if (((count % buttonSize) == 0) || (count == li.length)) {
+	    	var button = group.reduce(concat);
+		adjlist.push({...button})
+		group = [];
+	    }
+	}
+	displayInfo.push(adjlist);
+    }
+
+    return displayInfo;
+
+}
+
+// used by collapseMerge
+function concat(a, b) {
+    console.log(gl++);
+    return {nodeid: a.nodeid, color: b.color, cost: a.cost, text: a.text + ' ' + b.text};
+}
+
+*/
+
+
+
+/*
+  node is not compatible with the browser so you haveto use the below
+  code to read the data if you want to run 'node core.js'
+
+import * as fs from 'fs';
+
+import { readFile } from 'fs/promises';
+const node_data = JSON.parse(
+    await readFile(
+	new URL('./nodes.json', import.meta.url)));
+
+const graph = JSON.parse(
+    await readFile(
+	new URL('./graph.json', import.meta.url)));
+
+*/
+
+
+// Doesn't work under node currently but might in the future
 //import node_data from "./nodes.json" with { type: "json" };
 //import graph  from "./graph.json" with { type: "json" };
 
@@ -537,19 +599,15 @@ function makeStruct(keys) {
 
 
 
-
-//        1         2         3         4         5         6         7         8
-//2345678901234567890123456789012345678901234567890123456789012345678901234567890
-//
-
 /*
+example how to fault in rows and columns into the current view.
+
 const ROWS = 16;
 const COLS = 20;
-const START_I = 200;
-const START_J = 100;
+const START_I = 0;
+const START_J = 0;
 
 const [params, fullList] = getDisplayInfo2(5e9, 0, 0, {width:1920, height:1080});
-
 for (var i = START_I; i < (START_I + ROWS); i++) {
 
     var linebuf = [];
@@ -567,28 +625,8 @@ for (var i = START_I; i < (START_I + ROWS); i++) {
 }
 
 
-//process.stdout.write(JSON.stringify(fullList) + '\n');
-
-// function getDisplayInfo2( zlevel, xfactor, curr, extent)
-//const [params, fullList] = getDisplayInfo(4e9, 0, 0, {width:1920, height:1080});
-
-// const jsonString = JSON.stringify(fullList);
-
-//for (var i = 0; i < fullList.length; i++) {
-//    console.log(fullList[i]);
-//}
-*/
 
 
 
-/*
-fs.writeFile('data.json', jsonString, (err) => {
-  if (err) {
-    console.error('Error writing file:', err);
-  } else {
-    console.log('Hash table written to file successfully!');
-  }
-
-});
 
 */

@@ -1,7 +1,7 @@
 import graph from "./graph.json";
 import node_data from "./nodes.json";
 
-import  { getDisplayInfo, getDisplayInfo2, expand_synset, dijkstra, get_cost_and_distance, make_path,
+import  { getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
 		  random_node, minmax, nodeid_from_text, colors, zin,
 		  zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST} from "./core.js";
 
@@ -60,15 +60,6 @@ class Navigator {
 		this.nsyns = params.nsyns;
 	        return [params, displayInfo];
 
-	}
-
-        getDisplayInfo2(extent) {
-
-            var params = null; var displayInfo = null;
-	        [params, displayInfo] = getDisplayInfo2(this.zlevel,
-                    this.xfactor, this.current, extent);
-	    		this.nsyns = params.nsyns;
-	    return [params, displayInfo];
 	}
 
 
