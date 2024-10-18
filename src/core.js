@@ -107,10 +107,20 @@ function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
     var font_size = extent.width / cols;
     var nsyns = nodes.length;
 
-    if (font_size >= FONT_SIZE_HACK_MAX)
-	font_size = FONT_SIZE_HACK_MAX;
-    else if (font_size <= FONT_SIZE_HACK_MIN)
-	font_size = FONT_SIZE_HACK_MIN;
+    const fontmax = 16
+    const fontmed = 12
+
+
+    if (font_size > fontmax) {
+	font_size = fontmax;
+    }
+    else if ((nsyns > 1000) && (font_size < fontmed)) {
+	font_size = fontmed;
+    }
+
+    console.log("font-size: " + font_size);
+    console.log("font_size:" + font_size);
+    console.log("ratio: " + charcount/nsyns);
 
     var params = {
 	nsyns,
@@ -122,7 +132,7 @@ function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
 	font_size
     };
 
-    console.log('params: ' + params);
+    console.log(params);
 
     // colorize by cost and lay out with ~constant aspect ratio
     return [params, colorize_and_layout(nodes, revised_node_costs,
@@ -625,8 +635,46 @@ for (var i = START_I; i < (START_I + ROWS); i++) {
 }
 
 
+*****************************junk code from moby.js ***********************************
+
+function generatePseudoMatrix(nav, ui)
+{
+    const zlevel = 1e5; const xfactor = 1; const curr = 0;
+    const extent = {width: 1920, height: 1080};
 
 
+    var keys = Object.keys(nav.node_data).map(key => {
+       return (key) });
 
+
+    const [params, displayList] = getDisplayInfo3(keys, zlevel, xfactor, curr, extent);
+
+    return [params, displayList];
+}
+
+function test(nav, ui) {
+
+    console.log('here');
+
+
+    const [params, table] = generatePseudoMatrix(nav, ui);
+
+    var i = 0; var j = 0;
+
+    for (var list of table) {
+
+	j = 0;
+	for (var node of list) {
+	    process.stdout.write(i, j, node.nodeid + ' ');
+	    j++
+	}
+	process.stdout.write('\n\n');
+    }
+
+
+//    print_info(ui[1], nav.graph, nav.node_data);
+//    print_info(ui[2], nav.graph, nav.node_data);
+
+}
 
 */

@@ -490,7 +490,7 @@ def estimate_frequency_of_phrase(phrase, frequencies):
             count += 1
 
     count = 1 if count == 0 else count
-    return math.floor(total/count)
+    return math.floor(total/(count*count))
 
 
 def nodeid_from_text(text, node_data):
@@ -866,5 +866,5 @@ def gogogadget():
 
 
 # uncomment to create nodes.json and graph.json
-#create_moby_graph()
-gogogadget()
+create_moby_graph()
+#gogogadget()
