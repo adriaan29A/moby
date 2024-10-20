@@ -3,6 +3,7 @@
 .emacs.desktop
 .gitignore.swp
 .stash/
+../.#package-lock.json
 delme.txt
 launch.json.0
 moby.code-workspace

@@ -59,6 +59,7 @@ export function Synset({nav, extent, onClick}) {
 	var params = {}; var displayList = null;
 
 	[params, displayList] = nav.getDisplayInfo(extent);
+//	[params, displayList] = nav.getDispInfo(extent);
 
 
   console.log("total chars = " + params.charcount);

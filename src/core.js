@@ -1,9 +1,40 @@
+
+//  STOP AND READ ME !!!!!!!!!!!
+// node is not compatible with the browser so you haveto use the below
+// code to read the data if you want to run 'node core.js'
+
+/*
+
+import * as fs from 'fs';
+import { readFile } from 'fs/promises';
+
+const node_data = JSON.parse(
+    await readFile(
+	new URL('./nodes.json', import.meta.url)));
+
+const graph = JSON.parse(
+    await readFile(
+	new URL('./graph.json', import.meta.url)));
+
+// comment this out when generating layout.json
+const node_layout = JSON.parse(
+    await readFile(
+	new URL('./layout.json', import.meta.url)));
+
+*/
+
+// Otherwise import via
+
+
 import node_data from "./nodes.json";
 import graph  from "./graph.json";
+import node_layout from "./layout.json";
+
+
 import {CreatePriorityQueue} from "./priorityQueue.js";
 
 // used by nav.js
-export {getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
+export {getDisplayInfo, getDispInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
 		random_node, minmax, nodeid_from_text, colors, zin,
 		zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST };
 
@@ -37,6 +68,111 @@ const COST = 1;
 // there are 1,181,180 chars
 // there are 103,316/306/360 synonyms depending.
 
+
+
+function getDispInfo(zlevel, xfactor, node, extent) {
+
+    var neighbors = assemble2DNeighborhood(node, 10, 10);
+
+    var [params, dispInfo] = getDisplayInfo(neighbors, 5e9, 1, 0, {width:1920, height:1080});
+
+    return [params, dispInfo];
+}
+
+
+//const [params, dispInfo] = getDispInfo(2e5, 0, nodeid_from_text("auspicious", node_data));
+//process.stdout.write(JSON.stringify(dispInfo));
+
+// returns an array of nodeids
+function assemble2DNeighborhood(node, nrows, ncols)
+{
+    // location of node (nodeid -> [ival, jval])
+    var co = nodeToCoord(node);
+    var r = co[0]; var c = co[1];
+
+    var neighbors = [];
+
+    for (var i = (r - nrows); i < (r + nrows); i++) {
+	for (var j = (c - ncols); j < (c + ncols); j++) {
+	    neighbors.push(coordToNode([i, j]));
+	}
+    }
+    return neighbors;
+}
+
+function nodeToCoord(node) {
+    var coords = Object.entries(node_layout)
+	.reduce((acc, [key, val]) => {
+	    if (val == node) {
+		acc.push(key);
+            }
+            return acc;
+	}, []);
+
+    // co is unique and encodes (i, j) like '1234.5678'
+    var co = coords[0].split('.');
+    var i = parseInt(co[0]);
+    var j = parseInt(co[1]);
+    return [i, j];
+}
+
+function coordToNode(coord) {
+    var key = coord[0].toString() +'.' + coord[1].toString();
+    return (node_layout[key]);
+}
+
+
+///*-------------------------------------------------------------------------------
+
+
+function getDisplayInfo2(zlevel, xfactor, curr, extent) {
+
+    var keys = Object.keys(node_data).map(key => {
+	return (key) });
+
+    var [params, displayList] = getDisplayInfo(keys, zlevel, xfactor, curr, extent);
+
+    var neighbors = dumpneighbors(curr, displayList);
+
+    var [params, dispinfo] = getDisplayInfo(neighbors, 5e9, 1, 0, {width:1920, height:1080});
+
+    return [params, dispinfo];
+}
+
+
+function dumpneighbors(node, displayList)
+{
+    console.log("node: " + node);
+
+    var loc = node_layout[node];
+    var r = loc[0]; var c = loc[1];
+    console.log('loc: ' + loc);
+
+
+    var neighbors = [];
+
+    for (var i = (r - 5); i < (r + 5); i++) {
+	var line = ''
+	for (var j = (c - 5); j < (c + 5); j++) {
+	    if (displayList[i][j] != undefined) {
+		neighbors.push( displayList[i][j].nodeid);
+		line += displayList[i][j].text + ' ';
+	    }
+	    else
+		console.log(i,j);
+
+	}
+	console.log (line);
+	console.log();
+    }
+    return neighbors;
+}
+
+
+
+//-------------------------------------------------------------------------------*/
+
+
 /*--
 
   Constructs main synset display list ready to convert --> HTML
@@ -51,7 +187,6 @@ function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
 
     // A little pre-processing
     for (var node of nodes) {
-
 	if (graph[node].length == 0)
 		node_costs[node] = 0;
 
@@ -118,9 +253,9 @@ function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
 	font_size = fontmed;
     }
 
-    console.log("font-size: " + font_size);
-    console.log("font_size:" + font_size);
-    console.log("ratio: " + charcount/nsyns);
+    //console.log("font-size: " + font_size);
+    //console.log("font_size:" + font_size);
+    //console.log("ratio: " + charcount/nsyns);
 
     var params = {
 	nsyns,
@@ -132,7 +267,7 @@ function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
 	font_size
     };
 
-    console.log(params);
+   // console.log(params);
 
     // colorize by cost and lay out with ~constant aspect ratio
     return [params, colorize_and_layout(nodes, revised_node_costs,
@@ -477,6 +612,38 @@ function get_cost_and_distance(parent, goal, node_data) {
     return [cost, distance];
 }
 
+
+// Used to generage node_layout.json
+function generateLayoutJSON() { const zlevel = 0; const xfactor =0; const curr = 0;
+    const extent =  {width:1920, height:1080};
+
+    // Get all the keys of the node_data dict.
+    var keys = Object.keys(node_data).map(key => {
+	return (key) });
+
+    // Top level call to generate the list of [ list of [ { dictionaries } ] ]
+    var [params, dispInfo] = getDisplayInfo(keys, zlevel, xfactor, curr, extent);
+
+    // Create a dictionary keyed off 'row.column'
+    var row = 0; var nodeLayout = {};
+    for (var list of dispInfo) {
+	var col  = 0;
+	for (var node in list) {
+	    var nodeid = list[node].nodeid
+	    if (nodeid != -1) {
+		nodeLayout[row.toString() +'.'+ col.toString()] = nodeid.toString();
+	    }
+	    col++;
+	}
+	row++;
+    }
+
+    process.stdout.write(JSON.stringify(nodeLayout));
+}
+
+
+
+
 //----------------- sundry ----------------
 
 // This func is O(N), but it is rarely used and the
@@ -678,3 +845,40 @@ function test(nav, ui) {
 }
 
 */
+/*-------------------------------------------------------------------------------
+more junk
+// This code was used to create layout.json
+
+// Gets all the nodes.
+function getDisplayInfo2() {
+
+    var keys = Object.keys(node_data).map(key => {
+       return (key) });
+
+    const [params, displayList] = getDisplayInfo(keys, 5e9, 1, 0, {width:1920, height:1080});
+
+    return [params, displayList];
+}
+
+
+const [params, dispinfo] = getDisplayInfo2();
+
+// All I need are the nodeids and table indicese (row, col)
+var row = 0; var nodelayout = {};
+for (var list of dispinfo) {
+    var col  = 0;
+    for (var node in list) {
+	var nodeid = list[node].nodeid
+	if (nodeid != -1) {
+	    nodelayout[nodeid] = [row, col];
+	    //	process.stdout.write(row.toString() + ' ' + col.toString() + ' ' + nodeid.toString()
+	    //	    + ' ' + list[node].text + '  ' + nodeid.toString() + '\n');
+	}
+	col++;
+    }
+    row++;
+}
+
+process.stdout.write(JSON.stringify(nodelayout));
+
+-------------------------------------------------------------------------------*/
