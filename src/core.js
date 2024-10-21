@@ -17,9 +17,9 @@ const graph = JSON.parse(
 	new URL('./graph.json', import.meta.url)));
 
 // comment this out when generating layout.json
-const node_layout = JSON.parse(
-    await readFile(
-	new URL('./layout.json', import.meta.url)));
+//const node_layout = JSON.parse(
+//    await readFile(
+//	new URL('./layout.json', import.meta.url)));
 
 */
 
@@ -28,13 +28,13 @@ const node_layout = JSON.parse(
 
 import node_data from "./nodes.json";
 import graph  from "./graph.json";
-import node_layout from "./layout.json";
+//import node_layout from "./layout.json";
 
 
 import {CreatePriorityQueue} from "./priorityQueue.js";
 
 // used by nav.js
-export {getDisplayInfo, getDispInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
+export {getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
 		random_node, minmax, nodeid_from_text, colors, zin,
 		zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST };
 
@@ -69,107 +69,7 @@ const COST = 1;
 // there are 103,316/306/360 synonyms depending.
 
 
-
-function getDispInfo(zlevel, xfactor, node, extent) {
-
-    var neighbors = assemble2DNeighborhood(node, 10, 10);
-
-    var [params, dispInfo] = getDisplayInfo(neighbors, 5e9, 1, 0, {width:1920, height:1080});
-
-    return [params, dispInfo];
-}
-
-
-//const [params, dispInfo] = getDispInfo(2e5, 0, nodeid_from_text("auspicious", node_data));
-//process.stdout.write(JSON.stringify(dispInfo));
-
-// returns an array of nodeids
-function assemble2DNeighborhood(node, nrows, ncols)
-{
-    // location of node (nodeid -> [ival, jval])
-    var co = nodeToCoord(node);
-    var r = co[0]; var c = co[1];
-
-    var neighbors = [];
-
-    for (var i = (r - nrows); i < (r + nrows); i++) {
-	for (var j = (c - ncols); j < (c + ncols); j++) {
-	    neighbors.push(coordToNode([i, j]));
-	}
-    }
-    return neighbors;
-}
-
-function nodeToCoord(node) {
-    var coords = Object.entries(node_layout)
-	.reduce((acc, [key, val]) => {
-	    if (val == node) {
-		acc.push(key);
-            }
-            return acc;
-	}, []);
-
-    // co is unique and encodes (i, j) like '1234.5678'
-    var co = coords[0].split('.');
-    var i = parseInt(co[0]);
-    var j = parseInt(co[1]);
-    return [i, j];
-}
-
-function coordToNode(coord) {
-    var key = coord[0].toString() +'.' + coord[1].toString();
-    return (node_layout[key]);
-}
-
-
 ///*-------------------------------------------------------------------------------
-
-
-function getDisplayInfo2(zlevel, xfactor, curr, extent) {
-
-    var keys = Object.keys(node_data).map(key => {
-	return (key) });
-
-    var [params, displayList] = getDisplayInfo(keys, zlevel, xfactor, curr, extent);
-
-    var neighbors = dumpneighbors(curr, displayList);
-
-    var [params, dispinfo] = getDisplayInfo(neighbors, 5e9, 1, 0, {width:1920, height:1080});
-
-    return [params, dispinfo];
-}
-
-
-function dumpneighbors(node, displayList)
-{
-    console.log("node: " + node);
-
-    var loc = node_layout[node];
-    var r = loc[0]; var c = loc[1];
-    console.log('loc: ' + loc);
-
-
-    var neighbors = [];
-
-    for (var i = (r - 5); i < (r + 5); i++) {
-	var line = ''
-	for (var j = (c - 5); j < (c + 5); j++) {
-	    if (displayList[i][j] != undefined) {
-		neighbors.push( displayList[i][j].nodeid);
-		line += displayList[i][j].text + ' ';
-	    }
-	    else
-		console.log(i,j);
-
-	}
-	console.log (line);
-	console.log();
-    }
-    return neighbors;
-}
-
-
-
 //-------------------------------------------------------------------------------*/
 
 
@@ -244,18 +144,11 @@ function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
 
     const fontmax = 16
     const fontmed = 12
-
+    const fontmin = 4
 
     if (font_size > fontmax) {
 	font_size = fontmax;
     }
-    else if ((nsyns > 1000) && (font_size < fontmed)) {
-	font_size = fontmed;
-    }
-
-    //console.log("font-size: " + font_size);
-    //console.log("font_size:" + font_size);
-    //console.log("ratio: " + charcount/nsyns);
 
     var params = {
 	nsyns,
@@ -267,7 +160,7 @@ function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
 	font_size
     };
 
-   // console.log(params);
+    console.log(params);
 
     // colorize by cost and lay out with ~constant aspect ratio
     return [params, colorize_and_layout(nodes, revised_node_costs,
@@ -367,8 +260,12 @@ var n = nodes.length;
 				color = (color == "Black") ? "Red" : color;
 			}
 
+		       var syns = graph[node].length;
 			displayLine.push( { nodeid: nodes[i], text: text,
-								color: color, cost: node_data[nodes[i]][COST]} );
+					    color: color,
+					    cost: node_data[nodes[i]][COST],
+					    syns: syns
+					  } );
 
 
 		} // end for (i = nprev; i < ncur; i++)
@@ -410,36 +307,25 @@ function minmax(nodes) {
 // to acheive a center-line effect for each row
 function center_pad(displayInfo, columns) {
 
-	for (var i in displayInfo) {
+    for (var i in displayInfo) {
 
-		var line = '';
-		for (var node of displayInfo[i])
-			line += node.text + ' ';
+	var line = '';
+	for (var node of displayInfo[i])
+	    line += node.text + ' ';
 
-		// Add half of slack on to the beginning of the
-		// row in order to give a line-center effect
-		var slack = columns - line.length;
-		if (slack > 2)
-		{
-			var half = Math.floor(slack / 2);
-
-			var pad = { nodeid: -1, text: '*'.repeat(half),
-						color: "Black", cost: 0 };
-
-			displayInfo[i].unshift(pad);
-
-		}
-/* testing
-		displayInfo[i].push({ nodeid: -1, text: columns.toString(),
-							  color: "Yellow", cost: 0 });
-		displayInfo[i].push({ nodeid: -1, text: line.length,
-							  color: "Green", cost: 0 });
-		displayInfo[i].push({ nodeid: -1, text: slack.toString(),
-							  color: "Red", cost: 0 });
-*/
+	// Add half of slack on to the beginning of the
+	// row in order to give a line-center effect
+	var slack = columns - line.length;
+	if (slack > 2)
+	{
+	    var half = Math.floor(slack / 2);
+	    var pad = { nodeid: -1, text: '*'.repeat(half),
+			color: "Black", cost: 0 };
+	    displayInfo[i].unshift(pad);
 	}
+    }
 
-	return displayInfo;
+    return displayInfo;
 }
 
 // sort function for expand_synset below
@@ -455,63 +341,53 @@ function compareFn(a, b) {
   neighbors for additional terms and merging them in.
 
 */
-const EXPANSION_FACTOR = 1.2; // = 1.6; // eyeballed
+const EXPANSION_FACTOR = 1.3; // = 1.6; // eyeballed
 function expand_synset(synset, level) {
 
-	var synsets = [];
-	var final_set = [];
-	var expanded_list = [];
-	var visited = new Set();
+    var synsets = [];
+    var final_set = [];
+    var expanded_list = [];
+    var visited = new Set();
 
-	var limit = synset.length * Math.floor(EXPANSION_FACTOR ** level);
+    var limit = synset.length * Math.floor(EXPANSION_FACTOR ** level);
 
-	// populate the final list to be shown with
+    // populate the final list to be shown with
     // the nodes of the starting synsets.
     // bug - synset already used just above.
-	if (synset !== undefined) {
-		for (var child of synset ) {
-			visited.add(child);
-			synsets.push(child);
-			final_set.push([child, node_data[child][TEXT]]);
-		}
+    if (synset !== undefined) {
+	for (var child of synset ) {
+	    visited.add(child);
+	    synsets.push(child);
+	    final_set.push([child, node_data[child][TEXT]]);
 	}
-	// breadth first search for nearest terms completing when the requested
-	// limit has been reached. BUG - fix infinite loop
-	if (limit != 0) {
+    }
+    // breadth first search for nearest terms completing when the requested
+    // limit has been reached. BUG - fix infinite loop
+    if (limit != 0) {
 
-		var count = 0;
-		for (var node of synsets) {
-			var children = graph[node];
-			for (child of children) {
+	var count = 0;
+	for (var node of synsets) {
+	    var children = graph[node];
+	    for (child of children) {
 
-				if (!visited.has(child) && (child !== undefined)) {
-					visited.add(child);
-					synsets.push(child);
-					final_set.push([child, node_data[child][TEXT]]);
-					if (count++ > limit)
-						break;
-				}
-			}
-			if (count > limit)
-				break;
+		if (!visited.has(child) && (child !== undefined)) {
+		    visited.add(child);
+		    synsets.push(child);
+		    final_set.push([child, node_data[child][TEXT]]);
+		    if (count++ > limit)
+			break;
 		}
+	    }
+	    if (count > limit)
+		break;
 	}
-
+    }
 
 
     final_set = final_set.sort(compareFn);
     expanded_list = final_set.map(([key, value]) => (key));
-
-/*
-
-	final_set = final_set.sort(compareFn);
-	for (var item of final_set)
-		expanded_list.push(item[0]);
-*/
-	return expanded_list;
+    return expanded_list;
 }
-
-
 
 
 
@@ -668,7 +544,76 @@ function random_node() {
     return r;
 }
 
-// unloved
+/*-------------------------------------------------------------------------------
+// Oubliette
+function getDispInfo(node, zlevel, xfactor, extent) {
+
+    // Grow rect with xfactor
+    const base  =  [8, 15];
+    var rect = [base[0] + xfactor, base[1] + xfactor];
+
+    // this is very similar to expand_synset
+    var neighbors = assemble2DNeighborhood(node, rect);
+
+    var [params, dispInfo] = getDisplayInfo(neighbors, 5e9, 1, 0, {width:1920, height:1080});
+
+    return [params, dispInfo];
+}
+
+// simple test
+//const [params, dispInfo] = getDispInfo(2e5, 0, nodeid_from_text("auspicious", node_data));
+//process.stdout.write(JSON.stringify(dispInfo));
+
+// returns an array of nodeids
+function assemble2DNeighborhood(node, rect)
+{
+    var nrows = rect[0]; var ncols = rect[1];
+
+    // location of node (nodeid -> [ival, jval])
+    var co = nodeToCoord(node);
+    var r = co[0]; var c = co[1];
+
+
+    var neighbors = [];
+
+    for (var i = (r - nrows);  i < (r + nrows); i++) {
+
+	for (var j = (c - ncols); j < (c + ncols); j++) {
+	    var coord = [i, j];
+	    var node = coordToNode(coord);
+	    if (node != undefined) {
+		neighbors.push(coordToNode([i, j]));
+	    }
+	}
+    }
+    return neighbors;
+}
+
+function nodeToCoord(node) {
+    var coords = Object.entries(node_layout)
+	.reduce((acc, [key, val]) => {
+	    if (val == node) {
+		acc.push(key);
+            }
+            return acc;
+	}, []);
+
+    // co is unique and encodes (i, j) like '1234.5678'
+    var co = coords[0].split('.');
+    var i = parseInt(co[0]);
+    var j = parseInt(co[1]);
+    return [i, j];
+}
+
+function coordToNode(coord) {
+    var key = coord[0].toString() +'.' + coord[1].toString();
+    return (node_layout[key]);
+}
+
+-----------------------------------------------------------------------------*/
+
+
+// unused & unloved
 function makeStruct(keys) {
 
 	if (!keys) return null;
@@ -679,7 +624,6 @@ function makeStruct(keys) {
 	}
 	return constructor;
 }
-
 
 
 
@@ -748,33 +692,12 @@ function concat(a, b) {
 */
 
 
-
-/*
-  node is not compatible with the browser so you haveto use the below
-  code to read the data if you want to run 'node core.js'
-
-import * as fs from 'fs';
-
-import { readFile } from 'fs/promises';
-const node_data = JSON.parse(
-    await readFile(
-	new URL('./nodes.json', import.meta.url)));
-
-const graph = JSON.parse(
-    await readFile(
-	new URL('./graph.json', import.meta.url)));
-
-*/
-
-
 // Doesn't work under node currently but might in the future
 //import node_data from "./nodes.json" with { type: "json" };
 //import graph  from "./graph.json" with { type: "json" };
 
 // works
 // process.stdout.write(JSON.stringify(fullList) + '\n');
-
-
 
 /*
 example how to fault in rows and columns into the current view.
@@ -799,86 +722,5 @@ for (var i = START_I; i < (START_I + ROWS); i++) {
 	process.stdout.write(JSON.stringify(linebuf[j]) + ' ');
     }
     process.stdout.write('\n\n');
-}
-
-
-*****************************junk code from moby.js ***********************************
-
-function generatePseudoMatrix(nav, ui)
-{
-    const zlevel = 1e5; const xfactor = 1; const curr = 0;
-    const extent = {width: 1920, height: 1080};
-
-
-    var keys = Object.keys(nav.node_data).map(key => {
-       return (key) });
-
-
-    const [params, displayList] = getDisplayInfo3(keys, zlevel, xfactor, curr, extent);
-
-    return [params, displayList];
-}
-
-function test(nav, ui) {
-
-    console.log('here');
-
-
-    const [params, table] = generatePseudoMatrix(nav, ui);
-
-    var i = 0; var j = 0;
-
-    for (var list of table) {
-
-	j = 0;
-	for (var node of list) {
-	    process.stdout.write(i, j, node.nodeid + ' ');
-	    j++
-	}
-	process.stdout.write('\n\n');
     }
-
-
-//    print_info(ui[1], nav.graph, nav.node_data);
-//    print_info(ui[2], nav.graph, nav.node_data);
-
-}
-
 */
-/*-------------------------------------------------------------------------------
-more junk
-// This code was used to create layout.json
-
-// Gets all the nodes.
-function getDisplayInfo2() {
-
-    var keys = Object.keys(node_data).map(key => {
-       return (key) });
-
-    const [params, displayList] = getDisplayInfo(keys, 5e9, 1, 0, {width:1920, height:1080});
-
-    return [params, displayList];
-}
-
-
-const [params, dispinfo] = getDisplayInfo2();
-
-// All I need are the nodeids and table indicese (row, col)
-var row = 0; var nodelayout = {};
-for (var list of dispinfo) {
-    var col  = 0;
-    for (var node in list) {
-	var nodeid = list[node].nodeid
-	if (nodeid != -1) {
-	    nodelayout[nodeid] = [row, col];
-	    //	process.stdout.write(row.toString() + ' ' + col.toString() + ' ' + nodeid.toString()
-	    //	    + ' ' + list[node].text + '  ' + nodeid.toString() + '\n');
-	}
-	col++;
-    }
-    row++;
-}
-
-process.stdout.write(JSON.stringify(nodelayout));
-
--------------------------------------------------------------------------------*/

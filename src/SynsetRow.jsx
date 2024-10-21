@@ -2,29 +2,39 @@
 const FONT_SIZE_HACK_MED = 12;
 export function SynsetRow({row, font_size, onClick}) {
 
-	function handleOnClick(e) {
-		e.preventDefault()
-		console.log('SynsetRow Click');
-		onClick(e);
-	}
+    function handleOnClick(e) {
+	e.preventDefault()
+	console.log('SynsetRow Click');
+	onClick(e);
+    }
 
-	return (
-		<>
-		<li className = "quux1">
+    return (
+	<>
+	    <li className = "quux1">
 		{
-			row.map(function(node, index, array) {
+		    row.map(function(node, index, array) {
 
-			    return (<><button id = {row[index].nodeid} title = {(row[index].color == "Black")? null : ((font_size < FONT_SIZE_HACK_MED ? row[index].text + ' '  : '') + row[index].cost.toLocaleString()) } onClick = {(row[index].color == "Black") ? null : handleOnClick}
-								  style = {{ "color": row[index].color }} className="quuxbutton1">
+			return (<><button id = {row[index].nodeid} title =
+				{ (
+				   row[index].color == "Black") ?
+				   null : ((font_size < FONT_SIZE_HACK_MED ?
+				   row[index].text + ' '  : '') +'\n' +
+					   row[index].cost.toLocaleString() +
+					   '\n' + row[index].syns.toString() +
+					   ' syns'
+				) }
 
-							   {array[index].text}
+				 onClick = {(row[index].color == "Black") ? null : handleOnClick}
+				 style = {{ "color": row[index].color }} className="quuxbutton1">
 
-						  </button></>) }
-				   )
+				      {array[index].text}
+
+				  </button></>) }
+			   )
 		}
-		</li>
-		</>
-	)
+	    </li>
+	</>
+    )
 }
 
 

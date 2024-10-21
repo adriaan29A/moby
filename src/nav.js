@@ -1,7 +1,7 @@
 import graph from "./graph.json";
 import node_data from "./nodes.json";
 
-import  { getDisplayInfo, getDispInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
+import  { getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
 		  random_node, minmax, nodeid_from_text, colors, zin,
 		  zout, MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TEXT, COST} from "./core.js";
 
@@ -61,24 +61,28 @@ class Navigator {
 	        return [params, displayInfo];
 
 	}
-
+/*
 	getDispInfo(extent) {
+	    var params = null; var displayInfo = null;
 
-		var params = null; var displayInfo = null;
-		if ( this.xfactor == 0) {
-			[params, displayInfo] = getDisplayInfo(graph[this.current], this.zlevel,
-								  this.xfactor, this.current, extent);
+	    if ( this.xfactor == 0) {
+		[params, displayInfo] = getDisplayInfo(graph[this.current], this.zlevel,
+						       this.xfactor, this.current, extent);
+	    }
+	    else {
+                var expanded_synset = expand_synset(graph[this.current], this.xfactor);
+		if (expanded_synset.length < 5000) {
+                    [params, displayInfo] = getDisplayInfo(expanded_synset, this.zlevel,
+							   this.xfactor, this.current, extent);
 		}
 		else {
-		    [params, displayInfo] = getDispInfo(this.zlevel, this.xfactor, this.current, extent);
-
+		    [params, displayInfo] = getDispInfo(this.current, this.zlevel, this.xfactor, extent);
 		}
-
-		this.nsyns = params.nsyns;
-	        return [params, displayInfo];
-
-	}
-
+	    }
+	    this.nsyns = params.nsyns;
+	    return [params, displayInfo];
+	    }
+*/
 	zoom(z) {
 
             if (z == true && this.zlevel > MIN_ZOOM)
