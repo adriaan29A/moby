@@ -92,25 +92,27 @@ export function NewTodoForm({nav, onSubmit}) {
 			id="item"/>
 
 		    {/*-- Go/Nav/Clear--*/}
-		    <button className="btn" id = "go" title = "Search word or phrase" style = {{"margin-left":"1px"}} >&#128270; </button>
-		    <button className="btn" id = "navigate" title = {(nav.target == null) ? "Play Game: Type in a word/phrase and start navigating" : "End Game"} onClick = { handleOnClick }>
+		    <button className="btn" id = "go" title = "Search word or phrase"
+			    style = {{"margin-left":"1px"}} >&#128270; </button>
+
+		    <button className="btn" id = "navigate" title = {(nav.target == null) ?
+								     "Game Mode: Type in a word/phrase to begin navigating" : "End Game Mode"}
+			    onClick = { handleOnClick }>
 
 			{ (nav.target == null) ? ("\uD83C\uDFAE") : "\uD83D\uDED1" }
-
 		    </button>
 
-
-		    {/*-- ZoomIn/ZoomOut--*/}
-		    <button className="btn" title = "Zoom in" id = "zoomin" onClick = { handleOnClick } style = {{"margin-left":"10px"}}>&#x2b;</button>
-		    <button className="btn" title = "Zoom out" id = "zoomout" onClick = { handleOnClick } >&#x2212;</button>
 
 		    {/*-- Back/Next--*/}
 		    <button className="btn" id = "back" title = "Back" onClick={ handleOnClick } style = {{"margin-left":"10px"}}>&#x276E;</button>
 		    <button className="btn" id = "forward" title = "Next" onClick = { handleOnClick }>&#x276F;</button>
 
+		    {/*-- ZoomIn/ZoomOut--*/}
+		    <button className="btn" title = "Zoom in" id = "zoomin" onClick = { handleOnClick } style = {{"margin-left":"10px"}}>&#x2b;</button>
+		    <button className="btn" title = "Zoom out" id = "zoomout" onClick = { handleOnClick } >&#x2212;</button>
 
 		    {/*-- Current Zoom level--*/}
-		    <label title = "Zoom level" style = {{"margin-left":"10px"}}> {nav.getCostText(nav.zlevel)} </label>
+		    <label title = "Zoom level" style = {{"margin-left":"10px"}}> {nav.getLevelText(nav.zlevel)} </label>
 
 		    {/*-- Target--*/}
 		    <label style = {{ color:"DeepSkyBlue", "margin-left":"15px"}}>
@@ -170,7 +172,7 @@ export function NewTodoForm({nav, onSubmit}) {
 			<label style = {{"margin-left":"5px"}}>
 			{ (nav.target != null) ? nav.cheats : "" } </label>
 			<label style = {{"margin-left":"5px"}}>
-			{(nav.target != null) ? "Bogeys" : ""} </label>
+			{(nav.target != null) ? "Assists" : ""} </label>
 		    </div>
 		    <div className ="form-row">
 			{/*-- Jumps-- */}

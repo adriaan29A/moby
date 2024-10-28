@@ -324,15 +324,30 @@ class Navigator {
 	}
 
 
-	getCostText(num = this.cost) {
+    getLevelText() {
 
+	if (this.xfactor != 0) {
+	var str = 'X' + this.xfactor.toString()
+			+ ' (' + this.nsyns.toString()
+			+ ')';
+	    return (str);
+	}
+
+	return this.getNumText(this.zlevel);
+
+    }
+
+
+
+     getNumText(num) {
+/*
 		if (this.xfactor != 0) {
 			var str = 'X' + this.xfactor.toString()
 				+ ' (' + this.nsyns.toString()
 				+ ' syns)';
 			return (str);
 		}
-
+*/
 		var p; var v = 0;
 
 		var expstr = num.toExponential(1);
@@ -355,7 +370,10 @@ class Navigator {
 			p = '';
 		}
 		return (v.toString() + p);
-	}
+     }
+
+        getCostText(num = this.cost) { return this.getNumText(num); }
+
 
 	getHistoryText() {
 		var hist = '';
