@@ -22,25 +22,28 @@ class Navigator {
         // zoom levels
         this.zlevel = 1e6; this.xfactor = 0; this.total = 0; this.trvlog = [];
 
-		this.jumpstot = 0; this.deltaj = 0; this.cheats = 0; this.nsyns = 0;
+        this.jumpstot = 0; this.deltaj = 0; this.cheats = 0; this.nsyns = 0;
+
+        this.backCache = [];
 	}
 
         // put this in a dict
-	set(ctx) {
+        set(ctx) {
 		this.current = ctx.curr; this.origin = ctx.origin; this.history = ctx.history;
 		this.target = ctx.target; this.cost = ctx.cost; this.jumps = ctx.jumps;
 		this.delta = ctx.delta; this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor;
 		this.total = ctx.total; this.trvlog = ctx.trvlog; this.jumpstot = ctx.jumpstot;
 		this.deltaj = ctx.deltaj; this.cheats = ctx.cheats; this.nsyns =ctx.nsyns;
-
+	        this.backCache = ctx.backCache;
 	}
 
-	get() {
+        get() {
 		return { curr: this.current, origin: this.origin, history: this.history,
 				 target: this.target, cost: this.cost, jumps: this.jumps, delta:
 				 this.delta, zlevel: this.zlevel, xfactor: this.xfactor,
 				 total: this.total, trvlog: this.trvlog, jumpstot: this.jumpstot,
-			     deltaj: this.deltaj, cheats: this.cheats, nsyns: this.nsyns };
+			         deltaj: this.deltaj, cheats: this.cheats, nsyns: this.nsyns,
+			         backCache: this.backCache };
 
 	}
 
@@ -139,8 +142,8 @@ class Navigator {
         this.origin = this.current;
         this.target = nodeid;
         this.history = [this.current];
-		this.trvlog = [this.current];
-
+	this.trvlog = [this.current];
+	this.backCache = [];
         var parent = dijkstra(graph, node_data, this.current, this.target);
         var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
 
@@ -153,7 +156,9 @@ class Navigator {
         return true;
 	}
 
+
     next() {
+	this.backCache = [];
 
         if (this.target == null || this.current == this.target)
             return false;
@@ -197,43 +202,64 @@ class Navigator {
 		return true;
 	}
 
-	back() {
 
-        var node = this.history.pop();
-        if (this.history.length == 0) {
-            this.history.push(node);
-            return true;
-		}
 
-		this.current = this.history.slice(-1);
+    forward() {
 
-        if (this.target != null) {
-
-            // find min cost path from current node
-            var parent = dijkstra(graph, node_data,
-								  this.current, this.target);
-
-            var [cost, jumps] = get_cost_and_distance(parent, this.target,
-													  node_data);
-            this.delta = cost - this.cost;
-            this.deltaj = jumps - this.jumps;
-
-			var lastcost = cost;
-			this.cost = lastcost;
-
-			this.jumps = jumps;
-			if (lastcost == 0)
-				this.jumpstot--;
-		}
-
-		return true;
+	if (this.backCache.length != 0) {
+	    var node = this.backCache.pop();
+	    this.current = node;
+	    this.history.push(node);
 	}
 
-    // jump to a given word, possibly in a navigation session
-	goto(object) {
+    }
 
-		var next_node = (typeof(object) == 'string') ?
-			nodeid_from_text(object, node_data) : object;
+    back() {
+
+        var node = this.history.pop();
+	if (node == undefined)
+	    return false;
+
+        if (this.history.length == 0) {
+            this.history.push(node);
+	    this.trvlog.push(node) // bug may be double counted
+            return true;
+	}
+
+	    this.current = this.history.slice(-1);
+	    this.trvlog.push(node);
+	    this.backCache.push(node)
+
+            if (this.target != null) {
+
+		// find min cost path from current node
+		var parent = dijkstra(graph, node_data,
+				      this.current, this.target);
+
+		var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
+		this.delta = cost - this.cost;
+		this.deltaj = jumps - this.jumps;
+
+		var lastcost = cost;
+		this.cost = lastcost;
+
+		this.jumps = jumps;
+		if (lastcost == 0)
+		    this.jumpstot--;
+	    }
+
+	    return true;
+	}
+
+
+
+
+        // jump to a given word, possibly in a navigation session
+        goto(object) {
+	    this.backCache = [];
+
+	    var next_node = (typeof(object) == 'string') ?
+		nodeid_from_text(object, node_data) : object;
 
         if (next_node == null || graph[next_node].length == 0)
             return false;
@@ -277,7 +303,7 @@ class Navigator {
 		this.cheats = 0;
 		this.trvlog = [this.current];
 		this.history = [this.current];
-
+	        this.backCache = [];
 
 		if (f_all) {
 			this.zlevel = DEFAULT_ZOOM;
@@ -303,7 +329,7 @@ class Navigator {
 		if (this.xfactor != 0) {
 			var str = 'X' + this.xfactor.toString()
 				+ ' (' + this.nsyns.toString()
-				+ ' Synonyms)';
+				+ ' syns)';
 			return (str);
 		}
 

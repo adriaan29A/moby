@@ -1,4 +1,3 @@
-
 const FONT_SIZE_HACK_MED = 12;
 export function SynsetRow({row, font_size, onClick}) {
 
@@ -14,7 +13,9 @@ export function SynsetRow({row, font_size, onClick}) {
 		{
 		    row.map(function(node, index, array) {
 
-			return (<><button id = {row[index].nodeid} title =
+			return (<><button
+				      id = {row[index].nodeid}
+				      title =
 				{ (
 				   row[index].color == "Black") ?
 				   null : ((font_size < FONT_SIZE_HACK_MED ?
@@ -25,7 +26,8 @@ export function SynsetRow({row, font_size, onClick}) {
 				) }
 
 				 onClick = {(row[index].color == "Black") ? null : handleOnClick}
-				 style = {{ "color": row[index].color }} className="quuxbutton1">
+					  style = {{ "color": row[index].color }}
+					  className="quuxbutton1">
 
 				      {array[index].text}
 

@@ -41,8 +41,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  /* background-color: #1a1a1a; */
-  background-color: transparent;
+  background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -98,10 +97,10 @@ body {
   padding: 10px;
 }
 
-.new-item-form {
-	position: absolute;
-	top: 4%;
-	left: 2%;
+.new-item-form{
+  position: absolute;
+  top: 4%;
+  left: 2%;
   gap: 0.1rem;
 }
 
@@ -112,11 +111,22 @@ body {
   gap: 0.1rem;
 }
 
+.form-col {
+  flex-direction: col;
+  padding-top: 10px;
+  font-size: 12px;
+  max_width: 100px
+}
+
+.form-col button {
+  width: 50px;
+  margin: 1px auto;
+}
 
 .quux {
 	position: absolute;
-	top: 12%;
-	left: 5%;
+	top: 10%;
+	left: 10%;
 }
 
 .quux1 {
@@ -139,16 +149,20 @@ body {
 		border: none;
 		outline: none;
 	    padding: 0.1em 0.2em;
- }
-
-tooltip {
-    background-color: transparent;
-
 }
+
+
 
 .quuxbtn2 {
 	margin-left: 20px;
 }
+
+.col {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
 
 .btn {
   background: hsl(200, 100%, 50%, 0.1);

@@ -79,8 +79,6 @@ const COST = 1;
 
 --*/
 function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
-    const FONT_SIZE_HACK_MAX = 16;
-    const FONT_SIZE_HACK_MIN = 8; // BUGBUG CHANGE THIS IN SYNSETROW TOO.
     var node_costs = {};
     var revised_node_costs = {};
 	var charcount = 0;
@@ -143,7 +141,7 @@ function getDisplayInfo(nodes, zlevel, xfactor, curr, extent) {
     var nsyns = nodes.length;
 
     const fontmax = 16
-    const fontmed = 12
+    const fontmed = 11
     const fontmin = 4
 
     if (font_size > fontmax) {
@@ -260,11 +258,10 @@ var n = nodes.length;
 				color = (color == "Black") ? "Red" : color;
 			}
 
-		       var syns = graph[node].length;
 			displayLine.push( { nodeid: nodes[i], text: text,
 					    color: color,
 					    cost: node_data[nodes[i]][COST],
-					    syns: syns
+					    syns: graph[nodes[i]].length
 					  } );
 
 
@@ -319,9 +316,10 @@ function center_pad(displayInfo, columns) {
 	if (slack > 2)
 	{
 	    var half = Math.floor(slack / 2);
+
 	    var pad = { nodeid: -1, text: '*'.repeat(half),
-			color: "Black", cost: 0 };
-	    displayInfo[i].unshift(pad);
+			color:'Black', cost:0, syns:0 };
+	   displayInfo[i].unshift(pad);
 	}
     }
 
@@ -341,7 +339,6 @@ function compareFn(a, b) {
   neighbors for additional terms and merging them in.
 
 */
-const EXPANSION_FACTOR = 1.3; // = 1.6; // eyeballed
 function expand_synset(synset, level) {
 
     var synsets = [];
@@ -349,7 +346,10 @@ function expand_synset(synset, level) {
     var expanded_list = [];
     var visited = new Set();
 
-    var limit = synset.length * Math.floor(EXPANSION_FACTOR ** level);
+    // This controls the rate at which the synthetic synset is expanded
+    // Right now it is a simple function of the expansion level
+    // (xfactor) but can be made more sophisticated.
+    var limit = synset.length * (1 + level)
 
     // populate the final list to be shown with
     // the nodes of the starting synsets.
