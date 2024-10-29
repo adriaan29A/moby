@@ -327,9 +327,9 @@ class Navigator {
     getLevelText() {
 
 	if (this.xfactor != 0) {
-	var str = 'X' + this.xfactor.toString()
-			+ ' (' + this.nsyns.toString()
-			+ ')';
+	    var str = 'X' + this.xfactor.toString();
+//			+ ' (' + this.nsyns.toString()
+//			+ ')';
 	    return (str);
 	}
 

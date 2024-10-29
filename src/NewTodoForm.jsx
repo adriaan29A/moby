@@ -130,7 +130,7 @@ export function NewTodoForm({nav, onSubmit}) {
 
 		<div className = "form-col">
 
-		    <label style = {{"font-size" : "12px", color:"DeepSkyBlue", "margin-top":"0"}}>
+		    <label style = {{"font-size" : "13px", color:"DeepSkyBlue", "margin-top":"0"}}>
 			{ (nav.target != null) ? "Best To Target:" : "" }
 		    </label>
 
@@ -156,7 +156,7 @@ export function NewTodoForm({nav, onSubmit}) {
 
 
 		    <div style = {{"margin-top": "20px"}}>
-			<label style = {{"font-size" : "12px", color:"DeepSkyBlue"}}>
+			<label style = {{"font-size" : "13px", color:"DeepSkyBlue"}}>
 			    { (nav.target != null) ? "Game Score:" : "" }
 			</label>
 		    </div>
