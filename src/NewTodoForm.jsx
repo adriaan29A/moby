@@ -124,13 +124,13 @@ export function NewTodoForm({nav, onSubmit}) {
 		</div>
 
 		{/* History (shown only during game */}
-		<div className = "form-row" style = {{ color: "SteelBlue", "padding-top": "10px", "max-width": "50px", "font-size": "16px"}} >
+		<div className = "form-row" style = {{ color: "SteelBlue", "padding-top": "15px", "padding-bottom": "15px", "max-width": "50px", "font-size": "16px"}} >
 		    <label > { (nav.target != null)  ? nav.getHistoryText() : nav.getCurrentText() } </label>
 		</div>
 
 		<div className = "form-col">
 
-		    <label style = {{"font-size" : "12x", color:"DeepSkyBlue", "padding-top": "50px" }}>
+		    <label style = {{"font-size" : "12x", color:"DeepSkyBlue", "margin-top": "1px" }}>
 			{ (nav.target != null) ? "Best To Target:" : "" }
 		    </label>
 
@@ -138,7 +138,7 @@ export function NewTodoForm({nav, onSubmit}) {
 		    <div className = "form-row">
 			{/*<label style = {{"margin-left":"4px", "margin-right":"4px"}} > { (nav.target != null) ? " / " : "" } </label> */}
 
-			<label style = {{"margin-left":"5px"}}>
+			<label style = {{"margin-left":"0px"}}>
 			{(nav.target != null) ? "Cost:" : ""} </label>
 
 			<label style = {{color: (nav.delta <= 0 || nav.current == nav.origin) ? "Lime" : "Red" }}>
@@ -147,7 +147,7 @@ export function NewTodoForm({nav, onSubmit}) {
 
 		    <div className ="form-row">
 			{/*-- Jumps-- */}
-			<label style = {{ "margin-left":"5px"}}>
+			<label style = {{ "margin-left":"0px"}}>
 			{(nav.target != null) ? "Jumps:" : ""} </label>
 			<label style = {{"margin-left":"5px", color: (nav.deltaj <= 0 || nav.current == nav.origin) ? "Lime" : "Red" }}>
 			    { (nav.target != null) ? nav.jumps : "" }
@@ -163,23 +163,23 @@ export function NewTodoForm({nav, onSubmit}) {
 
 		    <div className ="form-row">
 			{/*-- Cost-- */}
-			<label style = {{"margin-left":"5px" }} >  { (nav.target != null) ? "Cost:" : "" } </label>
+			<label style = {{"margin-left":"0px" }} >  { (nav.target != null) ? "Cost:" : "" } </label>
 			<label style = {{"margin-left":"5px" }}>
 			{ (nav.target != null) ? nav.getCostText(nav.total) : "" } </label>
 		    </div>
 		    <div className ="form-row">
-			{/*-- Cheats-- */}
-			<label style = {{"margin-left":"5px"}}>
-			{ (nav.target != null) ? nav.cheats : "" } </label>
-			<label style = {{"margin-left":"5px"}}>
-			{(nav.target != null) ? "Assists" : ""} </label>
-		    </div>
-		    <div className ="form-row">
 			{/*-- Jumps-- */}
+			<label style = {{"margin-left":"0px"}}>
+			{(nav.target != null) ? "Jumps:" : ""} </label>
 			<label style = {{"margin-left":"5px" }}>
 			{ (nav.target != null) ? nav.jumpstot : "" } </label>
+		    </div>
+		    <div className ="form-row">
+			{/*-- Cheats-- */}
+			<label style = {{"margin-left":"0px"}}>
+			{(nav.target != null) ? "Assists:" : ""} </label>
 			<label style = {{"margin-left":"5px"}}>
-			{(nav.target != null) ? "Jumps" : ""} </label>
+			{ (nav.target != null) ? nav.cheats : "" } </label>
 		    </div>
 		    <div style = {{"margin-top": "10px", "margin-left":"5px", "display" : (nav.target != null) ? "block" : "none"}}>
 			{/*	<button id = "cheat" className = "btn" title = "Go to the next best synonym along a minimum cost path"

@@ -115,7 +115,7 @@ body {
   flex-direction: col;
   padding-top: 10px;
   font-size: 12px;
-  max-width: 150px
+  max-width: 120px
 }
 
 .form-col button {
