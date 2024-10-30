@@ -12,16 +12,30 @@ Browse Mode
 
 Game Mode
 
-The object of the game is to find a path between two different terms through their shared synonyms. More commonplace synonyms (high frequency) cost the most, less popular ones cost less, with a range spanning 7 orders of magnitude. The path should consist of the least costly (i.e. rare) synonyms you can find. In practice, finding any path can be so challenging that an option is provided to aid you along the way. When in game mode you can get an an "assist" by clicking the &#x276F; (fwd/next) button which will navigate 1 step to the next best synonym along a *minimum cost path path towards the target*.  Repeatedly clicking "&#x276F;" will always take you to the target along the (or a) lowest cost path. Dijkstra's algorithm in action! Your running scores (cost, #assists and  #jumps) are tracked and comprise your compound game score. This is not to overemphasize the metrics, the idea here is to provide a semi-structured way of browsing through the work with a little playful competitiveness thrown in. 
+The object of the game is to find a path between two different terms through their shared synonyms. More commonplace synonyms (high frequency) cost the most, less popular ones cost less, with a range spanning 7 orders of magnitude. The path should consist of the least costly (i.e. rare) synonyms you can find. In practice, finding any path can be so challenging that an option is provided to help you along the way. When in game mode you can get an an "assist" by clicking &#x276F; (forward). This will navigate 1 step to the next best synonym along a *minimum cost path path towards the target* Repeatedly clicking "&#x276F;" will take you to the target along a lowest cost path. Dijkstra's algorithm in action! Your running scores (cost, #assists and  #jumps) are tracked and comprise your compound game score. I think the #assists figure is akin to a par score in golf if you squint hard enough. Not to overemphasize the metrics, the idea here is to provide a semi-structured way of browsing through the work with a little playful competitiveness thrown in. 
 
 
 To play - 
 - Click on a term or type one in, click "Go" or hit "\<return\>"
-- Use the "+/-" to zoom in/out and &#x276E; and &#x276F; to go back/forward.
-- Start from your current location or navigate to the word/phrase you'd like to start.
+- Use the "+/-" to zoom in/out and &#x276E; and &#x276F; to go back/next.
+
+![Screenshot from 2024-10-30 07-07-36](https://github.com/user-attachments/assets/16e562fe-9e1d-4757-8e20-5aeaf311dcb1)
+
+- Start from your current location or navigate to the word/phrase you'd like to start from.
 - Type in the target and click the &#x1F3AE; button (for navigate) You will see additional info pop up
-- Note the "Best To Target #s" - this is the minimum cost (and associated #jumps) to meet or beat** These are updated on each navigation to inform the player of the new Best To Target 
+
+
+![Screenshot from 2024-10-30 07-20-12](https://github.com/user-attachments/assets/9dec0d09-8d3d-4f28-a2be-c70a76fdb418)
+
+
+- Note the "Best To Target #s" - this is the minimum cost (and associated #jumps) to meet or beat** These are updated on each navigation to inform the player of the new Best To Target
+
+![Screenshot from 2024-10-30 06-36-07](https://github.com/user-attachments/assets/3a983777-1ad0-42ad-9bb9-5f91722c8e7e)
+
+
+
 - Mouse over synynoms to see word/phrase frequencies
+- The 
 - Click on the best lowest cost synonyms you think will get you to the target
 - Click on &#x276F; to get an assist and be moved 1 synonym towards the target at the cost of 1 assist and the synonym's cost.
 - Click on &#x1f6d1; to exit the game.
