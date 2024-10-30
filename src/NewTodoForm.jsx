@@ -112,7 +112,8 @@ export function NewTodoForm({nav, onSubmit}) {
 		    <button className="btn" title = "Zoom out" id = "zoomout" onClick = { handleOnClick } >&#x2212;</button>
 
 		    {/*-- Current Zoom level--*/}
-		    <label title = "Zoom level" style = {{"margin-left":"10px"}}> {nav.getLevelText(nav.zlevel)} </label>
+		    <label title = "Zoom level" style = {{ color:"DeepSkyBlue", "margin-left":"1em", "margin-right":"1em"}}> Zoom:</label>
+		    <label>{nav.getLevelText(nav.zlevel)} </label>
 
 		    {/*-- Target--*/}
 		    <label style = {{ color:"DeepSkyBlue", "margin-left":"15px"}}>

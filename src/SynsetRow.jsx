@@ -22,7 +22,7 @@ export function SynsetRow({row, font_size, onClick}) {
 				   row[index].text + ' '  : '') +'\n' +
 					   row[index].cost.toLocaleString() +
 					   '\n' + row[index].syns.toString() +
-					   ' syns'
+					   ' links'
 				) }
 
 				 onClick = {(row[index].color == "Black") ? null : handleOnClick}
