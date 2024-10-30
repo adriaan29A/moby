@@ -19,7 +19,7 @@ To play -
 - Click on a term or type one in, click "Go" or hit "\<return\>"
 - Use the "+/-" to zoom in/out and &#x276E; and &#x276F; to go back/forward.
 - Start from your current location or navigate to the word/phrase you'd like to start.
-- Type in the target and click the &#x1f6d1; button (for navigate) You will see additional info pop up
+- Type in the target and click the &#x1F3AE; button (for navigate) You will see additional info pop up
 - Note the "Best To Target #s" - this is the minimum cost (and associated #jumps) to meet or beat** These are updated on each navigation to inform the player of the new Best To Target 
 - Mouse over synynoms to see word/phrase frequencies
 - Click on the best lowest cost synonyms you think will get you to the target
