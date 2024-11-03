@@ -50,14 +50,25 @@ class Navigator {
 	getDisplayInfo(extent) {
 
 		var params = null; var displayInfo = null;
-		if ( this.xfactor == 0) {
+
+	    	var pure_nodes = Object.keys(node_data).map(function(key) {
+		    return key; });
+
+//	    pure_nodes = pure_nodes.slice(0,30200);
+
+
+	    if ( this.xfactor == 0) {
 			[params, displayInfo] = getDisplayInfo(graph[this.current], this.zlevel,
 								  this.xfactor, this.current, extent);
+//			[params, displayInfo] = getDisplayInfo(pure_nodes, this.zlevel,
+//								  this.xfactor, this.current, extent);
 		}
 		else {
 			var expanded_synset = expand_synset(graph[this.current], this.xfactor);
 			[params, displayInfo] = getDisplayInfo(expanded_synset, this.zlevel,
 								  this.xfactor, this.current, extent);
+//			[params, displayInfo] = getDisplayInfo(pure_nodes, this.zlevel,
+//								  this.xfactor, this.current, extent);
 		}
 
 		this.nsyns = params.nsyns;

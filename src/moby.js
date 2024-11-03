@@ -52,14 +52,14 @@ function zoomout(nav, ui) { nav.integrated_zoom(false); }
 function back(nav, ui) { nav.back(); }
 function history(nav, ui) { nav.print_history(); }
 function random_word(nav, ui){ nav.goto(find_random_node(1e7, nav.node_data));}
-function info(nav, ui) { nav.print_info(ui); }
+//function info(nav, ui) { nav.print_info(ui); }
 function color_scale(nav, ui) { nav.print_color_scale(); }
 function help(nav,ui) { console.log(HelpText); }
 function clear_screen(nav, ui) { nav.clear_screan(); }
 function downfilter(nav, ui) { nav.zoom(true); }
 function upfilter(nav, ui) { nav.zoom(false); }
 function play_loop(nav, ui) { nav.play_loop(1000); }
-function do_test(nav, ui) { test(nav, ui); }
+function print_info(nav, ui) { nav.print_info(nav, ui); }
 function set_target(nav, ui) { if (!nav.set_target(ui[1])) console.log('error');}
 function next(nav, ui) { nav.next(); }
 function clear(nav, ui) { nav.clear(); console.log('cleared'); }
@@ -68,7 +68,7 @@ function clear(nav, ui) { nav.clear(); console.log('cleared'); }
 var commands = {'l': list, 'i': zoomin, 'o': zoomout, 'r': random_word, 'b': back,
 				'-p': history, '-g': set_target, '-c': clear, 'n': next, '-h': help,
 				'-a': play_loop, '-s': color_scale, '-cls': clear_screen,
-				'j': downfilter, 'k': upfilter, '-t': do_test};
+				'j': downfilter, 'k': upfilter, '-pi': print_info};
 
 // cmd line fixup for gogogadget - 'out of it' <-> out_of_it
 function mangle(cmdline, /* mangle/unmangle flag */ f) {
@@ -796,6 +796,45 @@ class Navigator
         this.zlevel = DEFAULT_ZOOM;
 	}
 
+
+
+    // prints path info between two words
+    print_info (nav, ui) {
+
+	var data = ui;
+	var node_data = nav.node_data;
+	var graph = nav.graph;
+
+	if (data.length == 5) {
+            var start = nodeid_from_text(ui[1], node_data);
+            var goal = nodeid_from_text(ui[2], node_data);
+            var edge_weight = parseInt(parseFloat(ui[3]));
+            var display_path = ui[4];
+            var parent = dijkstra(graph, node_data, start, goal, edge_weight);
+            const [cost, distance] = get_cost_and_distance(parent, goal, node_data);;
+            const [path, nodes] = make_path(parent, goal, node_data);
+	    console.log('\ncost: ' + cost.toLocaleString('en-US'));
+	    console.log('jumps: ' + distance);
+
+            if (display_path == 'y')
+		console.log(path);
+	}
+	else if (data.length == 2) {
+            var nodeid = nodeid_from_text(ui[1], node_data);
+            var cost = node_data[nodeid][COST];
+	    console.log('\ncost: ' + cost.toLocaleString('en-US'));
+	}
+	else if (data.length == 3) {
+            var nodeid1 = nodeid_from_text(ui[1], node_data);
+            var nodeid2 = nodeid_from_text(ui[2], node_data);
+	    var cost1 = node_data[nodeid1][COST];
+	    var cost2 = node_data[nodeid2][COST];
+	    console.log('\ncost1: ' + cost1.toLocaleString('en-US'));
+	    console.log('\ncost2: ' + cost2.toLocaleString('en-US'));
+	}
+
+    }
+
 } // end class Navigator
 
 
@@ -844,38 +883,6 @@ function sleep(milliseconds) {
 	} while (currentDate - date < milliseconds);
 }
 
-// prints path info between two words
-function print_info (data, graph, node_data) {
-
-    if (data.length == 5) {
-
-        var start = nodeid_from_text(data[1], node_data);
-        var goal = nodeid_from_text(data[2], node_data);
-        var edge_weight = parseInt(parseFloat(data[3]));
-        var display_path = data[4];
-        var parent = dijkstra(graph, node_data, start, goal, edge_weight);
-        const [cost, distance] = get_cost_and_distance(parent, goal, node_data);;
-        const [path, nodes] = make_path(parent, goal, node_data);
-		console.log('\ncost: ' + cost.toLocaleString('en-US'));
-		console.log('jumps: ' + distance);
-
-        if (display_path == 'y')
-            console.log(path);
-	}
-    else if (data.length == 2) {
-        var nodeid = nodeid_from_text(data[1], node_data);
-        var cost = node_data[nodeid][COST];
-		console.log('\ncost: ' + cost.toLocaleString('en-US'));
-	}
-    else if (data.length == 3) {
-        var nodeid1 = nodeid_from_text(data[1], node_data);
-        var nodeid2 = nodeid_from_text(data[2], node_data);
-	var cost1 = node_data[nodeid1][COST];
-	var cost2 = node_data[nodeid2][COST];
-	console.log('\ncost1: ' + cost1.toLocaleString('en-US'));
-	console.log('\ncost2: ' + cost2.toLocaleString('en-US'));
-    }
-}
 
 
 

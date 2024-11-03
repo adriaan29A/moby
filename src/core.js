@@ -333,6 +333,7 @@ function compareFn(a, b) {
 	return (sa < sb)? -1 : (sa > sb) ? 1 : 0;
 }
 
+
 /*
 
   Takes an existing synset and expands it by walking
