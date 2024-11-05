@@ -12,7 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "node": "^23.1.0",
+    "http-server": "^14.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "readline-sync": "^1.4.10",

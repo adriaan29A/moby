@@ -24,17 +24,17 @@ class Navigator {
 
         this.jumpstot = 0; this.deltaj = 0; this.cheats = 0; this.nsyns = 0;
 
-        this.backCache = [];
+        this.backCache = []; this.costOriginal = 0;
 	}
 
-        // put this in a dict
+    // put this in a dict, this is massively verbose
         set(ctx) {
 		this.current = ctx.curr; this.origin = ctx.origin; this.history = ctx.history;
 		this.target = ctx.target; this.cost = ctx.cost; this.jumps = ctx.jumps;
 		this.delta = ctx.delta; this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor;
 		this.total = ctx.total; this.trvlog = ctx.trvlog; this.jumpstot = ctx.jumpstot;
 		this.deltaj = ctx.deltaj; this.cheats = ctx.cheats; this.nsyns =ctx.nsyns;
-	        this.backCache = ctx.backCache;
+	        this.backCache = ctx.backCache; this.costOriginal = ctx.costOriginal;
 	}
 
         get() {
@@ -43,7 +43,7 @@ class Navigator {
 				 this.delta, zlevel: this.zlevel, xfactor: this.xfactor,
 				 total: this.total, trvlog: this.trvlog, jumpstot: this.jumpstot,
 			         deltaj: this.deltaj, cheats: this.cheats, nsyns: this.nsyns,
-			         backCache: this.backCache };
+			         backCache: this.backCache, costOriginal: this.costOriginal };
 
 	}
 
@@ -155,14 +155,16 @@ class Navigator {
         this.history = [this.current];
 	this.trvlog = [this.current];
 	this.backCache = [];
+
         var parent = dijkstra(graph, node_data, this.current, this.target);
         var [cost, jumps] = get_cost_and_distance(parent, this.target, node_data);
 
         this.cost = cost;
-		this.total = 0;
-		this.jumps = jumps;
-		this.jumpstot = 0;
-		this.deltaj = 0;
+	this.total = 0;
+	this.jumps = jumps;
+	this.jumpstot = 0;
+	this.deltaj = 0;
+	this.costOriginal = this.cost;
 
         return true;
 	}
@@ -334,8 +336,15 @@ class Navigator {
 			return '';
 	}
 
+        getOriginText() {
 
-    getLevelText() {
+		if (this.target != null)
+			return node_data[this.origin][TEXT];
+		else
+			return '';
+	}
+
+        getLevelText() {
 
 	if (this.xfactor != 0) {
 	    var str = 'X' + this.xfactor.toString();
@@ -384,6 +393,8 @@ class Navigator {
      }
 
         getCostText(num = this.cost) { return this.getNumText(num); }
+
+        getCostOriginalText(num = this.costOriginal) { return this.getNumText(num); }
 
 
 	getHistoryText() {

@@ -116,16 +116,27 @@ export function NewTodoForm({nav, onSubmit}) {
 		    <label>{nav.getLevelText(nav.zlevel)} </label>
 
 		    {/*-- Target--*/}
+
+		    <label style = {{ "margin-left":"15px", "font-size":"18px"}}>
+			{ (nav.target != null) ?  (nav.getOriginText() + '->' + nav.getTargetText()) : nav.getCurrentText() }
+		    </label>
+		    <label style = {{ color:"lime", "margin-left":"15px", "font-size":"18px"}}>
+			{ (nav.target != null) ?  '$' + nav.getCostOriginalText() : '' }
+		    </label>
+		    {/* <label style = {{"margin-left":"5px"}}> {nav.getTargetText()}</label> */}
+
+		    {/*
+
 		    <label style = {{ color:"DeepSkyBlue", "margin-left":"15px"}}>
 					{(nav.target != null) ? "Target:" : ""}
 		    </label>
 		    <label style = {{"margin-left":"5px"}}> {nav.getTargetText()}</label>
-
+		     */}
 
 		</div>
 
 		{/* History (shown only during game */}
-		<div className = "form-row" style = {{ color: "SteelBlue", "padding-top": "15px", "padding-bottom": "15px", "max-width": "50px", "font-size": "16px"}} >
+		<div className = "form-row" style = {{ color: "SteelBlue", "padding-top": "15px", "padding-bottom": "15x", "max-width": "50px", "font-size": "18px"}} >
 		    <label > { (nav.target != null)  ? nav.getHistoryText() : nav.getCurrentText() } </label>
 		</div>
 
@@ -135,7 +146,7 @@ export function NewTodoForm({nav, onSubmit}) {
 
 		    {/* Minimum to target, $cost, #jumps */}
 
-		    <label style = {{"font-size" : "12x", color:"DeepSkyBlue", "margin-top": "1px" }}>
+		    <label style = {{"font-size" : "13x", color:"DeepSkyBlue", "margin-top": "1px" }}>
 			{ (nav.target != null) ? "Best To Target:" : "" }
 		    </label>
 
@@ -164,7 +175,7 @@ export function NewTodoForm({nav, onSubmit}) {
 
 
 		    <div style = {{"margin-top": "20px"}}>
-			<label style = {{"font-size" : "12px", color:"DeepSkyBlue"}}>
+			<label style = {{"font-size" : "13px", color:"DeepSkyBlue"}}>
 			    { (nav.target != null) ? "Game Score:" : "" }
 			</label>
 		    </div>
@@ -184,9 +195,9 @@ export function NewTodoForm({nav, onSubmit}) {
 		    </div>
 		    <div className ="form-row">
 			{/*-- Cheats-- */}
-			<label style = {{"margin-left":"0px"}}>
+			<label style = {{"margin-left":"0px", "margin-top": "10px"}}>
 			{(nav.target != null) ? "Assists:" : ""} </label>
-			<label style = {{"margin-left":"5px"}}>
+			<label style = {{"margin-left":"5px","margin-top": "10px"}}>
 			{ (nav.target != null) ? nav.cheats : "" } </label>
 		    </div>
 		    <div style = {{"margin-top": "10px", "margin-left":"5px", "display" : (nav.target != null) ? "block" : "none"}}>

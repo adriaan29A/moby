@@ -42,9 +42,9 @@ export {getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_pat
 var g_c1 = 1; var g_c2 = 1; var g_limit = 0;
 
 // color stuff
+// Red->Crimson,
 const ztable = [4e9, 5e8, 1e8, 1e7, 1e6, 5e5, 3e5, 20e4, 5e4];
-var colors = ["Blue",  "DeepSkyBlue", "BlueViolet", "", "LightGreen", "Lime",
-              "Yellow", "LightYellow", "Orange", "Red"];
+var colors = ["Blue",  "DeepSkyBlue", "BlueViolet", "LightGreen", "Lime", "Yellow", "LightYellow", "Orange","OrangeRed", "Red"];
 
 // zoom stuff
 const MIN_ZOOM = 5e4;
