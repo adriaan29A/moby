@@ -112,26 +112,23 @@ export function NewTodoForm({nav, onSubmit}) {
 		    <button className="btn" title = "Zoom out" id = "zoomout" onClick = { handleOnClick } >&#x2212;</button>
 
 		    {/*-- Current Zoom level--*/}
-		    <label title = "Zoom level" style = {{ color:"DeepSkyBlue", "margin-left":"1em", "margin-right":"1em"}}> Zoom:</label>
+		    <label title = "Zoom level" style = {{  "font-size":"15px", color:"DeepSkyBlue", "margin-left":"1em", "margin-right":"1em"}}> Zoom:</label>
 		    <label>{nav.getLevelText(nav.zlevel)} </label>
 
-		    {/*-- Target--*/}
-
-		    <label style = {{ "margin-left":"15px", "font-size":"18px"}}>
-			{ (nav.target != null) ?  (nav.getOriginText() + '->' + nav.getTargetText()) : nav.getCurrentText() }
+		    {/*-- Goal--*/}
+		    <label title = "Goal" style = {{ "font-size":"15px", color:"DeepSkyBlue", "margin-left":"2em", "margin-right":"1em"}}>
+			{(nav.target != null) ? 'Goal:' : ''}
 		    </label>
-		    <label style = {{ color:"lime", "margin-left":"15px", "font-size":"18px"}}>
-			{ (nav.target != null) ?  '$' + nav.getCostOriginalText() : '' }
+		    <label title = "Target" style = {{"font-size":"15px"}}>
+			{ (nav.target != null) ?  nav.getTargetText() : '' }
 		    </label>
-		    {/* <label style = {{"margin-left":"5px"}}> {nav.getTargetText()}</label> */}
-
-		    {/*
-
-		    <label style = {{ color:"DeepSkyBlue", "margin-left":"15px"}}>
-					{(nav.target != null) ? "Target:" : ""}
+    		    <label title = "Cost" style = {{ "font-size":"15px", color:"DeepSkyBlue", "margin-left":"1em", "margin-right":"1em"}}>
+			{(nav.target != null) ? 'Cost:' : ''}
 		    </label>
-		    <label style = {{"margin-left":"5px"}}> {nav.getTargetText()}</label>
-		     */}
+
+		    <label title = "OriginalCost" style = {{ "font-size":"15px", "margin-left":"10px"}}>
+			{ (nav.target != null) ?  nav.getCostOriginalText() : '' }
+		    </label>
 
 		</div>
 
@@ -147,7 +144,7 @@ export function NewTodoForm({nav, onSubmit}) {
 		    {/* Minimum to target, $cost, #jumps */}
 
 		    <label style = {{"font-size" : "13x", color:"DeepSkyBlue", "margin-top": "1px" }}>
-			{ (nav.target != null) ? "Best To Target:" : "" }
+			{ (nav.target != null) ? "Goal From Here:" : "" }
 		    </label>
 
 		    {/*-- Cost-- */}
@@ -176,7 +173,7 @@ export function NewTodoForm({nav, onSubmit}) {
 
 		    <div style = {{"margin-top": "20px"}}>
 			<label style = {{"font-size" : "13px", color:"DeepSkyBlue"}}>
-			    { (nav.target != null) ? "Game Score:" : "" }
+			    { (nav.target != null) ? "Player Score:" : "" }
 			</label>
 		    </div>
 
