@@ -99,7 +99,8 @@ export function NewTodoForm({nav, onSubmit}) {
 								     "Game Mode: Type in a word/phrase to begin navigating" : "End Game Mode"}
 			    onClick = { handleOnClick }>
 
-			{ (nav.target == null) ? ("\uD83E\uDDED") : "\u274C" }
+			{/* (nav.target == null) ? ("\uD83E\uDDED") : "\u274C" */ }
+			{ (nav.target == null) ? ("\uD83E\uDDED") : "\uD83E\uDDED" }
 		    </button>
 
 
