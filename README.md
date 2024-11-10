@@ -3,7 +3,7 @@ Game Edition (Now With Cheats!®)
 
 ## Introduction
 
-The Moby Thesaurus is an eclectic and delightful compendium released into the public domain by Grady Ward in 1995 [(Wikipedia)](https://en.wikipedia.org/wiki/Moby_Project). This English version contains 30,260 root terms and 130,360* related synonyms and related sayings replete with Americana and oft amusing colloquialisms ranging from the antedeluvian through 1960s Hippiedom. I combined it with word frequencies from [Google's Trillion Word Corpus](https://research.google/blog/all-our-n-gram-are-belong-to-you/) with the vague idea of making a semantic word game. What I ended up with is a kind of a logophile's scavenger hunt with the goal of finding synonyms along paths between different entries. Along the way a simple method of incorporating the frequencies into the view fell out such that sets of synonyms (synsets) are displayed in a 2D "heat map word cloud" of hyperlinks colored and filtered by their respective frequencies. While originally intended with the game in mind it ends up being the main view by which the thesaurus is browsed.
+The Moby Thesaurus is an eclectic and delightful compendium released into the public domain by Grady Ward in 1995 [(Wikipedia)](https://en.wikipedia.org/wiki/Moby_Project). This English version contains 30,260 root terms and 130,360*, synonyms and related sayings replete with Americana and, if you are of a certain age and demographic, oft amusing colloquialisms ranging from antedeluvian through 1960s Hippiedom. I combined it with word frequencies from [Google's Trillion Word Corpus](https://research.google/blog/all-our-n-gram-are-belong-to-you/) with the vague idea of making a semantic word game. What I ended up with is a kind of a logophile's scavenger hunt with the goal of finding synonyms along paths between different entries. Along the way a simple method of incorporating the frequencies into the view fell out where sets of synonyms (synsets) are displayed in a 2D "heat map word cloud" of hyperlinks colored and filtered by their respective frequencies. While originally intended with the game in mind it serves as the main view by which the thesaurus is simply browsed.
 
 
 Browse Mode
@@ -40,7 +40,7 @@ The object of the game is to find a path between two different terms through the
 ![Screenshot from 2024-10-30 06-36-07](https://github.com/user-attachments/assets/3a983777-1ad0-42ad-9bb9-5f91722c8e7e)
 
 
-- Click on the best (lowest cost, semantically closest)  synonyms you think will get you to the target
+- Click on the best (lowest cost, semantically closest)  synonyms you think will get you to the target.
 - Click on &#x276F; to get an assist and be moved 1 synonym towards the target at the cost of 1 assist and the synonym's cost (this button's action is overloaded from its simple navigation stack usage in Browse Mode).
 - Click on &#x1f6d1; to exit the game.
 
