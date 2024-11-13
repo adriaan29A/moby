@@ -9,7 +9,9 @@ The Moby Thesaurus is an eclectic and delightful compendium released into the pu
 
 Browse Mode
 
-![Screenshot from 2024-11-11 16-26-28](https://github.com/user-attachments/assets/29c3ff5a-a4fa-475c-8b42-bd77960617a3)
+
+![browse mode](https://github.com/user-attachments/assets/77ee6923-6477-432c-aa66-0541cab2a541)
+
 
 
 To browse the thesaurus:
@@ -25,7 +27,9 @@ To browse the thesaurus:
 
 Game Mode
 
-![Screenshot from 2024-11-11 16-38-13](https://github.com/user-attachments/assets/1398bfa6-c2f1-467e-8c8c-9783edca100d)
+
+![Game Mode](https://github.com/user-attachments/assets/70b884cf-493f-4f41-a124-5cae8ab6961e)
+
 
 
 The object of the game is to find a path between two different terms through their shared synonyms. More commonplace synonyms (high frequency) cost the most, less popular ones cost less, with a range spanning 7 orders of magnitude. The path should consist of the least costly (i.e. rare) synonyms you can find. In practice, finding any path can be so challenging that an option is provided to help you along the way, ie cheat. When in game mode you can get an an "assist" by clicking &#x276F; (forward). This will navigate 1 step to the next best synonym along a *minimum cost path path towards the target* Repeatedly clicking &#x276F; will take you to the target along a lowest cost path. Dijkstra's algorithm in action! Your running scores (cost, #assists and  #jumps) are tracked and comprise your compound game score. I think the #assists figure is akin to a par score in golf if you squint hard enough. Not to overemphasize the metrics, the idea here is to provide a semi-structured way of browsing through the work with a little playful competitiveness thrown in. 
@@ -40,7 +44,7 @@ The object of the game is to find a path between two different terms through the
 
 - Click on the best (lowest cost, semantically closest)  synonyms you think will get you to the target.
 - Click on &#x276F; to get an assist and be moved 1 synonym towards the target at the cost of 1 assist and the synonym's cost (this button's action is overloaded from its simple navigation stack usage in Browse Mode).
-- Click on &#x1f9ed; to exit the game.
+- Click on &#x26F5; to exit the game.
 
 \* The Wikipedia entry cites a figure of ~2.5 million related words and phrases.  I'm not entirely certain where that number comes from but it might be referencing the Gutenberg project as a whole and including WordNet.
 
