@@ -99,8 +99,7 @@ export function NewTodoForm({nav, onSubmit}) {
 								     "Game Mode: Type in a word/phrase to begin navigating" : "End Game Mode"}
 			    onClick = { handleOnClick }>
 
-			{/* (nav.target == null) ? ("\uD83E\uDDED") : "\u274C" */ }
-			{ (nav.target == null) ? ("\uD83E\uDDED") : "\uD83E\uDDED" }
+			{(nav.target == null) ? ("\uD83E\uDDED") : "\u26F5"}
 		    </button>
 
 
@@ -145,7 +144,7 @@ export function NewTodoForm({nav, onSubmit}) {
 		    {/* Minimum to target, $cost, #jumps */}
 
 		    <label style = {{"font-size" : "13x", color:"DeepSkyBlue", "margin-top": "1px" }}>
-			{ (nav.target != null) ? "Goal From Here:" : "" }
+			{ (nav.target != null) ? "Best To Goal:" : "" }
 		    </label>
 
 		    {/*-- Cost-- */}
@@ -153,9 +152,9 @@ export function NewTodoForm({nav, onSubmit}) {
 			{/*<label style = {{"margin-left":"4px", "margin-right":"4px"}} > { (nav.target != null) ? " / " : "" } </label> */}
 
 			<label style = {{"margin-left":"0px"}}>
-			{(nav.target != null) ? "Cost:" : ""} </label>
+			{(nav.target != null) ? "Cost :" : ""} </label>
 
-			<label style = {{"text-align":"right", color: (nav.delta <= 0 || nav.current == nav.origin) ? "Lime" : "Red" }}>
+			<label style = {{"min-width":"40px", "text-align":"right", color: (nav.delta <= 0 || nav.current == nav.origin) ? "Lime" : "Red" }}>
 			{ (nav.target != null) ? nav.getCostText() : "" } </label>
 		    </div>
 
@@ -163,7 +162,7 @@ export function NewTodoForm({nav, onSubmit}) {
 			{/*-- Jumps-- */}
 			<label style = {{ "margin-left":"0px"}}>
 			{(nav.target != null) ? "Jumps:" : ""} </label>
-			<label style = {{"text-align":"right","margin-left":"5px", color: (nav.deltaj <= 0 || nav.current == nav.origin) ? "Lime" : "Red" }}>
+			<label style = {{"min-width":"40px", "text-align":"right", color: (nav.deltaj <= 0 || nav.current == nav.origin) ? "Lime" : "Red" }}>
 			    { (nav.target != null) ? nav.jumps : "" }
 			</label>
 		    </div>
@@ -180,22 +179,22 @@ export function NewTodoForm({nav, onSubmit}) {
 
 		    <div className ="form-row">
 			{/*-- Cost-- */}
-			<label style = {{"margin-left":"0px" }} >  { (nav.target != null) ? "Cost:" : "" } </label>
-			<label style = {{"text-align":"right","margin-left":"5px" }}>
+			<label style = {{"margin-left":"0px" }} >  { (nav.target != null) ? "Cost :" : "" } </label>
+			<label style = {{"min-width":"40px", "text-align":"right","margin-left":"5px" }}>
 			{ (nav.target != null) ? nav.getCostText(nav.total) : "" } </label>
 		    </div>
 		    <div className ="form-row">
 			{/*-- Jumps-- */}
 			<label style = {{"margin-left":"0px"}}>
 			{(nav.target != null) ? "Jumps:" : ""} </label>
-			<label style = {{"margin-left":"5px" }}>
+			<label style = {{"min-width":"40px", "text-align":"right", "margin-left":"5px" }}>
 			{ (nav.target != null) ? nav.jumpstot : "" } </label>
 		    </div>
 		    <div className ="form-row">
 			{/*-- Cheats-- */}
 			<label style = {{"margin-left":"0px", "margin-top": "10px"}}>
 			{(nav.target != null) ? "Assists:" : ""} </label>
-			<label style = {{"margin-left":"5px","margin-top": "10px"}}>
+			<label style = {{"min-width":"30px", "text-align":"right","margin-top": "10px"}}>
 			{ (nav.target != null) ? nav.cheats : "" } </label>
 		    </div>
 		    <div style = {{"margin-top": "10px", "margin-left":"5px", "display" : (nav.target != null) ? "block" : "none"}}>
