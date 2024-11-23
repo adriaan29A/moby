@@ -1,6 +1,6 @@
 # The Moby Thesaurus
 Game Edition (Now With Cheats!®) <br>
-Most Anticlimactic Game Ending Ever Invented!
+Most Anticlimactic Game Ever!
 
 ## Introduction
 
@@ -32,18 +32,20 @@ Game Mode
 
 
 
-The object of the game is to find a path between two different terms through their shared synonyms. More commonplace synonyms (high frequency) cost the most, less popular ones cost less, with a range spanning 7 orders of magnitude. The path should consist of the least costly (i.e. rare) synonyms you can find. In practice, finding any path can be so challenging that an option is provided to help you along the way, ie cheat. When in game mode you can get an an "assist" by clicking &#x276F; (forward). This will navigate 1 step to the next best synonym along a *minimum cost path path towards the target* Repeatedly clicking &#x276F; will take you to the target along a lowest cost path. Dijkstra's algorithm in action! Your running scores (cost, #assists and  #jumps) are tracked and comprise your compound game score. I think the #assists figure is akin to a par score in golf if you squint hard enough. Not to overemphasize the metrics, the idea here is to provide a semi-structured way of browsing through the work with a little playful competitiveness thrown in. 
+The object of the game is to find a path between two different terms through their shared synonyms. More commonplace synonyms (high frequency) cost the most, less popular ones cost less, with a range spanning 7 orders of magnitude. The path should consist of the least costly (i.e. rare) synonyms you can find. In practice, finding any path can be so challenging that an option is provided to help you along the way, ie cheat. When in game mode you can get an an "assist" by clicking &#x276F; (forward). This will navigate 1 step to the next best synonym along a *minimum cost path path towards the target* Repeatedly clicking &#x276F; will take you to the target along a lowest cost path. Dijkstra's algorithm in action! Your running scores (cost, #assists and  #jumps) are tracked and comprise your compound game score. The costs of the start and goal synonyms are not counted. The #assists figure is akin to a par score in golf if you squint hard enough. Not to overemphasize the metrics, the idea here is to provide a semi-structured way of browsing through the work with a little playful competitiveness thrown in. 
 
 
 - Start from your current location or navigate to the word/phrase you'd like to start from.
 - Type in the target and click the &#x1f9ed; button. You will see additional info pop up
 - Your navigation path is tracked from the starting point (origin) and displayed until you exit the game.
-- Note the "Goal From Here #s" - this is the minimum cost (and associated #jumps) to meet or beat**. These are updated on each navigation so that the minimum *cost* and  #jumps to the target is always displayed from wherever you are without divulging the path that gets you there. The values are colored red to indicate an increase from the last value, green to indicate a decrease.
+- Note the "Goal From Here" #s - this is the minimum cost (and associated #jumps) to meet or beat**. These are updated on each navigation so that the minimum *cost* and  #jumps to the target is always displayed from wherever you are without divulging the path that gets you there. The values are colored red to indicate an increase from the last value, green to indicate a decrease.
 
+![Screenshot from 2024-11-23 07-25-45](https://github.com/user-attachments/assets/fb7e42d5-6f4c-431f-809a-056bff6e329f)
 ![game detail](https://github.com/user-attachments/assets/33f6d28e-b0c9-44a7-8365-efc2ca50598f)
 
 - Click on the best (lowest cost, semantically closest)  synonyms you think will get you to the target.
 - Click on &#x276F; to get an assist and be moved 1 synonym towards the target at the cost of 1 assist and the synonym's cost (this button's action is overloaded from its simple navigation stack usage in Browse Mode).
+- Once (if) you have landed on a synset containing the goal (#jumps = 1) you have essentially won the game since you can now compare the synonym costs against the From Here cost to identify the final synset before the Goal. 
 - Click on &#x26F5; to exit the game.
 
 \* The Wikipedia entry cites a figure of ~2.5 million related words and phrases.  I'm not entirely certain where that number comes from but it might be referencing the Gutenberg project as a whole and including WordNet.
@@ -60,6 +62,8 @@ The object of the game is to find a path between two different terms through the
 - The thesaurus contains terms that some people may find offensive.
 - Not affiliated with the Moby Project, Project Guttenberg, Grady Ward or the LDS Church.
 
+
+## Future Directions:
 
 
 
