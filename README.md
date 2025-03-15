@@ -1,6 +1,6 @@
 # The Moby Thesaurus
 Game Edition (Now With Cheats!®) <br>
-Most Anticlimactic Game Ever!
+Most Anticlimactic Game Ending Ever!
 
 ## Introduction
 
@@ -21,7 +21,7 @@ To browse the thesaurus:
 ![browse detail](https://github.com/user-attachments/assets/d9d4d38c-0d9d-4984-a583-a1e0590ffee1)
 
 
-- Hover over a synonym to see it's cost (frequency) and # links (synonyms/related terms). These will become important when playing the game.
+- Hover over a synonym to see its cost (frequency) and # links (synonyms/related terms). These will become important when playing the game.
 - The Zoom level filters on frequency. In the above, 500K means that all synonyms with a frequency of less than half a million are displayed.
 - The  &#x1f9ed; button initiates Game Mode:
 
