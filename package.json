@@ -17,7 +17,7 @@
     "save-dev": "^0.0.1-security"
   },
   "devDependencies": {
-    "@types/react": "^19.1.6",
+    "@types/react": "^19.1.7",
     "@types/react-dom": "^19.1.5",
     "@vitejs/plugin-react": "^4.5.0",
     "gh-pages": "^6.3.0",
