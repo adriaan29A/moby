@@ -1,6 +1,6 @@
 {
   "name": "moby",
-  "homepage": "https://adriaan29A.github.io/adriaan29A/moby.git",
+  "homepage": "https://adriaan29a.github.io/moby",
   "private": false,
   "version": "0.0.1",
   "type": "module",
@@ -22,6 +22,8 @@
     "@vitejs/plugin-react": "^4.7.0",
     "gh-pages": "^6.3.0",
     "typescript": "^5.8.3",
-    "vite": "^7.0.5"
+    "vite": "^7.0.5",
+    "vite-plugin-pwa": "^1.0.1",
+    "workbox-window": "^7.3.0"
   }
 }
