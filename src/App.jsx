@@ -4,7 +4,6 @@ import { TodoList } from "./TodoList" // remove ?
 import { Synset } from "./Synset.jsx"
 import { CreateNavigator } from "./nav.js"
 import { random_node } from "./core.js"
-import InstallPWA from "./InstallPWA.jsx"
 
 
 //------------------------------------------------------------------------------
@@ -116,7 +115,6 @@ export default function App() {
 		<>
 		<Synset nav = {nav} extent = {extent} onClick = { setCtx } />
 		<NewTodoForm nav = { nav } onSubmit = { setCtx } />
-		<InstallPWA />
 		</>
 	)
 }
