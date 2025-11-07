@@ -14,6 +14,14 @@ import { random_node } from "./core.js"
 // Windows dimensions
 
 function getWindowDimensions() {
+  // Prefer visualViewport API for mobile/WebView (more accurate for actual visible area)
+  if (window.visualViewport) {
+    return {
+      width: window.visualViewport.width,
+      height: window.visualViewport.height
+    };
+  }
+  // Fallback to window dimensions
   const { innerWidth: width, innerHeight: height } = window;
   return {
     width,
@@ -28,22 +36,42 @@ function useWindowDimensions() {
   );
 
   useEffect(() => {
+    function updateDimensions() {
+      const newDims = getWindowDimensions();
+      setWindowDimensions(prevDims => {
+        // Only update if dimensions actually changed (avoid unnecessary re-renders)
+        if (prevDims.width !== newDims.width || prevDims.height !== newDims.height) {
+          return newDims;
+        }
+        return prevDims;
+      });
+    }
+
     function handleResize() {
-      setWindowDimensions(getWindowDimensions());
+      updateDimensions();
     }
 
     function handleOrientationChange() {
-      // On mobile devices, orientation change might not immediately update window dimensions
-      // Use a small delay to ensure dimensions are updated
-      setTimeout(() => {
-        setWindowDimensions(getWindowDimensions());
-      }, 100);
+      // On mobile devices/WebView, orientation change might not immediately update window dimensions
+      // Try multiple times with increasing delays to catch the dimension update
+      setTimeout(updateDimensions, 0);
+      setTimeout(updateDimensions, 100);
+      setTimeout(updateDimensions, 300);
+      setTimeout(updateDimensions, 500);
+    }
+
+    // Use visualViewport API if available (better for mobile/WebView)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", handleResize);
     }
 
     window.addEventListener("resize", handleResize);
     window.addEventListener("orientationchange", handleOrientationChange);
     
     return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", handleResize);
+      }
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleOrientationChange);
     };
@@ -124,9 +152,13 @@ export default function App() {
 	// Get the main window dimensions
 	const extent = useWindowDimensions();
 
+	// Create a key based on dimensions to force re-render when orientation changes
+	// This ensures the layout is recalculated with the new aspect ratio
+	const synsetKey = `${extent.width}x${extent.height}`;
+
 	return (
 		<>
-		<Synset nav = {nav} extent = {extent} onClick = { setCtx } />
+		<Synset key={synsetKey} nav = {nav} extent = {extent} onClick = { setCtx } />
 		<NewTodoForm nav = { nav } onSubmit = { setCtx } />
 		</>
 	)
