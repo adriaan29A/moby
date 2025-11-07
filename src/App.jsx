@@ -35,9 +35,9 @@ function useWindowDimensions() {
     function handleOrientationChange() {
       // On mobile devices, orientation change might not immediately update window dimensions
       // Use a small delay to ensure dimensions are updated
-      setTimeout(() => {
-        setWindowDimensions(getWindowDimensions());
-      }, 100);
+//      setTimeout(() => {
+//        setWindowDimensions(getWindowDimensions());
+//      }, 100);
     }
 
     window.addEventListener("resize", handleResize);
