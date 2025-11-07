@@ -53,11 +53,51 @@ function useWindowDimensions() {
 
     function handleOrientationChange() {
       // On mobile devices/WebView, orientation change might not immediately update window dimensions
-      // Try multiple times with increasing delays to catch the dimension update
-      setTimeout(updateDimensions, 0);
-      setTimeout(updateDimensions, 100);
-      setTimeout(updateDimensions, 300);
-      setTimeout(updateDimensions, 500);
+      // WebView can be slow, especially after first rotation - use longer delays and more checks
+      const timeouts = [0, 50, 100, 200, 400, 600, 800, 1000, 1500, 2000];
+      timeouts.forEach(delay => {
+        setTimeout(updateDimensions, delay);
+      });
+      
+      // Also use requestAnimationFrame for immediate next frame checks
+      requestAnimationFrame(() => {
+        updateDimensions();
+        requestAnimationFrame(() => {
+          updateDimensions();
+        });
+      });
+      
+      // Continuous check until dimensions stabilize (stop after 3 seconds)
+      // This handles cases where WebView is very slow to update dimensions
+      let checkCount = 0;
+      const initialDims = getWindowDimensions();
+      let lastWidth = initialDims.width;
+      let lastHeight = initialDims.height;
+      let stableCount = 0;
+      const maxChecks = 30; // 30 checks over 3 seconds
+      const stableThreshold = 3; // Stop after 3 consecutive stable checks
+      
+      const intervalId = setInterval(() => {
+        checkCount++;
+        const currentDims = getWindowDimensions();
+        
+        // Check if dimensions have changed
+        if (currentDims.width !== lastWidth || currentDims.height !== lastHeight) {
+          // Dimensions changed, update and reset stable counter
+          lastWidth = currentDims.width;
+          lastHeight = currentDims.height;
+          stableCount = 0;
+          updateDimensions();
+        } else {
+          // Dimensions are stable
+          stableCount++;
+        }
+        
+        // Stop if dimensions have been stable or max checks reached
+        if (checkCount >= maxChecks || stableCount >= stableThreshold) {
+          clearInterval(intervalId);
+        }
+      }, 100);
     }
 
     // Use visualViewport API if available (better for mobile/WebView)
