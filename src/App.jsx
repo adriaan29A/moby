@@ -14,14 +14,9 @@ import { random_node } from "./core.js"
 // Windows dimensions
 
 function getWindowDimensions() {
-  // Prefer visualViewport API for mobile/WebView (more accurate for actual visible area)
-  if (window.visualViewport) {
-    return {
-      width: window.visualViewport.width,
-      height: window.visualViewport.height
-    };
-  }
-  // Fallback to window dimensions
+  // Use innerWidth/innerHeight for layout calculations (full viewport including UI chrome)
+  // visualViewport excludes browser chrome and can cause layout to be calculated for smaller area
+  // This is especially important in WebView where we need the full screen dimensions
   const { innerWidth: width, innerHeight: height } = window;
   return {
     width,
@@ -38,9 +33,18 @@ function useWindowDimensions() {
   useEffect(() => {
     function updateDimensions() {
       const newDims = getWindowDimensions();
+      // Debug logging for WebView orientation issues
+      if (window.visualViewport) {
+        console.log('Dimensions - inner:', newDims.width, 'x', newDims.height, 
+                   'visualViewport:', window.visualViewport.width, 'x', window.visualViewport.height);
+      } else {
+        console.log('Dimensions - inner:', newDims.width, 'x', newDims.height);
+      }
       setWindowDimensions(prevDims => {
         // Only update if dimensions actually changed (avoid unnecessary re-renders)
         if (prevDims.width !== newDims.width || prevDims.height !== newDims.height) {
+          console.log('Dimensions changed from', prevDims.width, 'x', prevDims.height, 
+                     'to', newDims.width, 'x', newDims.height);
           return newDims;
         }
         return prevDims;
