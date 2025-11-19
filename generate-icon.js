@@ -5,10 +5,19 @@ const svgBuffer = readFileSync('moby.svg');
 
 // Use dark blue background to make the light blue whale (#98c9ff) stand out
 // This matches the app's darker blue theme color
+// Add padding to ensure whale fits within Android's adaptive icon safe zone (center 66%)
+// The safe zone prevents cropping on different launchers
 sharp(svgBuffer)
-  .resize(512, 512, {
+  .resize(340, 340, {  // 66% of 512 to fit in safe zone
     fit: 'contain',
     background: { r: 25, g: 118, b: 210, alpha: 1 } // Dark blue #1976D2 for contrast
+  })
+  .extend({
+    top: 86,
+    bottom: 86,
+    left: 86,
+    right: 86,
+    background: { r: 25, g: 118, b: 210, alpha: 1 } // Extend with same background color
   })
   .png()
   .toFile('moby-icon-512.png')
