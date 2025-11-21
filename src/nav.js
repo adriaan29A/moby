@@ -1,5 +1,7 @@
 import graph from "./graph.json";
 import node_data from "./nodes.json";
+import { showWinCelebration } from './Celebration.jsx';
+
 
 import  { getDisplayInfo, expand_synset, dijkstra, get_cost_and_distance, make_path,
 		  random_node, minmax, nodeid_from_text, colors, zin,
@@ -196,27 +198,37 @@ class Navigator {
 				new_jumps = 0;
 				new_cost = 0;
 			}
-
+		
 			this.delta = (next_node != this.target)? new_cost - this.cost : 0;
 			this.deltaj = (next_node != this.target)? new_jumps - this.jumps : 0;
             this.current = next_node;
             this.cost = new_cost;
 			this.jumps = new_jumps;
+		
 
+			// If this node has not been visited before add it's cost to the total
 			if (this.trvlog.find(node => node == this.current) == undefined) {
-				this.total += node_data[this.current][COST];
+				if (this.current != this.target) { 
+					this.total += node_data[this.current][COST];
+				}
 				this.jumpstot += 1;
 			}
 
             this.history.push(next_node);
             this.trvlog.push(next_node);
 			this.cheats++;
+
+			// Check for this.jumps == 0 and show confetti.
+			if (this.jumps == 0 && (next_node != this.target)) {
+				showWinCelebration("Score: Jumps: " + this.jumpstot + " Cost: $ " + this.total.toFixed(0));
+			}
+			
 		}
 		return true;
 	}
 
 
-
+	// Forward function only looks at the backcache
     forward() {
 
 	if (this.backCache.length != 0) {
@@ -294,6 +306,9 @@ class Navigator {
 			}
 
 			this.jumps = jumps;
+			if (this.jumps == 0) {
+				showWinCelebration("Score: Jumps: " + this.jumpstot + " Cost: $ " + this.total.toFixed(0));
+			}
 		}
 
 		this.current = next_node;

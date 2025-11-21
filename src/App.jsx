@@ -4,6 +4,7 @@ import { TodoList } from "./TodoList" // remove ?
 import { Synset } from "./Synset.jsx"
 import { CreateNavigator } from "./nav.js"
 import { random_node } from "./core.js"
+import { Celebration } from "./Celebration.jsx"
 
 
 //------------------------------------------------------------------------------
@@ -169,7 +170,7 @@ export default function App() {
 	var nav = CreateNavigator();
 
 	const [navctx, setNavctx] = useState(() => {
-		const localValue = localStorage.getItem("NAVCTX26")
+		const localValue = localStorage.getItem("NAVCTX27")
 		if (localValue == null) {
 			console.log('localValue null')
 
@@ -182,7 +183,7 @@ export default function App() {
 	})
 
 	useEffect(() => {
-		localStorage.setItem("NAVCTX26", JSON.stringify(navctx))
+		localStorage.setItem("NAVCTX27", JSON.stringify(navctx))
 	}, [navctx])
 
 	function setCtx(ctx) {
@@ -204,6 +205,7 @@ export default function App() {
 		<>
 		<Synset key={synsetKey} nav = {nav} extent = {extent} onClick = { setCtx } />
 		<NewTodoForm nav = { nav } onSubmit = { setCtx } />
+		<Celebration />
 		</>
 	)
 }
