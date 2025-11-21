@@ -220,7 +220,7 @@ class Navigator {
 
 			// Check for this.jumps == 0 and show confetti.
 			if (this.jumps == 0 && (next_node != this.target)) {
-				showWinCelebration("Score: Jumps: " + this.jumpstot + " Cost: $ " + this.total.toFixed(0));
+				showWinCelebration("Score: $ " + this.total.toFixed(0) + " Jumps: " + this.jumpstot);
 			}
 			
 		}
@@ -301,13 +301,16 @@ class Navigator {
             this.cost = new_cost;
 
 			if (this.trvlog.find(node => node == next_node) == undefined) {
-				this.total += node_data[next_node][COST];
+
+				if (next_node != this.target) {
+					this.total += node_data[next_node][COST];
+				}
 				this.jumpstot += 1;
 			}
 
 			this.jumps = jumps;
 			if (this.jumps == 0) {
-				showWinCelebration("Score: Jumps: " + this.jumpstot + " Cost: $ " + this.total.toFixed(0));
+				showWinCelebration("Score: $ " + this.total.toFixed(0) + " Jumps: " + this.jumpstot);
 			}
 		}
 
