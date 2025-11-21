@@ -37,7 +37,7 @@ export function Celebration() {
       
       // Start confetti immediately
       const confettiDuration = 3000; // Confetti runs for 3 seconds
-      const messageDisplayDuration = 7000; // Message stays visible for 7 seconds total
+      const messageDisplayDuration = 10000; // Message stays visible for 10 seconds total
       const animationEnd = Date.now() + confettiDuration;
       const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
 

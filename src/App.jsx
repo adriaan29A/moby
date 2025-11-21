@@ -170,7 +170,7 @@ export default function App() {
 	var nav = CreateNavigator();
 
 	const [navctx, setNavctx] = useState(() => {
-		const localValue = localStorage.getItem("NAVCTX27")
+		const localValue = localStorage.getItem("NAVCTX29")
 		if (localValue == null) {
 			console.log('localValue null')
 
@@ -179,11 +179,16 @@ export default function App() {
 
 			return nav.get();
 		}
-		return JSON.parse(localValue)
+		const parsed = JSON.parse(localValue);
+		// Ensure gameover exists (for backward compatibility with old localStorage)
+		if (parsed.gameover === undefined) {
+			parsed.gameover = false;
+		}
+		return parsed;
 	})
 
 	useEffect(() => {
-		localStorage.setItem("NAVCTX27", JSON.stringify(navctx))
+		localStorage.setItem("NAVCTX29", JSON.stringify(navctx));
 	}, [navctx])
 
 	function setCtx(ctx) {

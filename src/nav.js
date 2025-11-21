@@ -26,7 +26,7 @@ class Navigator {
 
         this.jumpstot = 0; this.deltaj = 0; this.cheats = 0; this.nsyns = 0;
 
-        this.backCache = []; this.costOriginal = 0;
+        this.backCache = []; this.costOriginal = 0; this.gameover = false;
 	}
 
     // put this in a dict, this is massively verbose
@@ -36,7 +36,9 @@ class Navigator {
 		this.delta = ctx.delta; this.zlevel = ctx.zlevel; this.xfactor = ctx.xfactor;
 		this.total = ctx.total; this.trvlog = ctx.trvlog; this.jumpstot = ctx.jumpstot;
 		this.deltaj = ctx.deltaj; this.cheats = ctx.cheats; this.nsyns =ctx.nsyns;
-	        this.backCache = ctx.backCache; this.costOriginal = ctx.costOriginal;
+	    this.backCache = ctx.backCache; this.costOriginal = ctx.costOriginal;
+		// Default gameover to false if undefined (for backward compatibility)
+		this.gameover = ctx.gameover !== undefined ? ctx.gameover : false;
 	}
 
         get() {
@@ -44,8 +46,9 @@ class Navigator {
 				 target: this.target, cost: this.cost, jumps: this.jumps, delta:
 				 this.delta, zlevel: this.zlevel, xfactor: this.xfactor,
 				 total: this.total, trvlog: this.trvlog, jumpstot: this.jumpstot,
-			         deltaj: this.deltaj, cheats: this.cheats, nsyns: this.nsyns,
-			         backCache: this.backCache, costOriginal: this.costOriginal };
+		         deltaj: this.deltaj, cheats: this.cheats, nsyns: this.nsyns,
+		         backCache: this.backCache, costOriginal: this.costOriginal,
+				 gameover: this.gameover };
 
 	}
 
@@ -219,8 +222,9 @@ class Navigator {
 			this.cheats++;
 
 			// Check for this.jumps == 0 and show confetti.
-			if (this.jumps == 0 && (next_node != this.target)) {
-				showWinCelebration("Score: $ " + this.total.toFixed(0) + " Jumps: " + this.jumpstot);
+			if ((this.jumps == 0) && (this.gameover == false)) {
+				showWinCelebration("Score: $" + this.numberWithCommas(this.total.toFixed(0)) + " Assists: " + this.cheats);
+				this.gameover = true;
 			}
 			
 		}
@@ -309,8 +313,9 @@ class Navigator {
 			}
 
 			this.jumps = jumps;
-			if (this.jumps == 0) {
-				showWinCelebration("Score: $ " + this.total.toFixed(0) + " Jumps: " + this.jumpstot);
+			if ((this.jumps == 0) && (this.gameover == false)) {
+				showWinCelebration("Score: $" + this.numberWithCommas(this.total.toFixed(0)) + " Assists: " + this.cheats);
+				this.gameover = true;
 			}
 		}
 
@@ -334,7 +339,8 @@ class Navigator {
 		this.cheats = 0;
 		this.trvlog = [this.current];
 		this.history = [this.current];
-	        this.backCache = [];
+	    this.backCache = [];
+		this.gameover = false;
 
 		if (f_all) {
 			this.zlevel = DEFAULT_ZOOM;
@@ -427,5 +433,7 @@ class Navigator {
 		return hist;
 	}
 
-
+	numberWithCommas(x) {
+		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}		
 } // end class Navigator
