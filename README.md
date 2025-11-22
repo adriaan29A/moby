@@ -1,6 +1,9 @@
 # The Moby Thesaurus
-Game Edition (Now With Cheats!®) <br>
-Most Anticlimactic Game Ending Ever!
+Game Edition 
+
+
+<br>
+
 
 ## Introduction
 
