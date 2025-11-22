@@ -37,10 +37,9 @@ export function Celebration() {
       isCelebrating = true;
       console.log('Starting celebration with message:', msg);
       
-      // Reset and show container immediately
-      setMessage(msg);
-      setShowMessage(false); // Start with message hidden
-      setIsVisible(true); // Show container immediately
+      // Reset visibility state first to prevent flash from previous celebration
+      setIsVisible(false);
+      setShowMessage(false);
       
       // Optimize for Android WebView - use lighter settings
       const isAndroid = isAndroidWebView();
@@ -60,14 +59,25 @@ export function Celebration() {
         return Math.random() * (max - min) + min;
       }
 
-      // Show message sooner on Android to ensure it's visible even if confetti struggles
-      const messageDelay = isAndroid ? 200 : 500;
+      // Set message and ensure message is hidden
+      setMessage(msg);
+      
+      // Use a small delay to ensure React has updated showMessage to false before showing container
+      // This prevents the brief flash of the message
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
+          setIsVisible(true); // Show container only after message is confirmed hidden
+          
+          // Start confetti immediately when container becomes visible
+          // (confetti animation starts below)
+          
+          // Small delay to ensure DOM is ready and element is rendered with opacity 0
+          // Then show message after confetti has started (500ms delay)
+          // This ensures confetti is running before message fades in
           setTimeout(() => {
             console.log('Showing message - setting showMessage to true');
             setShowMessage(true);
-          }, messageDelay);
+          }, 500);
         });
       });
 
@@ -194,7 +204,8 @@ export function Celebration() {
           border: '2px solid #98c9ff',
           opacity: showMessage ? 1 : 0,
           transform: showMessage ? 'scale(1)' : 'scale(0.95)',
-          transition: 'opacity 0.8s ease-in, transform 0.8s ease-out',
+          // Always have transition when container is visible - ensures smooth fade-in
+          transition: isVisible ? 'opacity 0.8s ease-in, transform 0.8s ease-out' : 'none',
           willChange: 'opacity, transform',
         }}
       >
