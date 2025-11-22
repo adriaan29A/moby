@@ -53,6 +53,11 @@ class Navigator {
 	}
 
 	getDisplayInfo(extent) {
+		// Guard against undefined data (e.g., if IndexedDB hasn't loaded yet)
+		if (!node_data || !graph) {
+			console.error('getDisplayInfo: node_data or graph is not available');
+			return [null, null];
+		}
 
 		var params = null; var displayInfo = null;
 
@@ -61,6 +66,11 @@ class Navigator {
 
 //	    pure_nodes = pure_nodes.slice(0,30200);
 
+		// Guard against undefined current node
+		if (this.current == null || !graph[this.current]) {
+			console.error('getDisplayInfo: current node is not available', this.current);
+			return [null, null];
+		}
 
 	    if ( this.xfactor == 0) {
 			[params, displayInfo] = getDisplayInfo(graph[this.current], this.zlevel,
@@ -148,11 +158,16 @@ class Navigator {
 	}
 
 	set_target(object) {
+		// Guard against undefined data (e.g., if IndexedDB hasn't loaded yet)
+		if (!node_data || !graph) {
+			console.error('set_target: node_data or graph is not available');
+			return false;
+		}
 
 		var nodeid = (typeof(object) === 'string') ?
 			nodeid_from_text(object, node_data) : object;
 
-        if (nodeid == null || graph[nodeid].length == 0)
+        if (nodeid == null || !graph[nodeid] || graph[nodeid].length == 0)
             return false;
 
         this.origin = this.current;
@@ -180,6 +195,12 @@ class Navigator {
 
         if (this.target == null || this.current == this.target)
             return false;
+
+		// Guard against undefined data (e.g., if IndexedDB hasn't loaded yet)
+		if (!node_data || !graph) {
+			console.error('next: node_data or graph is not available');
+			return false;
+		}
 
         // find min cost path from current node
         var parent = dijkstra(graph, node_data, this.current, this.target);
@@ -211,7 +232,7 @@ class Navigator {
 
 			// If this node has not been visited before add it's cost to the total
 			if (this.trvlog.find(node => node == this.current) == undefined) {
-				if (this.current != this.target) { 
+				if (this.current != this.target && node_data[this.current]) { 
 					this.total += node_data[this.current][COST];
 				}
 				this.jumpstot += 1;
@@ -287,10 +308,16 @@ class Navigator {
         goto(object) {
 	    this.backCache = [];
 
+		// Guard against undefined data (e.g., if IndexedDB hasn't loaded yet)
+		if (!node_data || !graph) {
+			console.error('goto: node_data or graph is not available');
+			return false;
+		}
+
 	    var next_node = (typeof(object) == 'string') ?
 		nodeid_from_text(object, node_data) : object;
 
-        if (next_node == null || graph[next_node].length == 0)
+        if (next_node == null || !graph[next_node] || graph[next_node].length == 0)
             return false;
 
         // if tracking to a target
@@ -306,7 +333,7 @@ class Navigator {
 
 			if (this.trvlog.find(node => node == next_node) == undefined) {
 
-				if (next_node != this.target) {
+				if (next_node != this.target && node_data[next_node]) {
 					this.total += node_data[next_node][COST];
 				}
 				this.jumpstot += 1;
@@ -349,23 +376,22 @@ class Navigator {
 	}
 
 	getCurrentText() {
+		if (!node_data || this.current == null || !node_data[this.current]) {
+			return "";
+		}
 		return node_data[this.current][TEXT];
 	}
 
 	getTargetText() {
-
-		if (this.target != null)
-			return node_data[this.target][TEXT];
-		else
-			return '';
+		if (!node_data || this.target == null || !node_data[this.target])
+			return "";
+		return node_data[this.target][TEXT];
 	}
 
         getOriginText() {
-
-		if (this.target != null)
-			return node_data[this.origin][TEXT];
-		else
-			return '';
+		if (!node_data || this.origin == null || !node_data[this.origin])
+			return "";
+		return node_data[this.origin][TEXT];
 	}
 
         getLevelText() {
@@ -422,8 +448,14 @@ class Navigator {
 
 
 	getHistoryText() {
+		if (!node_data) {
+			return "";
+		}
 		var hist = '';
 		for (var i = 0; i < this.history.length; i++) {
+			if (!node_data[this.history[i]]) {
+				continue; // Skip invalid history entries
+			}
 			if (i == this.history.length -1)
 				var c = ' ';
 			else

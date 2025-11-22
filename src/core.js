@@ -526,8 +526,13 @@ function generateLayoutJSON() { const zlevel = 0; const xfactor =0; const curr =
 // This func is O(N), but it is rarely used and the
 // the need for an auxiliary dictionary is avoided.
 function nodeid_from_text(text, node_data) {
+	// Guard against undefined/null node_data (e.g., if IndexedDB hasn't loaded yet)
+	if (!node_data || typeof node_data !== 'object') {
+		console.error('nodeid_from_text: node_data is not available', node_data);
+		return null;
+	}
 	for (var nodeid in node_data) {
-		if (node_data[nodeid][TEXT] == text) {
+		if (node_data[nodeid] && node_data[nodeid][TEXT] == text) {
 			return parseInt(nodeid, 10);
 		}
 	}

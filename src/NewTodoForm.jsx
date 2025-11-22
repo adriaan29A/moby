@@ -13,8 +13,13 @@ export function NewTodoForm({nav, onSubmit}) {
 		if (e.target.id == "navigate") { // bug -ambiguous
 
 			if (newItem != "") {
-				if (nav.target == null)
+				if (nav.target == null) {
+					if (!nodes) {
+						console.error('NewTodoForm: nodes data is not available');
+						return;
+					}
 					nav.set_target(nodeid_from_text(newItem, nodes));
+				}
 				else {
 					nav.clear();
 				}
@@ -34,6 +39,10 @@ export function NewTodoForm({nav, onSubmit}) {
 		}
 
 		else {
+			if (!nodes) {
+				console.error('NewTodoForm: nodes data is not available for goto');
+				return;
+			}
 			nav.goto(newItem); // bug - resetting history twice?
 		}
 
