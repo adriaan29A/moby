@@ -33,11 +33,12 @@ export function Celebration() {
       
       // Reset and show container immediately
       setMessage(msg);
-      setIsVisible(true); // Show container
+      setShowMessage(false); // Start with message hidden
+      setIsVisible(true); // Show container immediately
       
       // Start confetti immediately
-      const confettiDuration = 3000; // Confetti runs for 3 seconds
-      const messageDisplayDuration = 10000; // Message stays visible for 10 seconds total
+      const confettiDuration = 4000; // Confetti runs for 4 seconds (1 second longer)
+      const messageDisplayDuration = 11000; // Message stays visible for 11 seconds total
       const animationEnd = Date.now() + confettiDuration;
       const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
 
@@ -46,10 +47,11 @@ export function Celebration() {
       }
 
       // Show message after a short delay (500ms) so confetti starts first
-      // Use a double requestAnimationFrame to ensure DOM is ready for transition
+      // Use requestAnimationFrame to ensure DOM is ready for transition
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          setShowMessage(false); // Set to false first to ensure transition works
+          // Force a reflow to ensure the element is in the DOM with opacity 0
+          // before we trigger the transition to opacity 1
           setTimeout(() => {
             console.log('Showing message - setting showMessage to true');
             setShowMessage(true);
@@ -109,7 +111,6 @@ export function Celebration() {
   }, [isVisible, showMessage, message]);
 
   // Always render but control visibility - this ensures transitions work
-  // Use visibility and opacity for smoother transitions
   return (
     <div
       style={{
@@ -124,8 +125,6 @@ export function Celebration() {
         zIndex: 10000,
         pointerEvents: 'none',
         visibility: isVisible ? 'visible' : 'hidden',
-        opacity: isVisible ? 1 : 0,
-        transition: 'opacity 0.3s ease-in, visibility 0.3s',
       }}
     >
       <div
@@ -137,8 +136,9 @@ export function Celebration() {
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
           border: '2px solid #98c9ff',
           opacity: showMessage ? 1 : 0,
-          transition: 'opacity 0.5s ease-in',
-          transform: showMessage ? 'scale(1)' : 'scale(0.9)',
+          transform: showMessage ? 'scale(1)' : 'scale(0.95)',
+          transition: 'opacity 0.8s ease-in, transform 0.8s ease-out',
+          willChange: 'opacity, transform',
         }}
       >
         <h1
