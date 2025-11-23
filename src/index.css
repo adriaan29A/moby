@@ -170,6 +170,16 @@ body {
 		border: none;
 		outline: none;
 	    padding: 0.1em 0.2em;
+		/* Prevent text selection on Android to avoid default selection menu */
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		-webkit-touch-callout: none; /* Disable iOS/Android long-press menu */
+		-webkit-tap-highlight-color: transparent; /* Remove tap highlight */
+		/* Prevent all touch gestures to avoid race conditions with Android handler */
+		touch-action: none;
+		-ms-touch-action: none;
 }
 
 
