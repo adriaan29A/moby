@@ -5,8 +5,8 @@ function isTouchDevice() {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 }
 
-// Global tooltip management - ensures only one tooltip is visible at a time (desktop only)
-// This prevents multiple tooltips from accumulating when quickly hovering over synonyms
+// Global tooltip management - ensures only one tooltip is visible at a time (both desktop and mobile)
+// This prevents multiple tooltips from accumulating when quickly hovering/tapping synonyms
 let activeTooltipHide = null;
 
 export function Tooltip({ children, cost, syns, text }) {
@@ -36,12 +36,12 @@ export function Tooltip({ children, cost, syns, text }) {
       if (hideTimeoutRef.current) {
         clearTimeout(hideTimeoutRef.current);
       }
-      // Desktop only: Clear global reference if this tooltip is the active one
-      if (!isTouch && activeTooltipHide === hideTooltipRef.current) {
+      // Clear global reference if this tooltip is the active one (both desktop and mobile)
+      if (activeTooltipHide === hideTooltipRef.current) {
         activeTooltipHide = null;
       }
     };
-  }, [isTouch]);
+  }, []);
 
   // Position tooltip relative to button - close to the button
   const updatePosition = () => {
@@ -69,17 +69,15 @@ export function Tooltip({ children, cost, syns, text }) {
   };
 
   const showTooltip = () => {
-    // Desktop only: Immediately hide any existing tooltip when showing a new one
-    // This prevents multiple tooltips from accumulating when quickly hovering
-    if (!isTouch && activeTooltipHide && activeTooltipHide !== hideTooltipRef.current) {
+    // Immediately hide any existing tooltip when showing a new one (both desktop and mobile)
+    // This prevents multiple tooltips from accumulating when quickly hovering/tapping
+    if (activeTooltipHide && activeTooltipHide !== hideTooltipRef.current) {
       activeTooltipHide(true); // Immediately hide previous tooltip
       activeTooltipHide = null;
     }
     
-    // Register this tooltip's hide function as the active one (desktop only)
-    if (!isTouch) {
-      activeTooltipHide = hideTooltipRef.current;
-    }
+    // Register this tooltip's hide function as the active one
+    activeTooltipHide = hideTooltipRef.current;
     
     setShow(true);
     // Use multiple requestAnimationFrame calls to ensure DOM is fully updated
@@ -100,8 +98,8 @@ export function Tooltip({ children, cost, syns, text }) {
       hideTimeoutRef.current = null;
     }
     
-    // Desktop only: Clear global reference if this is the active tooltip
-    if (!isTouch && activeTooltipHide === hideTooltipRef.current) {
+    // Clear global reference if this is the active tooltip (both desktop and mobile)
+    if (activeTooltipHide === hideTooltipRef.current) {
       activeTooltipHide = null;
     }
     
@@ -122,8 +120,8 @@ export function Tooltip({ children, cost, syns, text }) {
         }
         touchStartTimeRef.current = null;
         hideTimeoutRef.current = null;
-        // Clear global reference when hiding completes
-        if (!isTouch && activeTooltipHide === hideTooltipRef.current) {
+        // Clear global reference when hiding completes (both desktop and mobile)
+        if (activeTooltipHide === hideTooltipRef.current) {
           activeTooltipHide = null;
         }
       }, HIDE_DELAY);
