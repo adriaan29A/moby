@@ -104,14 +104,12 @@ export function Celebration() {
                 origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
               });
               
-              // Launch confetti from right (skip on Android to reduce load)
-              if (!isAndroid) {
-                confetti({
-                  ...defaults,
-                  particleCount,
-                  origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-                });
-              }
+              // Launch confetti from right (restored for Android - other optimizations should handle the load)
+              confetti({
+                ...defaults,
+                particleCount: isAndroid ? particleCount : undefined, // Use explicit count for Android
+                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+              });
               
               lastFrameTime = now;
             } catch (error) {

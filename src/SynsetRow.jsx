@@ -1,3 +1,5 @@
+import { Tooltip } from "./Tooltip";
+
 const FONT_SIZE_HACK_MED = 12;
 export function SynsetRow({row, font_size, onClick}) {
 
@@ -12,27 +14,35 @@ export function SynsetRow({row, font_size, onClick}) {
 	    <li className = "quux1">
 		{
 		    row.map(function(node, index, array) {
+			// Skip tooltip for black (disabled) nodes
+			if (row[index].color == "Black") {
+				return (<><button
+					id = {row[index].nodeid}
+					onClick = {null}
+					style = {{ "color": row[index].color }}
+					className="quuxbutton1">
+					{array[index].text}
+				</button></>);
+			}
 
-			return (<><button
-				      id = {row[index].nodeid}
-				      title =
-				{ (
-				   row[index].color == "Black") ?
-				   null : ((font_size < FONT_SIZE_HACK_MED ?
-				   row[index].text + ' '  : '') +'\n' +
-					   row[index].cost.toLocaleString() +
-					   '\n' + row[index].syns.toString() +
-					   ' links'
-				) }
-
-				 onClick = {(row[index].color == "Black") ? null : handleOnClick}
-					  style = {{ "color": row[index].color }}
-					  className="quuxbutton1">
-
-				      {array[index].text}
-
-				  </button></>) }
-			   )
+			// Use custom Tooltip component for enabled nodes
+			return (
+				<Tooltip
+					key={row[index].nodeid}
+					cost={row[index].cost}
+					syns={row[index].syns}
+					text={row[index].text}
+				>
+					<button
+						id = {row[index].nodeid}
+						onClick = {handleOnClick}
+						style = {{ "color": row[index].color }}
+						className="quuxbutton1">
+						{array[index].text}
+					</button>
+				</Tooltip>
+			);
+		    })
 		}
 	    </li>
 	</>
