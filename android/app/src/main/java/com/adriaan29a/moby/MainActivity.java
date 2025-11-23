@@ -94,6 +94,12 @@ public class MainActivity extends AppCompatActivity {
                     mainHandler.postDelayed(() -> hideSplashScreen(), 300);
                 });
             }
+            
+            @JavascriptInterface
+            @SuppressWarnings("unused")
+            public void logError(String message) {
+                Log.e(TAG + "_JS", "JavaScript error: " + message);
+            }
         }, "AndroidApp");
         
         // Enable hardware acceleration for better canvas performance (important for confetti)
@@ -155,7 +161,15 @@ public class MainActivity extends AppCompatActivity {
             public android.webkit.WebResourceResponse shouldInterceptRequest(WebView view, android.webkit.WebResourceRequest request) {
                 // Use WebViewAssetLoader to serve local assets via https:// scheme
                 // This allows ES modules to work properly
-                return assetLoader.shouldInterceptRequest(request.getUrl());
+                android.net.Uri uri = request.getUrl();
+                Log.d(TAG, "Intercepting request: " + uri);
+                android.webkit.WebResourceResponse response = assetLoader.shouldInterceptRequest(uri);
+                if (response == null) {
+                    Log.w(TAG, "AssetLoader returned null for: " + uri);
+                } else {
+                    Log.d(TAG, "AssetLoader serving: " + uri + " (status: " + response.getStatusCode() + ")");
+                }
+                return response;
             }
             
             @Override
