@@ -52,26 +52,11 @@ android {
     }
 }
 
-// Task to copy dist files to assets for offline support
-task copyWebAssets(type: Copy) {
-    from '../../dist'
-    into 'src/main/assets'
-    // Fix paths in index.html to be relative (remove /moby prefix)
-    filesMatching('index.html') {
-        filter { line ->
-            line.replaceAll('/moby/assets/', 'assets/')
-                .replaceAll('/moby/moby.svg', 'moby.svg')
-        }
-    }
-}
-
-// Run copyWebAssets before building
-preBuild.dependsOn copyWebAssets
+// Offline support removed - app loads directly from network URL
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.activity:activity:1.9.2'
-    implementation 'androidx.webkit:webkit:1.9.0'
 } 

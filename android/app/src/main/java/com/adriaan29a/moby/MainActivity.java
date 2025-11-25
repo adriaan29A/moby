@@ -11,7 +11,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebSettings;
-import androidx.webkit.WebViewAssetLoader;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -148,34 +147,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         
-        // Create WebViewAssetLoader to serve local assets via https:// scheme
-        // This is required for ES modules to work (file:// URLs don't support ES modules due to CORS)
-        WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder()
-            .setDomain("appassets.androidplatform.net")
-            .addPathHandler("/", new WebViewAssetLoader.AssetsPathHandler(this))
-            .build();
-        
         // Set WebViewClient AFTER configuring settings
         webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public android.webkit.WebResourceResponse shouldInterceptRequest(WebView view, android.webkit.WebResourceRequest request) {
-                // Use WebViewAssetLoader to serve local assets via https:// scheme
-                // This allows ES modules to work properly
-                android.net.Uri uri = request.getUrl();
-                Log.d(TAG, "Intercepting request: " + uri);
-                android.webkit.WebResourceResponse response = assetLoader.shouldInterceptRequest(uri);
-                if (response == null) {
-                    Log.w(TAG, "AssetLoader returned null for: " + uri);
-                } else {
-                    Log.d(TAG, "AssetLoader serving: " + uri + " (status: " + response.getStatusCode() + ")");
-                }
-                return response;
-            }
             
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 Log.d(TAG, "onPageFinished called for: " + url);
+                
+                // Warn if page finished loading from file:// instead of https://
+                if (url != null && url.startsWith("file://")) {
+                    Log.e(TAG, "WARNING: Page loaded from file:// instead of https://! This will cause CORS errors.");
+                    Log.e(TAG, "Expected: https://appassets.androidplatform.net/index.html");
+                    Log.e(TAG, "Got: " + url);
+                }
+                
                 // Don't hide splash here - wait for React app to signal it's ready via JavaScript interface
                 // This ensures the app is actually rendered, not just the HTML loaded
             }
@@ -214,29 +200,12 @@ public class MainActivity extends AppCompatActivity {
             hideSplashScreen();
         }, 8000);
 
-        // Load from local assets for offline support, fallback to network URL
-        // Use https:// scheme via WebViewAssetLoader (required for ES modules)
-        // Check if local assets exist first
-        String localUrl = "https://appassets.androidplatform.net/index.html";
+        // Load from network URL
         String networkUrl = "https://adriaan29a.github.io/moby";
-        
-        // Try to load from local assets first (for offline support)
-        // If assets don't exist, fall back to network URL
-        try {
-            java.io.InputStream is = getAssets().open("index.html");
-            is.close();
-            // Local assets exist, load from there via WebViewAssetLoader
-            Log.d(TAG, "Loading from local assets via WebViewAssetLoader: " + localUrl);
-            // Use LOAD_DEFAULT for local files (not LOAD_CACHE_ONLY which prevents loading)
-            webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
-            webView.loadUrl(localUrl);
-        } catch (java.io.IOException e) {
-            // Local assets don't exist, load from network
-            Log.d(TAG, "Local assets not found, loading from network: " + networkUrl);
-            // Use cache-else-network to cache for future offline use
-            webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-            webView.loadUrl(networkUrl);
-        }
+        Log.d(TAG, "Loading from network: " + networkUrl);
+        // Use cache-else-network to cache for faster subsequent loads
+        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        webView.loadUrl(networkUrl);
         
         // Handle back button press (replaces deprecated onBackPressed)
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
