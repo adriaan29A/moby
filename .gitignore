@@ -154,3 +154,9 @@ android/local.properties
 *.ap_
 *.dex
 *.class
+
+# Android assets (not needed for network-only WebView app)
+android/app/src/main/assets/assets/
+android/app/src/main/assets/*.html
+android/app/src/main/assets/*.js
+android/app/src/main/assets/*.css
