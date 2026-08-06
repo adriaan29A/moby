@@ -31,7 +31,6 @@ export function SynsetRow({row, font_size, onClick}) {
 					key={row[index].nodeid}
 					cost={row[index].cost}
 					syns={row[index].syns}
-					text={row[index].text}
 				>
 					<button
 						id = {row[index].nodeid}

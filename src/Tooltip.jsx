@@ -9,9 +9,12 @@ function isTouchDevice() {
 // This prevents multiple tooltips from accumulating when quickly hovering/tapping synonyms
 let activeTooltipHide = null;
 
-export function Tooltip({ children, cost, syns, text }) {
+export function Tooltip({ children, cost, syns }) {
   const [show, setShow] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
+  // Keeps the tooltip invisible until it has been positioned, so it never
+  // flashes at the top-left corner (0,0) before moving to the button.
+  const [visible, setVisible] = useState(false);
   const timeoutRef = useRef(null);
   const hideTimeoutRef = useRef(null);
   const touchStartTimeRef = useRef(null);
@@ -80,12 +83,16 @@ export function Tooltip({ children, cost, syns, text }) {
     activeTooltipHide = hideTooltipRef.current;
     
     setShow(true);
+    // Keep it invisible until positioned so it never flashes at (0,0)
+    setVisible(false);
     // Use multiple requestAnimationFrame calls to ensure DOM is fully updated
     // and tooltip dimensions are available before positioning
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           updatePosition();
+          // Now that it's positioned, fade it in
+          setVisible(true);
         });
       });
     });
@@ -330,51 +337,24 @@ export function Tooltip({ children, cost, syns, text }) {
             top: `${position.top}px`,
             left: `${position.left}px`,
             background: 'rgba(0, 0, 0, 0.9)',
-            border: '1px solid #fff',
+            border: '1px solid rgba(152, 201, 255, 0.35)',
             borderRadius: '4px',
-            padding: '8px 12px',
+            padding: '4px 6px',
             color: '#98c9ff',
             fontSize: '14px',
             fontFamily: 'monospace, Courier, Arial, Helvetica, sans-serif',
             whiteSpace: 'nowrap',
             zIndex: 10001,
-            pointerEvents: 'auto', // Allow clicks on the link
+            pointerEvents: 'auto', // Allow clicks on the tooltip
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.5)',
             lineHeight: '1.4',
             textAlign: 'left',
+            opacity: visible ? 1 : 0,
+            transition: 'opacity 0.15s ease',
           }}
         >
           <div style={{ pointerEvents: 'none' }}>${cost.toLocaleString()}</div>
           <div style={{ pointerEvents: 'none' }}>{syns} links</div>
-          <div style={{ 
-            marginTop: '8px', 
-            paddingTop: '8px', 
-            borderTop: '1px solid rgba(255, 255, 255, 0.3)',
-            pointerEvents: 'auto' // Allow clicks on the link
-          }}>
-            <a
-              href={`https://en.m.wiktionary.org/wiki/${encodeURIComponent(text.replace(/\s+/g, '_'))}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                // Check if offline - if so, prevent navigation and show message
-                if (!navigator.onLine) {
-                  e.preventDefault();
-                  alert('Wiktionary is not available offline');
-                  return false;
-                }
-              }}
-              style={{
-                color: '#98c9ff',
-                textDecoration: 'underline',
-                fontSize: '12px',
-                cursor: 'pointer',
-                pointerEvents: 'auto',
-              }}
-            >
-              Wiktionary
-            </a>
-          </div>
         </div>
       )}
     </>
